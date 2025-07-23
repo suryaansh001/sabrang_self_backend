@@ -64,28 +64,51 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files from public directory
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-// Routes
+// Routes - Add extensive logging
 app.get("/", (req, res) => {
-  res.json({
+  console.log(`📥 Root route accessed - ${req.method} ${req.path}`);
+  console.log(`📡 Headers:`, req.headers);
+  console.log(`🌐 IP:`, req.ip);
+  console.log(`🔗 Protocol:`, req.protocol);
+  
+  const response = {
     message: "API Server is running",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     port: PORT,
-    mongoStatus: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
-  });
+    mongoStatus: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    serverInfo: {
+      uptime: process.uptime(),
+      pid: process.pid,
+      platform: process.platform,
+      version: process.version
+    }
+  };
+  
+  console.log(`📤 Sending response:`, response);
+  res.json(response);
 });
 
 // Health check endpoint - should respond quickly
 app.get("/health", (req, res) => {
+  console.log(`📥 Health check accessed - ${req.method} ${req.path}`);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.json({
+  const response = {
     status: "OK",
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
     port: PORT,
     mongoStatus: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
-  });
+  };
+  console.log(`📤 Health response:`, response);
+  res.json(response);
+});
+
+// Add a simple test route
+app.get("/ping", (req, res) => {
+  console.log(`📥 Ping accessed - ${req.method} ${req.path}`);
+  res.send("pong");
 });
 
 // Public routes (no authentication required)
@@ -115,7 +138,18 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start server
+// Debug: Log all environment variables related to networking
+console.log('🔍 Environment Debug:');
+console.log('PORT:', process.env.PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('All env vars:', Object.keys(process.env).filter(key => 
+  key.includes('PORT') || key.includes('HOST') || key.includes('RAILWAY')
+).reduce((obj, key) => {
+  obj[key] = process.env[key];
+  return obj;
+}, {}));
+
+// Start server with additional error handling
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
@@ -123,10 +157,12 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🗄️ MongoDB Connected: ${mongoose.connection.readyState === 1 ? 'Yes' : 'No'}`);
   console.log(`✅ Server ready to accept connections`);
   
-  // Test that the server is actually responding
-  setTimeout(() => {
-    console.log(`🔍 Server self-check: Server is listening and ready`);
-  }, 1000);
+  // Get the actual address the server is listening on
+  const address = server.address();
+  console.log(`🎯 Server address:`, address);
+  
+  // Test that routes are working
+  console.log('🧪 Testing server responsiveness...');
 });
 
 // Handle server errors
