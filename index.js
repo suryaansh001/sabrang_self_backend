@@ -22,6 +22,12 @@ mongoose.connect(process.env.mongodb)
 // Middleware
 app.use(cookieparser());
 
+// Add request logging for debugging
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.get('Origin') || 'none'}`);
+  next();
+});
+
 app.use(cors({
   origin: [
     'https://sabrang25-first-draft.vercel.app', 
@@ -42,7 +48,13 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("API Server is running");
+  res.json({
+    message: "API Server is running",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    port: process.env.PORT || 8080,
+    mongoStatus: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+  });
 });
 
 // Public routes (no authentication required)
@@ -82,7 +94,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`MongoDB Connected: ${mongoose.connection.readyState === 1 ? 'Yes' : 'No'}`);
 });
