@@ -11,6 +11,9 @@ const path = require('path');
 
 const app = express();
 
+// Trust proxy for Railway deployment
+app.set('trust proxy', 1);
+
 // Connect to MongoDB
 mongoose.connect(process.env.mongodb)
   .then(() => console.log("Database Connected Successfully"))
@@ -20,8 +23,15 @@ mongoose.connect(process.env.mongodb)
 app.use(cookieparser());
 
 app.use(cors({
-  origin: ['https://sabrang25-first-draft.vercel.app/', 'http://localhost:3000'],
-  credentials: true
+  origin: [
+    'https://sabrang25-first-draft.vercel.app', 
+    'http://localhost:3000',
+    'https://sabrangselfbackend-production.up.railway.app'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  optionsSuccessStatus: 200
 }));
 
 app.use(bodyParser.json());
@@ -46,10 +56,12 @@ app.use("/admin", adminrouter);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.json({
     status: "OK",
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
