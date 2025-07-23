@@ -14,10 +14,27 @@ const app = express();
 // Trust proxy for Railway deployment
 app.set('trust proxy', 1);
 
-// Connect to MongoDB
-mongoose.connect(process.env.mongodb)
-  .then(() => console.log("Database Connected Successfully"))
-  .catch((err) => console.log("MongoDB Connection Error:", err));
+// PORT - Fix: Use consistent variable name and ensure it's available early
+const PORT = process.env.PORT || 8080;
+
+// Connect to MongoDB with better error handling
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.mongodb, {
+      // Add these options for better connection handling
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    console.log("Database Connected Successfully");
+  } catch (err) {
+    console.error("MongoDB Connection Error:", err);
+    // Don't exit the process, let the app start even if DB connection fails initially
+    // This allows Railway to detect the app is running
+  }
+};
+
+// Connect to database
+connectDB();
 
 // Middleware
 app.use(cookieparser());
@@ -28,6 +45,7 @@ app.use((req, res, next) => {
   next();
 });
 
+// CORS configuration
 app.use(cors({
   origin: [
     'https://sabrang25-first-draft.vercel.app', 
@@ -52,7 +70,20 @@ app.get("/", (req, res) => {
     message: "API Server is running",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    port: process.env.PORT || 8080,
+    port: PORT,
+    mongoStatus: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
+  });
+});
+
+// Health check endpoint - should respond quickly
+app.get("/health", (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
+    port: PORT,
     mongoStatus: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
   });
 });
@@ -66,22 +97,12 @@ app.post("/logout", logout);
 app.use("/api", apirouter);
 app.use("/admin", adminrouter);
 
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.json({
-    status: "OK",
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: "Route not found"
+    message: "Route not found",
+    path: req.path
   });
 });
 
@@ -94,9 +115,32 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`MongoDB Connected: ${mongoose.connection.readyState === 1 ? 'Yes' : 'No'}`);
+// Start server
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📡 Listening on 0.0.0.0:${PORT}`);
+  console.log(`🗄️ MongoDB Connected: ${mongoose.connection.readyState === 1 ? 'Yes' : 'No'}`);
+});
+
+// Handle server errors
+server.on('error', (err) => {
+  console.error('Server error:', err);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+    mongoose.connection.close();
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  server.close(() => {
+    console.log('Process terminated');
+    mongoose.connection.close();
+  });
 });
