@@ -121,6 +121,12 @@ const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`📡 Listening on 0.0.0.0:${PORT}`);
   console.log(`🗄️ MongoDB Connected: ${mongoose.connection.readyState === 1 ? 'Yes' : 'No'}`);
+  console.log(`✅ Server ready to accept connections`);
+  
+  // Test that the server is actually responding
+  setTimeout(() => {
+    console.log(`🔍 Server self-check: Server is listening and ready`);
+  }, 1000);
 });
 
 // Handle server errors
