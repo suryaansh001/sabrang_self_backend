@@ -1,2 +1,2 @@
-mongodb = "mongodb+srv://ayushsharma2440:ayush@sabrang.icpskhz.mongodb.net/sabrang"
-jwtkey = "ayushsharma"
+mongodb = "url"
+jwtkey = "key"
