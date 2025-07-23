@@ -21,7 +21,10 @@ async function login(req, res) {
   },process.env.jwtkey)
 
   res.cookie("jwt",token,{
-    httpOnly:true,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Allow cross-site cookies in production
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   })
 
   return res.status(200).json({
@@ -121,8 +124,8 @@ async function logout(req, res) {
     // Clear the JWT cookie
     res.clearCookie("jwt", {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
-      sameSite: 'lax'
+      secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     });
 
     return res.status(200).json({
