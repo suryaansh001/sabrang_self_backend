@@ -116,8 +116,26 @@ async function signup(req, res) {
   }
 }
 
+async function logout(req, res) {
+  try {
+    // Clear the JWT cookie
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: false, // Set to true in production with HTTPS
+      sameSite: 'lax'
+    });
 
-module.exports = signup;
+    return res.status(200).json({
+      success: true,
+      message: 'Logout successful'
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+}
 
-module.exports = { login,signup };
- 
+module.exports = { login, signup, logout };

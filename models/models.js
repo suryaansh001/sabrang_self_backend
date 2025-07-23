@@ -14,8 +14,19 @@ const userSchema = new mongoose.Schema({
   isvalidated:{
     type:Boolean,
     default:false
+  },
+  hasEntered:{
+    type:Boolean,
+    default:false
+  },
+  entryTime:{
+    type:Date,
+    default:null
+  },
+  isAdmin:{
+    type:Boolean,
+    default:false
   }
-  
 });
 
 const eventSchema = new mongoose.Schema({
@@ -24,6 +35,8 @@ const eventSchema = new mongoose.Schema({
   link: String,
   coordinator:String,
   timings:String,
+  date: String,
+  whatsappLink: String
 });
 
 const User = mongoose.model("User", userSchema);
