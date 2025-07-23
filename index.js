@@ -20,7 +20,7 @@ mongoose.connect(process.env.mongodb)
 app.use(cookieparser());
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: ['https://sabrang25-first-draft.vercel.app/', 'http://localhost:3000'],
   credentials: true
 }));
 
