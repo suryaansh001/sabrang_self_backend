@@ -36,7 +36,28 @@ const eventSchema = new mongoose.Schema({
   coordinator:String,
   timings:String,
   date: String,
-  whatsappLink: String
+  whatsappLink: String,
+  rules: {
+    type: String,
+    default: ""
+  },
+  image: {
+    type: String,
+    default: ""
+  },
+  description: {
+    type: String,
+    default: ""
+  },
+  prize: {
+    type: String,
+    default: ""
+  },
+  category: {
+    type: String,
+    enum: ['Cultural', 'Technical', 'Management'],
+    default: 'Cultural'
+  }
 });
 
 const User = mongoose.model("User", userSchema);
