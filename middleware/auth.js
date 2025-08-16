@@ -58,8 +58,13 @@ const verifyAdmin = async (req, res, next) => {
       });
     }
 
-    // For now, allow all authenticated users to access admin routes
-    // You can later add: if (!user.isAdmin) { return res.status(403)... }
+    // Check if user has admin privileges
+    if (!user.isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Admin privileges required."
+      });
+    }
     
     req.user = user;
     next();

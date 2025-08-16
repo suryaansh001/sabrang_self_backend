@@ -9,8 +9,15 @@ router.get("/verify/:id", verifyAdmin, async (req, res) => {
     const user = await User.findById(req.params.id);
     
     if (!user) {
+      console.log(`❌ User verification failed - User not found: ${req.params.id}`);
       return res.status(404).json({ error: 'User not found' });
     }
+
+    console.log(`👤 User verification for ${user.name} (${user.email}):`, {
+      hasEntered: user.hasEntered,
+      entryTime: user.entryTime,
+      isvalidated: user.isvalidated
+    });
 
     const data = {
       _id: user._id,
@@ -39,6 +46,7 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
     const user = await User.findById(req.params.id);
     
     if (!user) {
+      console.log(`❌ Allow entry failed - User not found: ${req.params.id}`);
       return res.status(404).json({ 
         success: false,
         message: 'User not found',
@@ -46,8 +54,14 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
       });
     }
 
+    console.log(`🚪 Entry attempt for ${user.name} (${user.email}):`, {
+      currentStatus: user.hasEntered ? 'Already entered' : 'Not entered yet',
+      entryTime: user.entryTime
+    });
+
     // Check if user has already entered
     if (user.hasEntered) {
+      console.log(`🚫 Entry denied - ${user.name} has already entered at ${user.entryTime}`);
       return res.json({
         success: false,
         message: 'Access denied - User has already entered',
@@ -57,15 +71,18 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
     }
 
     // Update user entry status
+    const entryTime = new Date();
     user.hasEntered = true;
-    user.entryTime = new Date();
+    user.entryTime = entryTime;
     await user.save();
+
+    console.log(`✅ Entry allowed - ${user.name} successfully entered at ${entryTime}`);
 
     res.json({
       success: true,
       message: 'Entry allowed successfully',
       playBuzzer: false,
-      entryTime: user.entryTime
+      entryTime: entryTime
     });
 
   } catch (error) {
@@ -75,6 +92,17 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
       message: 'Internal server error',
       playBuzzer: true
     });
+  }
+});
+
+// Get all events (public endpoint for frontend)
+router.get("/events-public", async (req, res) => {
+  try {
+    const events = await Event.find({});
+    return res.json(events);
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -89,6 +117,23 @@ router.get("/events", verifyAdmin, async (req,res)=>{
   }
 });
 
+// Get event by name (public endpoint for frontend)
+router.get("/event/:name", async (req, res) => {
+  try {
+    const eventName = req.params.name;
+    const event = await Event.findOne({ name: { $regex: new RegExp(eventName, 'i') } });
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    res.json(event);
+  } catch (error) {
+    console.error('Error fetching event details:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Update event (admin only)
 router.post("/update", verifyAdmin, async (req,res)=>{
   try {
@@ -98,6 +143,13 @@ router.post("/update", verifyAdmin, async (req,res)=>{
       mobile:req.body.mobile,
       date:req.body.date,
       whatsappLink:req.body.whatsappLink,
+      rules:req.body.rules,
+      image:req.body.image,
+      description:req.body.description,
+      prize:req.body.prize,
+      category:req.body.category,
+      timings:req.body.timings,
+      link:req.body.link
     }, { new: true });
     
     if (event){
@@ -130,7 +182,12 @@ router.post("/add-event", verifyAdmin, async (req, res) => {
       date: req.body.date,
       whatsappLink: req.body.whatsappLink,
       timings: req.body.timings,
-      link: req.body.link
+      link: req.body.link,
+      rules: req.body.rules || "",
+      image: req.body.image || "",
+      description: req.body.description || "",
+      prize: req.body.prize || "",
+      category: req.body.category || "Cultural"
     });
 
     await newEvent.save();
@@ -159,7 +216,5 @@ router.get("/users", verifyAdmin, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-module.exports = router;
 
 module.exports = router;
