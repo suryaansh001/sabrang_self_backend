@@ -14,7 +14,6 @@ const app = express();
 // Trust proxy for Railway deployment
 app.set('trust proxy', 1);
 
-// PORT - Fix: Use consistent variable name and ensure it's available early
 const PORT = process.env.PORT || 8080;
 
 // Connect to MongoDB with better error handling
