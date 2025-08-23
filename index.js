@@ -8,13 +8,15 @@ const apirouter = require("./routes/api");
 const cookieparser = require("cookie-parser");
 const adminrouter = require("./routes/admin");
 const path = require('path');
+const jwt = require("jsonwebtoken");
+const shortid = require("shortid"); // Add this line
 
 const app = express();
 
 // Trust proxy for Railway deployment
 app.set('trust proxy', 1);
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB with better error handling
 const connectDB = async () => {
@@ -118,6 +120,132 @@ app.post("/logout", logout);
 // Protected routes (authentication required)
 app.use("/api", apirouter);
 app.use("/admin", adminrouter);
+
+
+//GOOGLE AUTHENTICATION 
+const passport = require("passport");
+const session = require("express-session");
+const { access } = require("fs");
+const { User } = require("./models/models");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+
+app.use(session({
+secret:"ayush",
+resave:false,
+saveUninitialized:true,
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new GoogleStrategy({
+  clientID:process.env.client,
+  clientSecret:process.env.clientsecret,
+  callbackURL:'http://localhost:5000/auth/google/callback'
+},async (accessToken, refreshToken, profile, done) => {
+  try {
+    // Find existing user
+    let user = await User.findOne({ email: profile.emails[0].value });
+    
+    if (!user) {
+      // Import shortid at the top of the file if not already imported
+      const shortid = require("shortid");
+      
+      // Generate referral ID
+      const referralID = shortid.generate();
+      
+      // Create new user if doesn't exist
+      user = new User({
+        email: profile.emails[0].value,
+        name: profile.displayName,
+        referalID: referralID, // Add referral ID
+      });
+      await user.save();
+      
+      // Generate QR code for the new user
+      const fs = require('fs');
+      const qr = require('qr-image');
+      
+      const qrFilename = `${user._id}.png`;
+      const qrPath = `public/qrcodes/${qrFilename}`;
+      
+      // Create directories if they don't exist
+      if (!fs.existsSync("public")) {
+        fs.mkdirSync("public");
+      }
+      if (!fs.existsSync("public/qrcodes")) {
+        fs.mkdirSync("public/qrcodes");
+      }
+      
+      // Generate and save QR code
+      const qr_png = qr.image(`${user._id}`, { type: 'png' });
+      const qrStream = fs.createWriteStream(qrPath);
+      
+      qr_png.pipe(qrStream);
+      
+      await new Promise((resolve, reject) => {
+        qrStream.on('finish', resolve);
+        qrStream.on('error', reject);
+      });
+      
+      // Update user with QR path
+      await User.findOneAndUpdate(
+        { _id: user._id },
+        { qrPath: `${user._id}` },
+        { new: true }
+      );
+      
+      console.log('New user created with QR code:', user);
+    }
+    
+    return done(null, user);
+  } catch (err) {
+    return done(err, null);
+  }
+}));
+
+passport.serializeUser((user,done)=>done(null,user));
+passport.deserializeUser((user,done)=>done(null,user));
+
+app.get("/auth/google",passport.authenticate("google",{scope:["profile","email"]}));
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: '/login',
+    session: false
+  }),
+  async (req, res) => {
+    try {
+      // Generate JWT token with user data
+      const token = jwt.sign(
+        {
+          _id: req.user._id, // Changed from id to _id to match verification middleware
+          email: req.user.email,
+          name: req.user.name
+        },
+        process.env.jwtkey,
+        { expiresIn: '1d' }
+      );
+      
+      // Redirect to frontend with token
+      res.redirect(`${process.env.frontendurl}/auth/callback?token=${token}`);
+    } catch (err) {
+      // Handle error
+    }
+  });
+
+app.get("/success",(req,res)=>{
+  res.send(`Welcome ${req.user.displayName}`)
+})
+
+
+
+
+
+
+
+
+
 
 // 404 handler
 app.use((req, res) => {

@@ -25,7 +25,6 @@ router.get('/qrcode/:id', verifyToken, (req, res) => {
 // Get user data (requires authentication)
 router.get("/user", verifyToken, async (req,res)=>{
     try{
-    
     const user = req.user; // User is already available from verifyToken middleware
     if (!user) {
       return res.status(404).json({
