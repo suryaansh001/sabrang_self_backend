@@ -141,7 +141,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID:process.env.client,
   clientSecret:process.env.clientsecret,
-  callbackURL:'http://localhost:5000/auth/google/callback'
+  callbackURL:process.env.backendurl
 },async (accessToken, refreshToken, profile, done) => {
   try {
     // Find existing user
