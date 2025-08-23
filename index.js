@@ -227,6 +227,14 @@ app.get('/auth/google/callback',
         { expiresIn: '1d' }
       );
       
+
+// Set the token as an HTTP-only cookie
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+      });
       // Redirect to frontend with token
       res.redirect(`${process.env.frontendurl}/auth/callback?token=${token}`);
     } catch (err) {
