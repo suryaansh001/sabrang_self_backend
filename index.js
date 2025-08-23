@@ -51,7 +51,7 @@ app.use(cors({
   origin: [
     'https://sabrang25-first-draft.vercel.app', 
     'http://localhost:3000',
-    'https://sabrangselfbackend-production.up.railway.app'
+    'https://sabrangselfbackend-production.up.railway.app',
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -141,7 +141,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID:process.env.client,
   clientSecret:process.env.clientsecret,
-  callbackURL:process.env.backendurl
+  callbackURL:'https://surprising-balance-production.up.railway.app/auth/google/callback'
 },async (accessToken, refreshToken, profile, done) => {
   try {
     // Find existing user
