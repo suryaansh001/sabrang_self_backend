@@ -141,7 +141,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID:process.env.client,
   clientSecret:process.env.clientsecret,
-  callbackURL:'https://surprising-balance-production.up.railway.app/auth/google/callback'
+  callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:5000/auth/google/callback'
 },async (accessToken, refreshToken, profile, done) => {
   try {
     // Find existing user
@@ -227,14 +227,21 @@ app.get('/auth/google/callback',
         { expiresIn: '1d' }
       );
       
-
-// Set the token as an HTTP-only cookie
-      res.cookie('token', token, {
+      // Determine environment to set cookie options appropriately
+      const isProduction = process.env.NODE_ENV === 'production';
+      const isLocalFrontend = (process.env.frontendurl || '').includes('localhost');
+      
+      // Set the token as an HTTP-only cookie
+      const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: isProduction && !isLocalFrontend ? true : false,
+        sameSite: isProduction && !isLocalFrontend ? 'none' : 'lax',
+        domain: isProduction && process.env.COOKIE_DOMAIN ? process.env.COOKIE_DOMAIN : undefined,
+        path: '/',
         maxAge: 24 * 60 * 60 * 1000 // 1 day
-      });
+      };
+      console.log('Setting jwt cookie with options:', cookieOptions);
+      res.cookie('jwt', token, cookieOptions);
       // Redirect to frontend with token
       res.redirect(`${process.env.frontendurl}/auth/callback?token=${token}`);
     } catch (err) {

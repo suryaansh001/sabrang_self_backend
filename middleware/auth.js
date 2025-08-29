@@ -4,7 +4,8 @@ const { User } = require("../models/models");
 // Middleware to verify JWT token
 const verifyToken = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
+    // Accept either 'jwt' (local login) or 'token' (Google login) cookie names
+    const token = req.cookies.jwt || req.cookies.token;
     console.log(token);
     if (!token) {
       return res.status(401).json({
@@ -39,7 +40,8 @@ const verifyToken = async (req, res, next) => {
 // Middleware to verify admin access
 const verifyAdmin = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
+    // Accept either 'jwt' (local login) or 'token' (Google login) cookie names
+    const token = req.cookies.jwt || req.cookies.token;
     
     if (!token) {
       return res.status(401).json({
