@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-<<<<<<< HEAD
   qrPath: String,
   isvalidated: {
     type: Boolean,
@@ -27,8 +26,7 @@ const userSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false
-=======
-  qrPath:String,
+  },
   isvalidated:{
     type:Boolean,
     default:false
@@ -37,14 +35,13 @@ const userSchema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
-  entryTime:{
-    type:Date,
-    default:null
+  entryTime: {
+    type: Date,
+    default: null
   },
-  isAdmin:{
-    type:Boolean,
-    default:false
->>>>>>> remote-backup
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -52,13 +49,8 @@ const eventSchema = new mongoose.Schema({
   name: String,
   mobile: String,
   link: String,
-<<<<<<< HEAD
   coordinator: String,
   timings: String,
-=======
-  coordinator:String,
-  timings:String,
->>>>>>> remote-backup
   date: String,
   whatsappLink: String,
   rules: {
