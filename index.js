@@ -51,10 +51,14 @@ app.use(cors({
   origin: [
     'https://sabrang25-first-draft.vercel.app', 
     'http://localhost:3000',
+<<<<<<< HEAD
     'http://localhost:3001',
     'http://127.0.0.1:3000',
     'http://127.0.0.1:3001',
     'https://sabrang.jklu.edu.in'
+=======
+    'https://sabrangselfbackend-production.up.railway.app',
+>>>>>>> remote-backup
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -108,6 +112,7 @@ app.get("/health", (req, res) => {
   console.log(`📤 Health response:`, response);
   res.json(response);
 });
+<<<<<<< HEAD
 
 // Add a simple test route
 app.get("/ping", (req, res) => {
@@ -134,6 +139,20 @@ app.post("/signup", (req, res, next) => {
 
 app.post("/logout", logout);
 
+=======
+
+// Add a simple test route
+app.get("/ping", (req, res) => {
+  console.log(`📥 Ping accessed - ${req.method} ${req.path}`);
+  res.send("pong");
+});
+
+// Public routes (no authentication required)
+app.post("/login", login);
+app.post("/signup", signup);
+app.post("/logout", logout);
+
+>>>>>>> remote-backup
 // Protected routes (authentication required)
 app.use("/api", apirouter);
 app.use("/admin", adminrouter);
@@ -165,7 +184,11 @@ passport.use(new GoogleStrategy({
     let user = await User.findOne({ email: profile.emails[0].value });
     
     if (!user) {
+<<<<<<< HEAD
       // Import shortid at the top of the filegoogle-oauth20").Strategy; if not already imported
+=======
+      // Import shortid at the top of the file if not already imported
+>>>>>>> remote-backup
       const shortid = require("shortid");
       
       // Generate referral ID

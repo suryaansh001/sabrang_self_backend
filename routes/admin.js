@@ -1,9 +1,16 @@
 const express = require("express");
+<<<<<<< HEAD
 const { User, Event, CheckoutOffer, PromoCode, Purchase } = require("../models/models");
 const { verifyAdmin } = require("../middleware/auth");
 const router = express.Router();
 
 // Existing user verification routes
+=======
+const { User, Event } = require("../models/models");
+const { verifyAdmin } = require("../middleware/auth");
+const router = express.Router();
+
+>>>>>>> remote-backup
 // Verify user by ID (with entry tracking)
 router.get("/verify/:id", verifyAdmin, async (req, res) => {
   try {
@@ -96,7 +103,10 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // Existing event routes
+=======
+>>>>>>> remote-backup
 // Get all events (public endpoint for frontend)
 router.get("/events-public", async (req, res) => {
   try {
@@ -109,7 +119,11 @@ router.get("/events-public", async (req, res) => {
 });
 
 // Get all events (admin only)
+<<<<<<< HEAD
 router.get("/events", verifyAdmin, async (req, res) => {
+=======
+router.get("/events", verifyAdmin, async (req,res)=>{
+>>>>>>> remote-backup
   try {
     const events = await Event.find({});
     return res.json(events);
@@ -137,6 +151,7 @@ router.get("/event/:name", async (req, res) => {
 });
 
 // Update event (admin only)
+<<<<<<< HEAD
 router.post("/update", verifyAdmin, async (req, res) => {
   try {
     const event = await Event.findByIdAndUpdate(req.body._id, {
@@ -155,6 +170,26 @@ router.post("/update", verifyAdmin, async (req, res) => {
     }, { new: true });
     
     if (event) {
+=======
+router.post("/update", verifyAdmin, async (req,res)=>{
+  try {
+    const event = await Event.findByIdAndUpdate(req.body._id,{
+      name:req.body.name,
+      coordinator:req.body.coordinator,
+      mobile:req.body.mobile,
+      date:req.body.date,
+      whatsappLink:req.body.whatsappLink,
+      rules:req.body.rules,
+      image:req.body.image,
+      description:req.body.description,
+      prize:req.body.prize,
+      category:req.body.category,
+      timings:req.body.timings,
+      link:req.body.link
+    }, { new: true });
+    
+    if (event){
+>>>>>>> remote-backup
       res.status(200).json({
         success: true,
         message: 'Event updated successfully'
@@ -218,6 +253,7 @@ router.get("/users", verifyAdmin, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+<<<<<<< HEAD
 
 // ========================= CHECKOUT OFFER ROUTES =========================
 
@@ -728,5 +764,7 @@ router.get("/analytics/dashboard", verifyAdmin, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+=======
+>>>>>>> remote-backup
 
 module.exports = router;
