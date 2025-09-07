@@ -3,6 +3,220 @@ const { User, Event, CheckoutOffer, PromoCode, Purchase } = require("../models/m
 const { verifyAdmin } = require("../middleware/auth");
 const router = express.Router();
 
+// ========================= PAYMENT MANAGEMENT ROUTES =========================
+
+// Get all purchases (admin only)
+router.get("/purchases", verifyAdmin, async (req, res) => {
+  try {
+    const { page = 1, limit = 20, status, startDate, endDate } = req.query;
+    
+    // Build filter
+    const filter = {};
+    if (status) filter.paymentStatus = status;
+    if (startDate || endDate) {
+      filter.purchaseDate = {};
+      if (startDate) filter.purchaseDate.$gte = new Date(startDate);
+      if (endDate) filter.purchaseDate.$lte = new Date(endDate);
+    }
+
+    const purchases = await Purchase.find(filter)
+      .populate('userId', 'name email')
+      .populate('items.itemId')
+      .sort({ purchaseDate: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .exec();
+
+    const total = await Purchase.countDocuments(filter);
+
+    res.json({
+      purchases,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      total
+    });
+
+  } catch (error) {
+    console.error('Error fetching purchases:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get purchase analytics (admin only)
+router.get("/purchases/analytics", verifyAdmin, async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+    
+    const filter = {};
+    if (startDate || endDate) {
+      filter.purchaseDate = {};
+      if (startDate) filter.purchaseDate.$gte = new Date(startDate);
+      if (endDate) filter.purchaseDate.$lte = new Date(endDate);
+    }
+
+    const [
+      totalPurchases,
+      successfulPurchases,
+      totalRevenue,
+      averageOrderValue,
+      dailyStats
+    ] = await Promise.all([
+      Purchase.countDocuments(filter),
+      Purchase.countDocuments({ ...filter, paymentStatus: 'completed' }),
+      Purchase.aggregate([
+        { $match: { ...filter, paymentStatus: 'completed' } },
+        { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+      ]),
+      Purchase.aggregate([
+        { $match: { ...filter, paymentStatus: 'completed' } },
+        { $group: { _id: null, avg: { $avg: '$totalAmount' } } }
+      ]),
+      Purchase.aggregate([
+        { $match: filter },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$purchaseDate" } },
+            count: { $sum: 1 },
+            revenue: { $sum: { $cond: [{ $eq: ["$paymentStatus", "completed"] }, "$totalAmount", 0] } }
+          }
+        },
+        { $sort: { _id: 1 } }
+      ])
+    ]);
+
+    res.json({
+      totalPurchases,
+      successfulPurchases,
+      failedPurchases: totalPurchases - successfulPurchases,
+      totalRevenue: totalRevenue[0]?.total || 0,
+      averageOrderValue: averageOrderValue[0]?.avg || 0,
+      conversionRate: totalPurchases > 0 ? (successfulPurchases / totalPurchases) * 100 : 0,
+      dailyStats
+    });
+
+  } catch (error) {
+    console.error('Error fetching purchase analytics:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Refund purchase (admin only)
+router.post("/purchases/:id/refund", verifyAdmin, async (req, res) => {
+  try {
+    const purchaseId = req.params.id;
+    const { reason } = req.body;
+
+    const purchase = await Purchase.findById(purchaseId);
+    if (!purchase) {
+      return res.status(404).json({
+        success: false,
+        message: 'Purchase not found'
+      });
+    }
+
+    if (purchase.paymentStatus !== 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: 'Can only refund completed purchases'
+      });
+    }
+
+    // Update purchase status
+    purchase.paymentStatus = 'refunded';
+    purchase.refundReason = reason;
+    purchase.refundDate = new Date();
+    await purchase.save();
+
+    // Remove events from user's registered events
+    const user = await User.findById(purchase.userId);
+    if (user) {
+      for (const item of purchase.items) {
+        if (item.type === 'event') {
+          const event = await Event.findById(item.itemId);
+          if (event) {
+            user.events = user.events.filter(e => e !== event.name);
+          }
+        } else if (item.type === 'offer') {
+          const offer = await CheckoutOffer.findById(item.itemId);
+          if (offer) {
+            for (const offerEvent of offer.events) {
+              const event = await Event.findById(offerEvent.eventId);
+              if (event) {
+                user.events = user.events.filter(e => e !== event.name);
+              }
+            }
+          }
+        }
+      }
+      await user.save();
+    }
+
+    res.json({
+      success: true,
+      message: 'Purchase refunded successfully'
+    });
+
+  } catch (error) {
+    console.error('Error refunding purchase:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Export purchases data (admin only)
+router.get("/purchases/export", verifyAdmin, async (req, res) => {
+  try {
+    const { format = 'json', startDate, endDate } = req.query;
+    
+    const filter = {};
+    if (startDate || endDate) {
+      filter.purchaseDate = {};
+      if (startDate) filter.purchaseDate.$gte = new Date(startDate);
+      if (endDate) filter.purchaseDate.$lte = new Date(endDate);
+    }
+
+    const purchases = await Purchase.find(filter)
+      .populate('userId', 'name email')
+      .populate('items.itemId')
+      .sort({ purchaseDate: -1 });
+
+    if (format === 'csv') {
+      // Convert to CSV format
+      const csvData = purchases.map(purchase => ({
+        'Purchase ID': purchase._id,
+        'User Name': purchase.userId?.name || 'N/A',
+        'User Email': purchase.userId?.email || 'N/A',
+        'Total Amount': purchase.totalAmount,
+        'Payment Status': purchase.paymentStatus,
+        'Purchase Date': purchase.purchaseDate.toISOString(),
+        'Promo Code': purchase.promoCode?.code || 'N/A',
+        'Discount Amount': purchase.promoCode?.discountAmount || 0,
+        'Items': purchase.items.map(item => item.itemId?.name || item.itemId).join('; ')
+      }));
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="purchases.csv"');
+      
+      // Simple CSV conversion (for production, use a proper CSV library)
+      const headers = Object.keys(csvData[0] || {});
+      const csvContent = [
+        headers.join(','),
+        ...csvData.map(row => headers.map(header => `"${row[header]}"`).join(','))
+      ].join('\n');
+      
+      res.send(csvContent);
+    } else {
+      res.json(purchases);
+    }
+
+  } catch (error) {
+    console.error('Error exporting purchases:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 // Verify user by ID (with entry tracking)
 router.get("/verify/:id", verifyAdmin, async (req, res) => {

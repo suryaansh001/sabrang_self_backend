@@ -73,6 +73,22 @@ const eventSchema = new mongoose.Schema({
     type: String,
     enum: ['Cultural', 'Technical', 'Management'],
     default: 'Cultural'
+  },
+  price: {
+    type: Number,
+    default: 0
+  },
+  capacity: {
+    type: Number,
+    default: 100
+  },
+  registeredCount: {
+    type: Number,
+    default: 0
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   }
 });
 

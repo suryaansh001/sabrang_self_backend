@@ -5,6 +5,8 @@ const cors = require("cors");
 const bodyParser = require('body-parser');
 const { login, signup, logout } = require("./controller/controller");
 const apirouter = require("./routes/api");
+const paymentrouter = require("./routes/payment");
+const testpaymentrouter = require("./routes/test-payment");
 const cookieparser = require("cookie-parser");
 const adminrouter = require("./routes/admin");
 const path = require('path');
@@ -140,6 +142,8 @@ app.get("/ping", (req, res) => {
 
 // Protected routes (authentication required)
 app.use("/api", apirouter);
+app.use("/payment", paymentrouter);
+app.use("/test-payment", testpaymentrouter);
 app.use("/admin", adminrouter);
 
 
