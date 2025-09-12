@@ -83,6 +83,20 @@ const userSchema = new mongoose.Schema({
   teamSize: {
     type: Number,
     default: 1 // Total team size including main person
+  },
+  // Email tracking fields
+  emailSent: {
+    type: Boolean,
+    default: false
+  },
+  emailSentAt: {
+    type: Date,
+    default: null
+  },
+  emailSentBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   }
 });
 
@@ -387,6 +401,20 @@ const teamMemberSchema = new mongoose.Schema({
   // Additional details from registration form
   extraDetails: {
     type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
+  // Email tracking fields
+  emailSent: {
+    type: Boolean,
+    default: false
+  },
+  emailSentAt: {
+    type: Date,
+    default: null
+  },
+  emailSentBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     default: null
   },
   createdAt: {

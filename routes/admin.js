@@ -1,6 +1,9 @@
 const express = require("express");
 const { User, Event, CheckoutOffer, PromoCode, Purchase, TeamMember } = require("../models/models");
 const { verifyAdmin } = require("../middleware/auth");
+const { sendRegistrationEmail } = require("../utils/emailService");
+const path = require('path');
+const fs = require('fs');
 const router = express.Router();
 
 
@@ -964,6 +967,336 @@ router.get("/analytics/dashboard", verifyAdmin, async (req, res) => {
   } catch (error) {
     console.error('Error fetching dashboard analytics:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ========================= EMAIL MANAGEMENT ROUTES =========================
+
+// Get all users with email status (admin only)
+router.get("/users-email-status", verifyAdmin, async (req, res) => {
+  try {
+    const users = await User.find({}, '-password')
+      .populate('emailSentBy', 'name email')
+      .sort({ createdAt: -1 });
+
+    const usersWithEmailStatus = users.map(user => ({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      contactNo: user.contactNo,
+      universityName: user.universityName,
+      events: user.events,
+      teamId: user.teamId,
+      isMainPerson: user.isMainPerson,
+      teamSize: user.teamSize,
+      emailSent: user.emailSent,
+      emailSentAt: user.emailSentAt,
+      emailSentBy: user.emailSentBy,
+      hasEntered: user.hasEntered,
+      entryTime: user.entryTime,
+      isvalidated: user.isvalidated,
+      qrPath: user.qrPath,
+      createdAt: user.createdAt || new Date()
+    }));
+
+    res.json({
+      success: true,
+      users: usersWithEmailStatus,
+      totalUsers: usersWithEmailStatus.length,
+      emailsSent: usersWithEmailStatus.filter(u => u.emailSent).length,
+      emailsPending: usersWithEmailStatus.filter(u => !u.emailSent).length
+    });
+
+  } catch (error) {
+    console.error('Error fetching users with email status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Get team members with email status (admin only)
+router.get("/team-members-email-status", verifyAdmin, async (req, res) => {
+  try {
+    const teamMembers = await TeamMember.find({})
+      .populate('mainPersonId', 'name email teamId')
+      .populate('emailSentBy', 'name email')
+      .sort({ createdAt: -1 });
+
+    const teamMembersWithStatus = teamMembers.map(member => ({
+      _id: member._id,
+      name: member.name,
+      email: member.email,
+      contactNo: member.contactNo,
+      universityName: member.universityName,
+      events: member.events,
+      mainPersonId: member.mainPersonId,
+      emailSent: member.emailSent,
+      emailSentAt: member.emailSentAt,
+      emailSentBy: member.emailSentBy,
+      hasEntered: member.hasEntered,
+      entryTime: member.entryTime,
+      isvalidated: member.isvalidated,
+      qrPath: member.qrPath,
+      createdAt: member.createdAt || new Date()
+    }));
+
+    res.json({
+      success: true,
+      teamMembers: teamMembersWithStatus,
+      totalTeamMembers: teamMembersWithStatus.length,
+      emailsSent: teamMembersWithStatus.filter(m => m.emailSent).length,
+      emailsPending: teamMembersWithStatus.filter(m => !m.emailSent).length
+    });
+
+  } catch (error) {
+    console.error('Error fetching team members with email status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Send registration email to specific user (admin only)
+router.post("/send-email/:userId", verifyAdmin, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { userType = 'user' } = req.body; // 'user' or 'team-member'
+
+    let user;
+    let Model = userType === 'team-member' ? TeamMember : User;
+    
+    user = await Model.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: `${userType === 'team-member' ? 'Team member' : 'User'} not found`
+      });
+    }
+
+    // Check if email already sent
+    if (user.emailSent) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already sent to this user'
+      });
+    }
+
+    // Prepare user data for email
+    let qrCodeBase64 = null;
+    if (user.qrPath) {
+      try {
+        const qrFilePath = path.join(__dirname, '..', user.qrPath);
+        if (fs.existsSync(qrFilePath)) {
+          const qrBuffer = fs.readFileSync(qrFilePath);
+          qrCodeBase64 = qrBuffer.toString('base64');
+        }
+      } catch (qrError) {
+        console.log('QR code file not found, proceeding without QR code');
+      }
+    }
+
+    const userData = {
+      name: user.name,
+      events: user.events || [],
+      qrCodeBase64: qrCodeBase64
+    };
+
+    // Send email
+    const emailResult = await sendRegistrationEmail(user.email, userData);
+
+    if (emailResult.success) {
+      // Update user email status
+      user.emailSent = true;
+      user.emailSentAt = new Date();
+      user.emailSentBy = req.user.id;
+      await user.save();
+
+      res.json({
+        success: true,
+        message: `Registration email sent successfully to ${user.name}`,
+        emailSentAt: user.emailSentAt
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: `Failed to send email: ${emailResult.error}`
+      });
+    }
+
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Send bulk emails to all users who haven't received emails (admin only)
+router.post("/send-bulk-emails", verifyAdmin, async (req, res) => {
+  try {
+    const { targetType = 'users' } = req.body; // 'users', 'team-members', or 'both'
+
+    let results = {
+      totalProcessed: 0,
+      successful: 0,
+      failed: 0,
+      errors: []
+    };
+
+    // Process main users
+    if (targetType === 'users' || targetType === 'both') {
+      const usersToEmail = await User.find({ emailSent: false });
+      
+      for (const user of usersToEmail) {
+        try {
+          let qrCodeBase64 = null;
+          if (user.qrPath) {
+            try {
+              const qrFilePath = path.join(__dirname, '..', user.qrPath);
+              if (fs.existsSync(qrFilePath)) {
+                const qrBuffer = fs.readFileSync(qrFilePath);
+                qrCodeBase64 = qrBuffer.toString('base64');
+              }
+            } catch (qrError) {
+              console.log(`QR code not found for user ${user.name}`);
+            }
+          }
+
+          const userData = {
+            name: user.name,
+            events: user.events || [],
+            qrCodeBase64: qrCodeBase64
+          };
+
+          const emailResult = await sendRegistrationEmail(user.email, userData);
+          
+          if (emailResult.success) {
+            user.emailSent = true;
+            user.emailSentAt = new Date();
+            user.emailSentBy = req.user.id;
+            await user.save();
+            results.successful++;
+          } else {
+            results.failed++;
+            results.errors.push(`${user.name} (${user.email}): ${emailResult.error}`);
+          }
+          
+          results.totalProcessed++;
+          
+          // Add small delay to avoid overwhelming the email service
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+        } catch (userError) {
+          results.failed++;
+          results.errors.push(`${user.name} (${user.email}): ${userError.message}`);
+          results.totalProcessed++;
+        }
+      }
+    }
+
+    // Process team members
+    if (targetType === 'team-members' || targetType === 'both') {
+      const teamMembersToEmail = await TeamMember.find({ emailSent: false });
+      
+      for (const member of teamMembersToEmail) {
+        try {
+          let qrCodeBase64 = null;
+          if (member.qrPath) {
+            try {
+              const qrFilePath = path.join(__dirname, '..', member.qrPath);
+              if (fs.existsSync(qrFilePath)) {
+                const qrBuffer = fs.readFileSync(qrFilePath);
+                qrCodeBase64 = qrBuffer.toString('base64');
+              }
+            } catch (qrError) {
+              console.log(`QR code not found for team member ${member.name}`);
+            }
+          }
+
+          const userData = {
+            name: member.name,
+            events: member.events || [],
+            qrCodeBase64: qrCodeBase64
+          };
+
+          const emailResult = await sendRegistrationEmail(member.email, userData);
+          
+          if (emailResult.success) {
+            member.emailSent = true;
+            member.emailSentAt = new Date();
+            member.emailSentBy = req.user.id;
+            await member.save();
+            results.successful++;
+          } else {
+            results.failed++;
+            results.errors.push(`${member.name} (${member.email}): ${emailResult.error}`);
+          }
+          
+          results.totalProcessed++;
+          
+          // Add small delay to avoid overwhelming the email service
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+        } catch (memberError) {
+          results.failed++;
+          results.errors.push(`${member.name} (${member.email}): ${memberError.message}`);
+          results.totalProcessed++;
+        }
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Bulk email sending completed',
+      results: results
+    });
+
+  } catch (error) {
+    console.error('Error sending bulk emails:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Reset email status for a user (admin only)
+router.post("/reset-email-status/:userId", verifyAdmin, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { userType = 'user' } = req.body;
+
+    let Model = userType === 'team-member' ? TeamMember : User;
+    const user = await Model.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: `${userType === 'team-member' ? 'Team member' : 'User'} not found`
+      });
+    }
+
+    user.emailSent = false;
+    user.emailSentAt = null;
+    user.emailSentBy = null;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: `Email status reset for ${user.name}`
+    });
+
+  } catch (error) {
+    console.error('Error resetting email status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
   }
 });
 
