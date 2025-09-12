@@ -171,4 +171,16 @@ async function logout(req, res) {
   }
 }
 
-module.exports = { login, signup, logout };
+async function register(req, res) {
+  try {
+    const { email, password } = req.body;
+  } catch (error) {
+    console.error('Register error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+}
+
+module.exports = { login, signup, logout,register };

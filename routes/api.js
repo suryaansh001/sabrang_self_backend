@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const { User, Event } = require("../models/models");
-const { verifyToken } = require("../middleware/auth");
+const { User, Event, TeamMember } = require("../models/models");
+const { verifyToken,verifyAdmin } = require("../middleware/auth");
 const path = require('path');
 const fs = require('fs');
 const qr = require('qr-image');
@@ -22,7 +22,37 @@ router.get('/qrcode/:id', verifyToken, (req, res) => {
   fs.createReadStream(filePath).pipe(res);
 });
 
-// Get user data (requires authentication)
+router.get('/profile/:id', verifyAdmin, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    if (!user.profileImage) {
+      return res.status(404).send('No profile image set for this user');
+    }
+
+    const filePath = path.join(__dirname, '..', user.profileImage);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send('Profile image file not found');
+    }
+
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error fetching profile image:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+
+
+// Get user data (requires authentication) - UPDATED FOR TEAM SYSTEM
 router.get("/user", verifyToken, async (req,res)=>{
     try{
     console.log(req.user);
@@ -43,16 +73,41 @@ router.get("/user", verifyToken, async (req,res)=>{
       }
     }
 
+    // Get team members if user is main person
+    let teamMembers = [];
+    if (user.isMainPerson && user.teamId) {
+      teamMembers = await TeamMember.find({ mainPersonId: user._id });
+    }
+
     const data = {
       _id:user._id,
       name: user.name,
       email: user.email,
-      profileImage: "/images/default-avatar.jpg",
+      profileImage: user.profileImage || "/images/default-avatar.jpg",
       qrPath:user.qrPath,
       registeredEvents: eventData,
       hasEntered: user.hasEntered,
       entryTime: user.entryTime,
-      isAdmin: user.isAdmin
+      isAdmin: user.isAdmin,
+      // Team-related fields
+      isMainPerson: user.isMainPerson,
+      teamId: user.teamId,
+      teamSize: user.teamSize,
+      teamMembers: teamMembers.map(member => ({
+        id: member._id,
+        name: member.name,
+        email: member.email,
+        contactNo: member.contactNo,
+        gender: member.gender,
+        age: member.age,
+        universityName: member.universityName,
+        address: member.address,
+        profileImage: member.profileImage,
+        qrPath: member.qrPath,
+        hasEntered: member.hasEntered,
+        entryTime: member.entryTime,
+        events: member.events
+      }))
     }
 
     return res.send(data)
@@ -122,8 +177,133 @@ router.post("/register-event", verifyToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+// Get team member QR code (accessible to authenticated users)
+router.get('/team-member-qrcode/:id', verifyToken, (req, res) => {
+  const id = req.params.id;
+  const filename = `${id}.png`;
+  const filePath = path.join(__dirname, '../public/qrcodes', filename);
 
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).send('QR code not found'); 
+  }
 
+  res.type('png');
+  fs.createReadStream(filePath).pipe(res);
+});
+
+// Get team member profile image (accessible to authenticated users)
+router.get('/team-member-profile/:id', verifyToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const teamMember = await TeamMember.findById(id);
+    if (!teamMember) {
+      return res.status(404).send('Team member not found');
+    }
+
+    // Check if the requesting user is the main person of this team member
+    if (teamMember.mainPersonId.toString() !== req.user._id.toString()) {
+      return res.status(403).send('Access denied');
+    }
+
+    if (!teamMember.profileImage) {
+      return res.status(404).send('No profile image set for this team member');
+    }
+
+    const filePath = path.join(__dirname, '..', teamMember.profileImage);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).send('Profile image file not found');
+    }
+
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error fetching team member profile image:', error);
+    res.status(500).send('Server error');
+  }
+});
+
+// Get team details by team ID (accessible to authenticated users)
+router.get('/team/:teamId', verifyToken, async (req, res) => {
+  try {
+    const teamId = req.params.teamId;
+    
+    // Find main person by team ID
+    const mainPerson = await User.findOne({ teamId: teamId, isMainPerson: true });
+    if (!mainPerson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Team not found'
+      });
+    }
+
+    // Check if requesting user is the main person or admin
+    if (mainPerson._id.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied'
+      });
+    }
+
+    // Get team members
+    const teamMembers = await TeamMember.find({ mainPersonId: mainPerson._id });
+
+    // Get events data
+    const events = mainPerson.events;
+    const eventData = [];
+    for (let i = 0; i < events.length; i++) {
+      const info = await Event.findOne({ name: events[i] });
+      if (info) {
+        eventData.push(info);
+      }
+    }
+
+    res.json({
+      success: true,
+      team: {
+        teamId: mainPerson.teamId,
+        mainPerson: {
+          id: mainPerson._id,
+          name: mainPerson.name,
+          email: mainPerson.email,
+          contactNo: mainPerson.contactNo,
+          gender: mainPerson.gender,
+          age: mainPerson.age,
+          universityName: mainPerson.universityName,
+          address: mainPerson.address,
+          profileImage: mainPerson.profileImage,
+          qrPath: mainPerson.qrPath,
+          hasEntered: mainPerson.hasEntered,
+          entryTime: mainPerson.entryTime,
+          events: mainPerson.events
+        },
+        teamMembers: teamMembers.map(member => ({
+          id: member._id,
+          name: member.name,
+          email: member.email,
+          contactNo: member.contactNo,
+          gender: member.gender,
+          age: member.age,
+          universityName: member.universityName,
+          address: member.address,
+          profileImage: member.profileImage,
+          qrPath: member.qrPath,
+          hasEntered: member.hasEntered,
+          entryTime: member.entryTime,
+          events: member.events
+        })),
+        teamSize: mainPerson.teamSize,
+        registeredEvents: eventData
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching team details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
 
 module.exports = router;

@@ -5,6 +5,11 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   events: [String],
+  // Total payable amount for the current registration (team leader only)
+  finalPrice: {
+    type: Number,
+    default: 0
+  },
   referalID: String,
   referalcount: {
     type: Number,
@@ -27,21 +32,57 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  isvalidated:{
-    type:Boolean,
-    default:false
+  profileImage: {
+    type: String,
+    default: ""
   },
-  hasEntered:{
-    type:Boolean,
-    default:false
+  // Optional details captured from checkout form
+  contactNo: {
+    type: String,
+    default: ""
   },
-  entryTime: {
-    type: Date,
+  gender: {
+    type: String,
+    default: ""
+  },
+  age: {
+    type: Number,
     default: null
   },
-  isAdmin: {
+  universityName: {
+    type: String,
+    default: ""
+  },
+  address: {
+    type: String,
+    default: ""
+  },
+  // Store full raw form payload from frontend to avoid data loss
+  extraDetails: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
+  teamMembers: {
+    type: [mongoose.Schema.Types.Mixed],
+    default: []
+  },
+  // Full raw payload snapshot for audit/debugging
+  rawRegistration: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
+  // Team management fields
+  teamId: {
+    type: String,
+    default: null // Unique team identifier for main person
+  },
+  isMainPerson: {
     type: Boolean,
-    default: false
+    default: true // True for main person, false for individual registrations
+  },
+  teamSize: {
+    type: Number,
+    default: 1 // Total team size including main person
   }
 });
 
@@ -284,16 +325,92 @@ promoCodeSchema.index({ code: 1 });
 promoCodeSchema.index({ isActive: 1, validFrom: 1, validUntil: 1 });
 promoCodeSchema.index({ allowedEmailDomains: 1 });
 
+// Team Member Schema - Individual team members linked to main person
+const teamMemberSchema = new mongoose.Schema({
+  mainPersonId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  contactNo: {
+    type: String,
+    default: ""
+  },
+  gender: {
+    type: String,
+    default: ""
+  },
+  age: {
+    type: Number,
+    default: null
+  },
+  universityName: {
+    type: String,
+    default: ""
+  },
+  address: {
+    type: String,
+    default: ""
+  },
+  profileImage: {
+    type: String,
+    default: ""
+  },
+  // QR code for individual team member
+  qrPath: {
+    type: String,
+    default: ""
+  },
+  // Entry tracking for individual members
+  hasEntered: {
+    type: Boolean,
+    default: false
+  },
+  entryTime: {
+    type: Date,
+    default: null
+  },
+  isvalidated: {
+    type: Boolean,
+    default: false
+  },
+  // Events this team member is registered for
+  events: [String],
+  // Additional details from registration form
+  extraDetails: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+// Add indexes for better performance
+teamMemberSchema.index({ mainPersonId: 1 });
+teamMemberSchema.index({ email: 1 });
+
 const User = mongoose.model("User", userSchema);
 const Event = mongoose.model("Event", eventSchema);
 const CheckoutOffer = mongoose.model("CheckoutOffer", checkoutOfferSchema);
 const PromoCode = mongoose.model("PromoCode", promoCodeSchema);
 const Purchase = mongoose.model("Purchase", purchaseSchema);
+const TeamMember = mongoose.model("TeamMember", teamMemberSchema);
 
 module.exports = { 
   User, 
   Event, 
   CheckoutOffer, 
   PromoCode, 
-  Purchase 
+  Purchase,
+  TeamMember
 };

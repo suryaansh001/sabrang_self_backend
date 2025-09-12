@@ -1,53 +1,129 @@
 const express = require("express");
-const { User, Event, CheckoutOffer, PromoCode, Purchase } = require("../models/models");
+const { User, Event, CheckoutOffer, PromoCode, Purchase, TeamMember } = require("../models/models");
 const { verifyAdmin } = require("../middleware/auth");
 const router = express.Router();
 
 
-// Verify user by ID (with entry tracking)
+// Unified QR scanning route - handles both team leaders and team members
 router.get("/verify/:id", verifyAdmin, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const id = req.params.id;
     
-    if (!user) {
-      console.log(`❌ User verification failed - User not found: ${req.params.id}`);
-      return res.status(404).json({ error: 'User not found' });
+    // First try to find as User (main person/team leader)
+    let person = await User.findById(id);
+    let isTeamMember = false;
+    let teamInfo = null;
+    
+    if (!person) {
+      // If not found as User, try as TeamMember
+      const teamMember = await TeamMember.findById(id);
+      if (teamMember) {
+        person = teamMember;
+        isTeamMember = true;
+        
+        // Get team leader info for team members
+        const mainPerson = await User.findById(teamMember.mainPersonId);
+        if (mainPerson) {
+          teamInfo = {
+            teamId: mainPerson.teamId,
+            teamLeader: {
+              name: mainPerson.name,
+              email: mainPerson.email,
+              contactNo: mainPerson.contactNo
+            }
+          };
+        }
+      }
+    } else if (person.isMainPerson && person.teamId) {
+      // If it's a team leader, get team member count
+      const teamMemberCount = await TeamMember.countDocuments({ mainPersonId: person._id });
+      teamInfo = {
+        teamId: person.teamId,
+        teamSize: person.teamSize,
+        teamMemberCount: teamMemberCount
+      };
+    }
+    
+    if (!person) {
+      console.log(`❌ QR verification failed - Person not found: ${id}`);
+      return res.status(404).json({ 
+        success: false,
+        error: 'Person not found',
+        message: 'No user or team member found with this QR code'
+      });
     }
 
-    console.log(`👤 User verification for ${user.name} (${user.email}):`, {
-      hasEntered: user.hasEntered,
-      entryTime: user.entryTime,
-      isvalidated: user.isvalidated
+    console.log(`👤 QR verification for ${person.name} (${person.email}):`, {
+      hasEntered: person.hasEntered,
+      entryTime: person.entryTime,
+      isvalidated: person.isvalidated,
+      isTeamMember: isTeamMember,
+      teamInfo: teamInfo
     });
 
     const data = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isvalidated: user.isvalidated,
-      hasEntered: user.hasEntered,
-      entryTime: user.entryTime,
-      allowEntry: !user.hasEntered
+      success: true,
+      _id: person._id,
+      name: person.name,
+      email: person.email,
+      contactNo: person.contactNo || "",
+      gender: person.gender || "",
+      age: person.age || null,
+      universityName: person.universityName || "",
+      address: person.address || "",
+      profileImage: person.profileImage || "",
+      qrPath: person.qrPath || "",
+      isvalidated: person.isvalidated,
+      hasEntered: person.hasEntered,
+      entryTime: person.entryTime,
+      allowEntry: !person.hasEntered,
+      isTeamMember: isTeamMember,
+      isTeamLeader: !isTeamMember && person.isMainPerson,
+      events: person.events || [],
+      finalPrice: person.finalPrice || 0,
+      // Team information
+      teamInfo: teamInfo,
+      // If it's a team member, include main person reference
+      ...(isTeamMember && {
+        mainPersonId: person.mainPersonId
+      })
     };
 
     res.json(data); 
 
   } catch (error) {
-    console.error('Error verifying user:', error);
+    console.error('Error verifying QR code:', error);
 
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ 
+        success: false,
+        error: 'Internal server error',
+        message: 'Failed to verify QR code'
+      });
     }
   }
 });
 
-// Allow entry endpoint
+// Allow entry endpoint - UPDATED FOR TEAM SYSTEM
 router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const id = req.params.id;
+    
+    // First try to find as User (main person)
+    let user = await User.findById(id);
+    let isTeamMember = false;
     
     if (!user) {
-      console.log(`❌ Allow entry failed - User not found: ${req.params.id}`);
+      // If not found as User, try as TeamMember
+      const teamMember = await TeamMember.findById(id);
+      if (teamMember) {
+        user = teamMember;
+        isTeamMember = true;
+      }
+    }
+    
+    if (!user) {
+      console.log(`❌ Allow entry failed - User not found: ${id}`);
       return res.status(404).json({ 
         success: false,
         message: 'User not found',
@@ -57,7 +133,8 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
 
     console.log(`🚪 Entry attempt for ${user.name} (${user.email}):`, {
       currentStatus: user.hasEntered ? 'Already entered' : 'Not entered yet',
-      entryTime: user.entryTime
+      entryTime: user.entryTime,
+      isTeamMember: isTeamMember
     });
 
     // Check if user has already entered
@@ -83,7 +160,8 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
       success: true,
       message: 'Entry allowed successfully',
       playBuzzer: false,
-      entryTime: entryTime
+      entryTime: entryTime,
+      isTeamMember: isTeamMember
     });
 
   } catch (error) {
@@ -207,13 +285,147 @@ router.post("/add-event", verifyAdmin, async (req, res) => {
   }
 });
 
-// Get all users (admin only)
+// Get all users (admin only) - UPDATED FOR TEAM SYSTEM
 router.get("/users", verifyAdmin, async (req, res) => {
   try {
     const users = await User.find({}, '-password'); // Exclude password field
     res.json(users);
   } catch (error) {
     console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all team members (admin only)
+router.get("/team-members", verifyAdmin, async (req, res) => {
+  try {
+    const teamMembers = await TeamMember.find({})
+      .populate('mainPersonId', 'name email teamId');
+    res.json(teamMembers);
+  } catch (error) {
+    console.error('Error fetching team members:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get team details by team ID (admin only)
+router.get("/team/:teamId", verifyAdmin, async (req, res) => {
+  try {
+    const teamId = req.params.teamId;
+    
+    // Find main person by team ID
+    const mainPerson = await User.findOne({ teamId: teamId, isMainPerson: true });
+    if (!mainPerson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Team not found'
+      });
+    }
+
+    // Get team members
+    const teamMembers = await TeamMember.find({ mainPersonId: mainPerson._id });
+
+    res.json({
+      success: true,
+      team: {
+        teamId: mainPerson.teamId,
+        mainPerson: {
+          id: mainPerson._id,
+          name: mainPerson.name,
+          email: mainPerson.email,
+          contactNo: mainPerson.contactNo,
+          gender: mainPerson.gender,
+          age: mainPerson.age,
+          universityName: mainPerson.universityName,
+          address: mainPerson.address,
+          profileImage: mainPerson.profileImage,
+          qrPath: mainPerson.qrPath,
+          hasEntered: mainPerson.hasEntered,
+          entryTime: mainPerson.entryTime,
+          events: mainPerson.events
+        },
+        teamMembers: teamMembers.map(member => ({
+          id: member._id,
+          name: member.name,
+          email: member.email,
+          contactNo: member.contactNo,
+          gender: member.gender,
+          age: member.age,
+          universityName: member.universityName,
+          address: member.address,
+          profileImage: member.profileImage,
+          qrPath: member.qrPath,
+          hasEntered: member.hasEntered,
+          entryTime: member.entryTime,
+          events: member.events
+        })),
+        teamSize: mainPerson.teamSize
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching team details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Get all teams with their members (admin only)
+router.get("/teams", verifyAdmin, async (req, res) => {
+  try {
+    const teams = await User.find({ isMainPerson: true, teamId: { $exists: true } })
+      .populate({
+        path: 'teamMembers',
+        model: 'TeamMember',
+        match: { mainPersonId: { $exists: true } }
+      });
+
+    const teamsWithMembers = await Promise.all(
+      teams.map(async (team) => {
+        const teamMembers = await TeamMember.find({ mainPersonId: team._id });
+        return {
+          teamId: team.teamId,
+          mainPerson: {
+            id: team._id,
+            name: team.name,
+            email: team.email,
+            contactNo: team.contactNo,
+            gender: team.gender,
+            age: team.age,
+            universityName: team.universityName,
+            address: team.address,
+            profileImage: team.profileImage,
+            qrPath: team.qrPath,
+            hasEntered: team.hasEntered,
+            entryTime: team.entryTime,
+            events: team.events
+          },
+          teamMembers: teamMembers.map(member => ({
+            id: member._id,
+            name: member.name,
+            email: member.email,
+            contactNo: member.contactNo,
+            gender: member.gender,
+            age: member.age,
+            universityName: member.universityName,
+            address: member.address,
+            profileImage: member.profileImage,
+            qrPath: member.qrPath,
+            hasEntered: member.hasEntered,
+            entryTime: member.entryTime,
+            events: member.events
+          })),
+          teamSize: team.teamSize
+        };
+      })
+    );
+
+    res.json(teamsWithMembers);
+
+  } catch (error) {
+    console.error('Error fetching teams:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -499,9 +711,36 @@ router.post("/promo-codes/bulk", verifyAdmin, async (req, res) => {
 
     const promoCodes = [];
     const createdCodes = [];
+    const usedCodes = new Set();
 
-    for (let i = 1; i <= count; i++) {
-      const code = `${codePrefix}${String(i).padStart(4, '0')}`;
+    // Generate random alphanumeric string
+    const generateRandomString = (length) => {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    };
+
+    for (let i = 0; i < count; i++) {
+      let code;
+      let attempts = 0;
+      
+      // Generate unique random code
+      do {
+        const randomSuffix = generateRandomString(6); // 6 character random suffix
+        code = `${codePrefix}_${randomSuffix}`;
+        attempts++;
+        
+        // Prevent infinite loop
+        if (attempts > 100) {
+          code = `${codePrefix}_${Date.now()}_${i}`;
+          break;
+        }
+      } while (usedCodes.has(code));
+      
+      usedCodes.add(code);
       
       const promoCode = {
         code,
