@@ -1,0 +1,73 @@
+1) when the user clicks on the 'pay now ' button then the data is saved on the database aalong with the details filled by user  and a session id is generated .
+below is the code for sesionid generation
+==========inintialise sdk ===========
+import {load} from '@cashfreepayments/cashfree-js';
+
+let cashfree;
+var initializeSDK = async function () {          
+    cashfree = await load({
+        mode: "production"
+    });
+};
+initializeSDK();
+===================
+2)generation of session id the order amount will be fetched from the frontend ,
+things will happen simultaneously.Like details from the user will be saved to the database and session id will be generated and saved to database as well
+
+===========generate session id and save data to db================
+import { Cashfree, CFEnvironment } from "cashfree-pg"; 
+
+const cashfree = new Cashfree(CFEnvironment.PRODUCTION, "YOUR_CASHFREE_APP_ID", "YOUR_CASHFREE_SECRET_KEY");
+
+var request = {
+    "order_amount": 1.00,
+    "order_currency": "INR",
+    "order_id": "devstudio_7373010022689669687",
+    "customer_details": {
+        "customer_id": "devstudio_user",
+        "customer_phone": "9876543210"
+    },
+    "order_meta": {
+        "return_url": "https://www.cashfree.com/devstudio/preview/pg/web/checkout?order_id={order_id}",
+        "payment_methods": "cc,dc,upi"
+    }
+};
+
+cashfree.PGCreateOrder(request).then((response) => {
+    console.log('Order created successfully:',response.data);
+}).catch((error) => {
+    console.error('Error:', error.response.data.message);
+});
+
+========================Load checkout page ================
+import { load } from "@cashfreepayments/cashfree-js";
+
+function Checkout() {
+    let cashfree;
+    var initializeSDK = async function () {          
+        cashfree = await load({
+            mode: "production"
+        });
+    }
+    initializeSDK();
+
+    const doPayment = async () => {
+        let checkoutOptions = {
+            paymentSessionId: "your-payment-session-id",
+            redirectTarget: "_self",
+        };
+        cashfree.checkout(checkoutOptions);
+    };
+
+    return (
+        <div class="row">
+            <p>Click below to open the checkout page in current tab</p>
+            <button type="submit" class="btn btn-primary" id="renderBtn" onClick={doPayment}>
+                Pay Now
+            </button>
+        </div>
+    );
+}
+export default Checkout;
+
+//herepayment session id is the one which is generated in the previous step and saved to the database will be passed to the checkout page

@@ -284,11 +284,33 @@ const promoCodeSchema = new mongoose.Schema({
 
 // Purchase/Order Schema to track purchases
 const purchaseSchema = new mongoose.Schema({
+  // Order identification
+  orderId: {
+    type: String,
+    required: true,
+    unique: true
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
+  
+  // User details captured during checkout
+  userDetails: {
+    name: String,
+    email: String,
+    contactNo: String,
+    gender: String,
+    age: Number,
+    universityName: String,
+    address: String,
+    // Store complete form data
+    formData: mongoose.Schema.Types.Mixed,
+    teamMembers: [mongoose.Schema.Types.Mixed]
+  },
+  
+  // Items and pricing
   items: [{
     type: {
       type: String,
@@ -299,6 +321,7 @@ const purchaseSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       required: true // Can reference Event or CheckoutOffer
     },
+    itemName: String, // Store event/offer name for reference
     quantity: {
       type: Number,
       default: 1
@@ -308,6 +331,8 @@ const purchaseSchema = new mongoose.Schema({
       required: true
     }
   }],
+  
+  // Pricing details
   subtotal: {
     type: Number,
     required: true
@@ -320,6 +345,16 @@ const purchaseSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  
+  // Payment gateway integration
+  paymentSessionId: {
+    type: String, // Cashfree payment session ID
+    default: null
+  },
+  cashfreeOrderId: {
+    type: String, // Cashfree's internal order ID
+    default: null
+  },
   paymentStatus: {
     type: String,
     enum: ['pending', 'completed', 'failed', 'refunded'],
@@ -327,11 +362,49 @@ const purchaseSchema = new mongoose.Schema({
   },
   paymentMethod: String,
   transactionId: String,
+  
+  // Registration processing
+  userRegistered: {
+    type: Boolean,
+    default: false
+  },
+  registrationError: String,
+  
+  // QR code generation
+  qrGenerated: {
+    type: Boolean,
+    default: false
+  },
+  qrPath: String,
+  
+  // Email notification
+  emailSent: {
+    type: Boolean,
+    default: false
+  },
+  emailSentAt: Date,
+  
+  // Timestamps
   purchaseDate: {
     type: Date,
     default: Date.now
+  },
+  paymentCompletedAt: Date,
+  
+  // Additional metadata
+  metadata: {
+    userAgent: String,
+    ipAddress: String,
+    source: String // 'checkout', 'admin', etc.
   }
 });
+
+// Add indexes for better performance
+purchaseSchema.index({ orderId: 1 });
+purchaseSchema.index({ userId: 1 });
+purchaseSchema.index({ paymentSessionId: 1 });
+purchaseSchema.index({ paymentStatus: 1 });
+purchaseSchema.index({ purchaseDate: -1 });
 
 // Add indexes for better performance
 checkoutOfferSchema.index({ isActive: 1, validFrom: 1, validUntil: 1 });
