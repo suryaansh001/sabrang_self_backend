@@ -426,6 +426,10 @@ app.post("/register", upload.any(), async (req, res) => {
 app.use("/api", apirouter);
 app.use("/admin", adminrouter);
 
+// Payment routes (mount payment router)
+const paymentRouter = require("./routes/payment");
+app.use("/api/payment", paymentRouter);
+
 
 //GOOGLE AUTHENTICATION 
 const passport = require("passport");
