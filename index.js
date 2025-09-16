@@ -427,7 +427,7 @@ app.use("/api", apirouter);
 app.use("/admin", adminrouter);
 
 // Payment routes (mount new payment router)
-const paymentRouter = require("./routes/payment_new");
+const paymentRouter = require("./routes/cashfree_simple");
 app.use("/api/payments", paymentRouter);
 
 
