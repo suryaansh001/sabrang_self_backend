@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const { Cashfree } = require('cashfree-pg');
 const { User, Purchase } = require('../models/models');
 const router = express.Router();
@@ -16,6 +17,15 @@ console.log('Cashfree Simple SDK initialized:', {
     clientSecret: process.env.CASHFREE_CLIENT_SECRET ? 'Set' : 'Not set',
     environment: 'PRODUCTION (forced due to prod credentials)'
 });
+
+// Generate unique order ID using crypto
+function generateOrderId() {
+    const uniqueId = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.createHash('sha256');
+    hash.update(uniqueId);
+    const orderId = hash.digest('hex');
+    return orderId.substr(0, 12);
+}
 
 // Test route
 router.get('/', (req, res) => {
@@ -45,13 +55,13 @@ router.post('/create-order', async (req, res) => {
             });
         }
 
-        // Generate unique order ID
-        const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Generate unique order ID using crypto
+        const orderId = await generateOrderId();
 
         // Create order request following Cashfree documentation exactly
         const orderRequest = {
             order_id: orderId,
-            order_amount: amount,
+            order_amount: parseFloat(amount),
             order_currency: "INR",
             customer_details: {
                 customer_id: `customer_${Date.now()}`,
