@@ -108,12 +108,11 @@ router.post('/validate-promo', async (req, res) => {
   }
 });
 
-// Store order data (no Cashfree order creation - frontend handles that)
-router.post('/store-order', async (req, res) => {
+// Create order and payment session (updated to match Cashfree docs)
+router.post('/create-order', async (req, res) => {
   try {
-    console.log('🛒 Order data storage started');
+    console.log('🛒 Creating Cashfree order');
     console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
-    console.log('🌐 Headers:', req.headers);
 
     const { 
       userDetails,
@@ -122,13 +121,6 @@ router.post('/store-order', async (req, res) => {
       promoCode,
       metadata 
     } = req.body;
-
-    console.log('📋 Parsed data:', { 
-      userDetails: userDetails ? { ...userDetails, password: '[HIDDEN]' } : null,
-      itemsCount: items ? items.length : 0,
-      totalAmount,
-      hasPromoCode: !!promoCode
-    });
 
     // Validate input
     if (!userDetails || !userDetails.email || !userDetails.name) {
@@ -157,7 +149,7 @@ router.post('/store-order', async (req, res) => {
 
     console.log('✅ Input validation passed');
 
-    // Generate unique order ID for frontend to use with Cashfree
+    // Generate unique order ID
     const orderId = `SABRANG_${shortid.generate()}_${Date.now()}`;
     console.log('🆔 Generated order ID:', orderId);
 
@@ -207,109 +199,49 @@ router.post('/store-order', async (req, res) => {
     await purchase.save();
     console.log('✅ Purchase record saved with ID:', purchase._id);
 
-    // Return order details for frontend to create Cashfree order
-    res.json({
-      success: true,
-      data: {
-        orderId: orderId,
-        amount: finalAmount,
-        customerDetails: {
-          customer_id: `customer_${Date.now()}`,
-          customer_name: userDetails.name,
-          customer_email: userDetails.email,
-          customer_phone: userDetails.contactNo || "9999999999"
-        },
-        orderMeta: {
-          return_url: `${process.env.FRONTEND_URL || process.env.frontendurl || 'http://localhost:3000'}/payment/success?order_id={order_id}`,
-          payment_methods: "cc,dc,upi,nb,wallet"
-        }
+    // Create Cashfree order request (as per docs)
+    const cashfreeRequest = {
+      order_amount: finalAmount,
+      order_currency: "INR",
+      order_id: orderId,
+      customer_details: {
+        customer_id: `customer_${Date.now()}`,
+        customer_name: userDetails.name,
+        customer_email: userDetails.email,
+        customer_phone: userDetails.contactNo || "9999999999"
       },
-      message: 'Order data stored successfully. Frontend should now create Cashfree order.'
-    });
+      order_meta: {
+        return_url: `${process.env.FRONTEND_URL || process.env.frontendurl || 'http://localhost:3000'}/payment/success?order_id={order_id}`,
+        payment_methods: "cc,dc,upi,nb,wallet"
+      }
+    };
 
-  } catch (error) {
-    console.error('❌ Order data storage error:');
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
-    
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to store order data',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-    });
-  }
-});
+    console.log('🔄 Creating Cashfree order with:', JSON.stringify(cashfreeRequest, null, 2));
 
-// Update order with payment session ID from frontend
-router.post('/update-session', async (req, res) => {
-  try {
-    const { orderId, paymentSessionId, cashfreeOrderId } = req.body;
-
-    if (!orderId || !paymentSessionId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Order ID and payment session ID are required'
-      });
-    }
-
-    const purchase = await Purchase.findOne({ orderId: orderId });
-    
-    if (!purchase) {
-      return res.status(404).json({
-        success: false,
-        message: 'Order not found'
-      });
-    }
-
-    // Update purchase with payment session details
-    purchase.paymentSessionId = paymentSessionId;
-    purchase.cashfreeOrderId = cashfreeOrderId || orderId;
-    await purchase.save();
-
-    console.log('✅ Payment session updated:', {
-      orderId,
-      sessionId: paymentSessionId
-    });
-
-    res.json({
-      success: true,
-      message: 'Payment session updated successfully'
-    });
-
-  } catch (error) {
-    console.error('❌ Payment session update error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to update payment session' 
-    });
-  }
-});
-
-// Cashfree order creation endpoint (for frontend to call)
-router.post('/cashfree/create-order', async (req, res) => {
-  try {
-    console.log('🔄 Creating Cashfree order via frontend request');
-    console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
-
-    const orderRequest = req.body;
-
-    // Validate the request
-    if (!orderRequest.order_id || !orderRequest.order_amount || !orderRequest.customer_details) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid order request. Missing required fields.'
-      });
-    }
-
-    // Create order with Cashfree
-    const response = await cashfree.PGCreateOrder(orderRequest);
+    // Create order with Cashfree (server-side as per docs)
+    const response = await cashfree.PGCreateOrder(cashfreeRequest);
+    console.log('📨 Cashfree response:', JSON.stringify(response, null, 2));
     
     if (response.data && response.data.payment_session_id) {
-      console.log('✅ Cashfree order created successfully:', response.data);
-      
+      // Update purchase with payment session ID
+      purchase.paymentSessionId = response.data.payment_session_id;
+      purchase.cashfreeOrderId = response.data.order_id;
+      await purchase.save();
+
+      console.log('✅ Order created successfully:', {
+        orderId,
+        sessionId: response.data.payment_session_id,
+        amount: finalAmount
+      });
+
       res.json({
         success: true,
-        data: response.data
+        data: {
+          paymentSessionId: response.data.payment_session_id,
+          orderId: orderId,
+          amount: finalAmount,
+          cashfreeOrderId: response.data.order_id
+        }
       });
     } else {
       console.log('❌ Invalid Cashfree response structure:', response);
@@ -317,7 +249,9 @@ router.post('/cashfree/create-order', async (req, res) => {
     }
 
   } catch (error) {
-    console.error('❌ Cashfree order creation error:', error);
+    console.error('❌ Cashfree order creation error:');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     
     // Log specific Cashfree errors
     if (error.response) {
@@ -325,22 +259,26 @@ router.post('/cashfree/create-order', async (req, res) => {
       console.error('Cashfree API Status:', error.response.status);
     }
     
-    res.status(500).json({
-      success: false,
+    res.status(500).json({ 
+      success: false, 
       message: 'Failed to create Cashfree order',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? {
+        stack: error.stack,
+        cashfreeError: error.response?.data
+      } : undefined
     });
   }
 });
 
-// Cashfree fetch payments endpoint (for frontend to call)
-router.get('/cashfree/fetch-payments/:orderId', async (req, res) => {
+// Fetch payment details from Cashfree (as per docs)
+router.get('/fetch-payments/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
     
-    console.log(`🔍 Fetching Cashfree payments for order: ${orderId}`);
+    console.log(`🔍 Fetching payment details for order: ${orderId}`);
     
-    // Fetch payment details from Cashfree
+    // Fetch payment details from Cashfree (as per docs)
     const response = await cashfree.PGOrderFetchPayments(orderId);
     
     if (response.data) {
