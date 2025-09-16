@@ -109,9 +109,9 @@ router.post('/validate-promo', async (req, res) => {
 });
 
 // Create order and payment session (updated to match Cashfree docs)
-router.post('/create-order', async (req, res) => {
+router.post('/create-session', async (req, res) => {
   try {
-    console.log('🛒 Creating Cashfree order');
+    console.log('� Creating Cashfree order and payment session');
     console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
 
     const { 
