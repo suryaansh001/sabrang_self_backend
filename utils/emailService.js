@@ -215,8 +215,133 @@ async function sendRegistrationEmail(userEmail, userData) {
     }
 }
 
+/**
+ * Generate payment initiation email content
+ */
+function generatePaymentInitiationEmailContent(paymentData) {
+    const { name, orderId, amount, paymentSessionId, environment } = paymentData;
+    
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Payment Initiated - Sabrang'25</title>
+        <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+            .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+            .content { padding: 30px; }
+            .order-details { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+            .footer { background-color: #2c3e50; color: white; padding: 20px; text-align: center; }
+            .highlight { color: #667eea; font-weight: bold; }
+            .amount { font-size: 24px; color: #27ae60; font-weight: bold; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎊 Payment Initiated</h1>
+                <h2>Sabrang'25</h2>
+            </div>
+            <div class="content">
+                <h3>Hello ${name}!</h3>
+                <p>Your payment has been successfully initiated for Sabrang'25. Please complete the payment to confirm your registration.</p>
+                
+                <div class="order-details">
+                    <h4>📋 Payment Details</h4>
+                    <p><strong>Order ID:</strong> <span class="highlight">${orderId}</span></p>
+                    <p><strong>Amount:</strong> <span class="amount">₹${amount}</span></p>
+                    <p><strong>Environment:</strong> <span class="highlight">${environment.toUpperCase()}</span></p>
+                    <p><strong>Session ID:</strong> <code>${paymentSessionId}</code></p>
+                </div>
+                
+                <p><strong>⚠️ Important:</strong> Please complete your payment within the next 30 minutes to secure your registration.</p>
+                
+                <p>If you have any questions or need assistance, please contact our support team.</p>
+                
+                <p>Thank you for choosing Sabrang'25!</p>
+            </div>
+            <div class="footer">
+                <p>&copy; 2025 Sabrang'25 - JK Lakshmipat University</p>
+                <p>For support: support@sabrang.com</p>
+            </div>
+        </div>
+    </body>
+    </html>`;
+
+    const textContent = `
+Payment Initiated - Sabrang'25
+
+Hello ${name}!
+
+Your payment has been successfully initiated for Sabrang'25. Please complete the payment to confirm your registration.
+
+Payment Details:
+- Order ID: ${orderId}
+- Amount: ₹${amount}
+- Environment: ${environment.toUpperCase()}
+- Session ID: ${paymentSessionId}
+
+Important: Please complete your payment within the next 30 minutes to secure your registration.
+
+If you have any questions or need assistance, please contact our support team.
+
+Thank you for choosing Sabrang'25!
+
+© 2025 Sabrang'25 - JK Lakshmipat University
+For support: support@sabrang.com`;
+
+    return { htmlContent, textContent };
+}
+
+/**
+ * Send payment initiation email
+ */
+async function sendPaymentInitiatedEmail(paymentData) {
+    const { email: userEmail } = paymentData;
+    
+    try {
+        const config = {
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            tenantId: process.env.TENANT_ID,
+            userEmail: process.env.FROM_EMAIL
+        };
+
+        // Validate required environment variables
+        const requiredEnvVars = ['CLIENT_ID', 'CLIENT_SECRET', 'TENANT_ID', 'FROM_EMAIL'];
+        const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+        
+        if (missingVars.length > 0) {
+            throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+        }
+
+        const mailer = new MicrosoftOAuthMailer(config);
+        const { htmlContent, textContent } = generatePaymentInitiationEmailContent(paymentData);
+
+        const mailOptions = {
+            to: userEmail,
+            subject: '💳 Payment Initiated - Sabrang\'25',
+            text: textContent,
+            html: htmlContent
+        };
+
+        const result = await mailer.sendEmailGraph(mailOptions);
+        console.log(`✅ Payment initiation email sent successfully to ${userEmail}`);
+        return { success: true, result };
+
+    } catch (error) {
+        console.error(`❌ Failed to send payment initiation email to ${userEmail}:`, error.message);
+        return { success: false, error: error.message };
+    }
+}
+
 module.exports = {
     MicrosoftOAuthMailer,
     generateRegistrationEmailContent,
-    sendRegistrationEmail
+    sendRegistrationEmail,
+    generatePaymentInitiationEmailContent,
+    sendPaymentInitiatedEmail
 };

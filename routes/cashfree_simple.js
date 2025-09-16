@@ -1,44 +1,44 @@
 const express = require('express');
 const crypto = require('crypto');
-const { Cashfree } = require('cashfree-pg');
+const { Cashfree, CFEnvironment } = require('cashfree-pg');
 const { User, Purchase } = require('../models/models');
 const router = express.Router();
 
-// Initialize Cashfree with fallback mechanism
+// Initialize Cashfree with production credentials
 let cashfree;
-let isUsingProd = false;
+let isUsingProd = true;
 
-function initializeCashfree(useProd = false) {
+function initializeCashfree(useProd = true) {
     if (useProd) {
-        console.log('🔄 Switching to PRODUCTION credentials...');
+        console.log('🔄 Using PRODUCTION credentials...');
         cashfree = new Cashfree(
-            'PRODUCTION',
+            CFEnvironment.PRODUCTION,
             process.env.CASHFREE_PROD_CLIENT_ID,
             process.env.CASHFREE_PROD_CLIENT_SECRET
         );
         isUsingProd = true;
-        console.log('✅ Cashfree initialized with PRODUCTION credentials');
+        console.log('✅ Cashfree initialized with PRODUCTION environment');
     } else {
-        console.log('🧪 Using TEST credentials...');
+        console.log('🧪 Fallback to TEST credentials...');
         cashfree = new Cashfree(
-            'SANDBOX',
+            CFEnvironment.SANDBOX,
             process.env.CASHFREE_CLIENT_ID,
             process.env.CASHFREE_CLIENT_SECRET
         );
         isUsingProd = false;
-        console.log('✅ Cashfree initialized with SANDBOX credentials');
+        console.log('✅ Cashfree initialized with SANDBOX environment');
     }
 }
 
-// Start with TEST credentials
-initializeCashfree(false);
+// Start with PRODUCTION credentials
+initializeCashfree(true);
 
 console.log('Cashfree SDK initialized:', {
     testClientId: process.env.CASHFREE_CLIENT_ID ? 'Set' : 'Not set',
     testClientSecret: process.env.CASHFREE_CLIENT_SECRET ? 'Set' : 'Not set',
     prodClientId: process.env.CASHFREE_PROD_CLIENT_ID ? 'Set' : 'Not set',
     prodClientSecret: process.env.CASHFREE_PROD_CLIENT_SECRET ? 'Set' : 'Not set',
-    currentEnvironment: 'SANDBOX (with PROD fallback)'
+    currentEnvironment: 'PRODUCTION (with SANDBOX fallback)'
 });
 
 // Generate unique order ID using crypto
@@ -126,6 +126,60 @@ router.post('/create-order', async (req, res) => {
             } else {
                 throw firstError;
             }
+        }
+
+        // Save order to database
+        try {
+            const newPurchase = new Purchase({
+                orderId: response.data.order_id,
+                paymentSessionId: response.data.payment_session_id,
+                userDetails: {
+                    name: customerName,
+                    email: customerEmail,
+                    contactNo: customerPhone,
+                    formData: req.body // Store complete request data
+                },
+                items: [{
+                    type: 'event',
+                    itemName: 'Demo Payment', // You can customize this based on the request
+                    quantity: 1,
+                    price: parseFloat(amount)
+                }],
+                totalAmount: parseFloat(amount),
+                currency: "INR",
+                paymentStatus: 'pending',
+                environment: isUsingProd ? 'production' : 'sandbox',
+                fallbackUsed: attemptedFallback,
+                metadata: {
+                    userAgent: req.get('User-Agent'),
+                    ip: req.ip || req.connection.remoteAddress,
+                    timestamp: new Date()
+                }
+            });
+
+            await newPurchase.save();
+            console.log('✅ Order saved to database:', response.data.order_id);
+
+            // Send confirmation email
+            try {
+                const emailService = require('../utils/emailService');
+                await emailService.sendPaymentInitiatedEmail({
+                    email: customerEmail,
+                    name: customerName,
+                    orderId: response.data.order_id,
+                    amount: amount,
+                    paymentSessionId: response.data.payment_session_id,
+                    environment: isUsingProd ? 'production' : 'sandbox'
+                });
+                console.log('✅ Confirmation email sent to:', customerEmail);
+            } catch (emailError) {
+                console.error('❌ Failed to send email:', emailError.message);
+                // Don't fail the order creation if email fails
+            }
+
+        } catch (dbError) {
+            console.error('❌ Failed to save order to database:', dbError.message);
+            // Don't fail the order creation if database save fails
         }
 
         // Return successful response
