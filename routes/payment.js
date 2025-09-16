@@ -111,6 +111,16 @@ router.post('/validate-promo', async (req, res) => {
 // Create payment session (main checkout endpoint)
 router.post('/create-session', async (req, res) => {
   try {
+    console.log('🛒 Payment session creation started');
+    console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
+    console.log('🌐 Headers:', req.headers);
+    console.log('🔑 Environment check:', {
+      hasAppId: !!process.env.CASHFREE_APP_ID,
+      hasSecretKey: !!process.env.CASHFREE_SECRET_KEY,
+      hasMongoUri: !!process.env.mongodb,
+      mongoConnection: require('mongoose').connection.readyState
+    });
+
     const { 
       userDetails,
       items,
@@ -119,8 +129,16 @@ router.post('/create-session', async (req, res) => {
       metadata 
     } = req.body;
 
+    console.log('📋 Parsed data:', { 
+      userDetails: userDetails ? { ...userDetails, password: '[HIDDEN]' } : null,
+      itemsCount: items ? items.length : 0,
+      totalAmount,
+      hasPromoCode: !!promoCode
+    });
+
     // Validate input
     if (!userDetails || !userDetails.email || !userDetails.name) {
+      console.log('❌ Validation failed: Missing user details');
       return res.status(400).json({ 
         success: false, 
         message: 'User details are required' 
@@ -128,6 +146,7 @@ router.post('/create-session', async (req, res) => {
     }
 
     if (!items || items.length === 0) {
+      console.log('❌ Validation failed: No events selected');
       return res.status(400).json({ 
         success: false, 
         message: 'No events selected' 
@@ -135,19 +154,25 @@ router.post('/create-session', async (req, res) => {
     }
 
     if (!totalAmount || totalAmount <= 0) {
+      console.log('❌ Validation failed: Invalid amount');
       return res.status(400).json({ 
         success: false, 
         message: 'Invalid amount' 
       });
     }
 
+    console.log('✅ Input validation passed');
+
     // Generate unique order ID
     const orderId = `SABRANG_${shortid.generate()}_${Date.now()}`;
+    console.log('🆔 Generated order ID:', orderId);
 
     // Calculate amounts
     const subtotal = promoCode?.discountAmount ? totalAmount + promoCode.discountAmount : totalAmount;
     const finalAmount = totalAmount;
+    console.log('💰 Amount calculation:', { subtotal, finalAmount, promoCode });
 
+    console.log('💾 Creating purchase record...');
     // Create purchase record with all details
     const purchase = new Purchase({
       orderId: orderId,
@@ -186,7 +211,9 @@ router.post('/create-session', async (req, res) => {
     });
 
     await purchase.save();
+    console.log('✅ Purchase record saved with ID:', purchase._id);
 
+    console.log('💳 Preparing Cashfree order request...');
     // Prepare Cashfree order request
     const cashfreeRequest = {
       order_amount: finalAmount,
@@ -199,16 +226,22 @@ router.post('/create-session', async (req, res) => {
         customer_phone: userDetails.contactNo || "9999999999"
       },
       order_meta: {
-        return_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment/success?order_id={order_id}`,
+        return_url: `${process.env.FRONTEND_URL || process.env.frontendurl || 'http://localhost:3000'}/payment/success?order_id={order_id}`,
         notify_url: `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/payment/webhook`,
         payment_methods: "cc,dc,upi,nb,wallet"
       }
     };
 
-    console.log('Creating Cashfree order:', cashfreeRequest);
+    console.log('🔄 Creating Cashfree order with request:', JSON.stringify(cashfreeRequest, null, 2));
+    console.log('🔑 Cashfree initialized with:', {
+      environment: 'PRODUCTION',
+      appId: process.env.CASHFREE_APP_ID?.substring(0, 10) + '...',
+      hasSecretKey: !!process.env.CASHFREE_SECRET_KEY
+    });
 
     // Create order with Cashfree
     const response = await cashfree.PGCreateOrder(cashfreeRequest);
+    console.log('📨 Cashfree response:', JSON.stringify(response, null, 2));
     
     if (response.data && response.data.payment_session_id) {
       // Update purchase with payment session ID
@@ -232,15 +265,30 @@ router.post('/create-session', async (req, res) => {
         }
       });
     } else {
-      throw new Error('Failed to create payment session with Cashfree');
+      console.log('❌ Invalid Cashfree response structure:', response);
+      throw new Error('Failed to create payment session with Cashfree - invalid response structure');
     }
 
   } catch (error) {
-    console.error('❌ Payment session creation error:', error);
+    console.error('❌ Payment session creation error:');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', error);
+    
+    // Log specific Cashfree errors
+    if (error.response) {
+      console.error('Cashfree API Error Response:', error.response.data);
+      console.error('Cashfree API Status:', error.response.status);
+    }
+    
     res.status(500).json({ 
       success: false, 
       message: 'Failed to create payment session',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? {
+        stack: error.stack,
+        cashfreeError: error.response?.data
+      } : undefined
     });
   }
 });

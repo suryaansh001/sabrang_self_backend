@@ -293,7 +293,8 @@ const purchaseSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false, // Will be set after user registration
+    default: null
   },
   
   // User details captured during checkout
@@ -318,8 +319,8 @@ const purchaseSchema = new mongoose.Schema({
       required: true
     },
     itemId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true // Can reference Event or CheckoutOffer
+      type: mongoose.Schema.Types.Mixed, // More flexible to handle string IDs or ObjectIds
+      required: false // Make optional since we're storing itemName as well
     },
     itemName: String, // Store event/offer name for reference
     quantity: {
