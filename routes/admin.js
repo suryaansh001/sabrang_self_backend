@@ -6,6 +6,97 @@ const path = require('path');
 const fs = require('fs');
 const router = express.Router();
 
+// Promo code validation endpoint (for frontend)
+router.post('/promo-codes/validate', async (req, res) => {
+  try {
+    const { code, userEmail, orderAmount } = req.body;
+
+    if (!code || !userEmail || !orderAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+
+    const promoCode = await PromoCode.findOne({
+      code: code.toUpperCase(),
+      isActive: true
+    });
+
+    if (!promoCode) {
+      return res.status(200).json({
+        success: false,
+        message: 'Invalid promo code'
+      });
+    }
+
+    const currentDate = new Date();
+    
+    // Check validity period
+    if (currentDate < promoCode.validFrom || currentDate > promoCode.validUntil) {
+      return res.status(200).json({
+        success: false,
+        message: 'Promo code has expired'
+      });
+    }
+
+    // Check usage limit
+    if (promoCode.usedCount >= promoCode.usageLimit) {
+      return res.status(200).json({
+        success: false,
+        message: 'Promo code usage limit exceeded'
+      });
+    }
+
+    // Check minimum order amount
+    if (orderAmount < promoCode.minOrderAmount) {
+      return res.status(200).json({
+        success: false,
+        message: `Minimum order amount is ₹${promoCode.minOrderAmount}`
+      });
+    }
+
+    // Check email domain restriction
+    if (promoCode.allowedEmailDomains.length > 0) {
+      const userDomain = userEmail.split('@')[1];
+      if (!promoCode.allowedEmailDomains.includes(userDomain)) {
+        return res.status(200).json({
+          success: false,
+          message: 'This promo code is not valid for your email domain'
+        });
+      }
+    }
+
+    // Calculate discount
+    let discountAmount;
+    if (promoCode.discountType === 'percentage') {
+      discountAmount = (orderAmount * promoCode.discountValue) / 100;
+      if (promoCode.maxDiscountAmount && discountAmount > promoCode.maxDiscountAmount) {
+        discountAmount = promoCode.maxDiscountAmount;
+      }
+    } else {
+      discountAmount = promoCode.discountValue;
+    }
+
+    // Ensure discount doesn't exceed order amount
+    discountAmount = Math.min(discountAmount, orderAmount);
+
+    res.json({
+      success: true,
+      message: 'Promo code is valid',
+      discountAmount,
+      finalAmount: orderAmount - discountAmount
+    });
+
+  } catch (error) {
+    console.error('Error validating promo code:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 
 // Unified QR scanning route - handles both team leaders and team members
 router.get("/verify/:id", verifyAdmin, async (req, res) => {

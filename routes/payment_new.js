@@ -1,5 +1,5 @@
 const express = require('express');
-const { Cashfree, CFEnvironment } = require('cashfree-pg');
+const axios = require('axios');
 const { Purchase, User, Event, TeamMember, PromoCode } = require('../models/models');
 const { sendRegistrationEmail } = require('../utils/emailService');
 const shortid = require('shortid');
@@ -7,21 +7,53 @@ const qr = require('qr-image');
 const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
+const multer = require('multer');
 
 const router = express.Router();
 
-// Initialize Cashfree with proper environment configuration
-const cashfreeEnvironment = process.env.NODE_ENV === 'production' ? CFEnvironment.PRODUCTION : CFEnvironment.SANDBOX;
-console.log(`🔧 Initializing Cashfree in ${process.env.NODE_ENV === 'production' ? 'PRODUCTION' : 'SANDBOX'} mode`);
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 
-const cashfree = new Cashfree(
-  cashfreeEnvironment, 
-  process.env.CASHFREE_APP_ID, 
-  process.env.CASHFREE_SECRET_KEY
-);
+// Cashfree API configuration
+const CASHFREE_BASE_URL = 'https://api.cashfree.com/pg';
+const CASHFREE_API_VERSION = '2022-09-01';
 
-// Set API version for Cashfree SDK
-const CASHFREE_API_VERSION = "2022-09-01";
+console.log(`🔧 Cashfree Configuration:`);
+console.log(`📡 Base URL: ${CASHFREE_BASE_URL}`);
+console.log(`🔑 App ID: ${process.env.CASHFREE_APP_ID}`);
+console.log(`� Secret: ${process.env.CASHFREE_SECRET_KEY ? 'SET' : 'NOT SET'}`);
+
+// Helper function to make Cashfree API calls
+async function makeCashfreeRequest(endpoint, method = 'POST', data = null) {
+  const config = {
+    method,
+    url: `${CASHFREE_BASE_URL}${endpoint}`,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-client-id': process.env.CASHFREE_APP_ID,
+      'x-client-secret': process.env.CASHFREE_SECRET_KEY,
+      'x-api-version': CASHFREE_API_VERSION
+    }
+  };
+
+  if (data) {
+    config.data = data;
+  }
+
+  return await axios(config);
+}
 
 // Validate promo code endpoint
 router.post('/validate-promo', async (req, res) => {
@@ -35,75 +67,21 @@ router.post('/validate-promo', async (req, res) => {
       });
     }
 
-    const promoCode = await PromoCode.findOne({
-      code: code.toUpperCase(),
-      isActive: true
-    });
-
-    if (!promoCode) {
-pu      return res.status(200).json({
-        success: false,
-        message: 'Invalid promo code'
-      });
-    }
-
-    const currentDate = new Date();
+    const validationResult = await validatePromoCode(code, userEmail, orderAmount);
     
-    // Check validity period
-    if (currentDate < promoCode.validFrom || currentDate > promoCode.validUntil) {
-      return res.status(200).json({
-        success: false,
-        message: 'Promo code has expired'
+    if (validationResult.success) {
+      res.json({
+        success: true,
+        message: 'Promo code is valid',
+        discountAmount: validationResult.discountAmount,
+        finalAmount: validationResult.finalAmount
       });
-    }
-
-    // Check usage limit
-    if (promoCode.usedCount >= promoCode.usageLimit) {
-      return res.status(200).json({
-        success: false,
-        message: 'Promo code usage limit exceeded'
-      });
-    }
-
-    // Check minimum order amount
-    if (orderAmount < promoCode.minOrderAmount) {
-      return res.status(200).json({
-        success: false,
-        message: `Minimum order amount is ₹${promoCode.minOrderAmount}`
-      });
-    }
-
-    // Check email domain restriction
-    if (promoCode.allowedEmailDomains.length > 0) {
-      const userDomain = userEmail.split('@')[1];
-      if (!promoCode.allowedEmailDomains.includes(userDomain)) {
-        return res.status(200).json({
-          success: false,
-          message: 'This promo code is not valid for your email domain'
-        });
-      }
-    }
-
-    // Calculate discount
-    let discountAmount;
-    if (promoCode.discountType === 'percentage') {
-      discountAmount = (orderAmount * promoCode.discountValue) / 100;
-      if (promoCode.maxDiscountAmount && discountAmount > promoCode.maxDiscountAmount) {
-        discountAmount = promoCode.maxDiscountAmount;
-      }
     } else {
-      discountAmount = promoCode.discountValue;
+      res.status(200).json({
+        success: false,
+        message: validationResult.message
+      });
     }
-
-    // Ensure discount doesn't exceed order amount
-    discountAmount = Math.min(discountAmount, orderAmount);
-
-    res.json({
-      success: true,
-      message: 'Promo code is valid',
-      discountAmount,
-      finalAmount: orderAmount - discountAmount
-    });
 
   } catch (error) {
     console.error('Error validating promo code:', error);
@@ -114,26 +92,36 @@ pu      return res.status(200).json({
   }
 });
 
-// Create order and payment session (updated to match Cashfree docs)
-router.post('/create-session', async (req, res) => {
+// Create Cashfree order following the official documentation
+router.post('/cashfree/create-order', upload.any(), async (req, res) => {
   try {
-    console.log('� Creating Cashfree order and payment session');
-    console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
+    console.log('🛒 Creating Cashfree order via new API endpoint');
+    console.log('📝 Request body fields:', Object.keys(req.body));
+    console.log('📁 Uploaded files:', req.files?.length || 0);
 
-    const { 
-      userDetails,
-      items,
-      totalAmount,
-      promoCode,
-      metadata 
-    } = req.body;
+    // Parse form data and files from the frontend
+    const formsBySignature = req.body.formsBySignature ? JSON.parse(req.body.formsBySignature) : {};
+    const teamMembersBySignature = req.body.teamMembersBySignature ? JSON.parse(req.body.teamMembersBySignature) : {};
+    const items = req.body.items ? JSON.parse(req.body.items) : [];
+    const promoCode = req.body.promoCode;
 
-    // Validate input
-    if (!userDetails || !userDetails.email || !userDetails.name) {
-      console.log('❌ Validation failed: Missing user details');
+    console.log('📋 Parsed data:', {
+      formsCount: Object.keys(formsBySignature).length,
+      teamsCount: Object.keys(teamMembersBySignature).length,
+      itemsCount: items.length,
+      hasPromo: !!promoCode
+    });
+
+    // Extract user details from the first form signature (main user)
+    const firstSignature = Object.keys(formsBySignature)[0];
+    const userDetails = formsBySignature[firstSignature] || {};
+
+    // Validate required fields
+    if (!userDetails.name || !userDetails.collegeMailId) {
+      console.log('❌ Validation failed: Missing required user details');
       return res.status(400).json({ 
         success: false, 
-        message: 'User details are required' 
+        message: 'Name and email are required' 
       });
     }
 
@@ -145,93 +133,149 @@ router.post('/create-session', async (req, res) => {
       });
     }
 
-    if (!totalAmount || totalAmount <= 0) {
-      console.log('❌ Validation failed: Invalid amount');
+    // Calculate total amount from items
+    const totalAmount = items.reduce((sum, item) => {
+      const price = typeof item.price === 'string' ? 
+        parseFloat(item.price.replace(/[₹,]/g, '')) || 0 : 
+        item.price || 0;
+      return sum + price;
+    }, 0);
+
+    if (totalAmount <= 0) {
+      console.log('❌ Validation failed: Invalid total amount');
       return res.status(400).json({ 
         success: false, 
-        message: 'Invalid amount' 
+        message: 'Invalid total amount calculated' 
       });
     }
 
     console.log('✅ Input validation passed');
 
-    // Generate unique order ID
-    const orderId = `SABRANG_${shortid.generate()}_${Date.now()}`;
+    // Generate unique order ID following Cashfree requirements (alphanumeric with _ and -)
+    const orderId = `SABRANG_${shortid.generate()}_${Date.now()}`.substring(0, 50);
     console.log('🆔 Generated order ID:', orderId);
 
-    // Calculate amounts
-    const subtotal = promoCode?.discountAmount ? totalAmount + promoCode.discountAmount : totalAmount;
-    const finalAmount = totalAmount;
-    console.log('💰 Amount calculation:', { subtotal, finalAmount, promoCode });
+    // Apply promo code discount if provided
+    let discountAmount = 0;
+    let finalAmount = totalAmount;
+    let promoCodeDetails = null;
 
-    console.log('💾 Creating purchase record...');
-    // Create purchase record with all details
+    if (promoCode) {
+      try {
+        console.log('🎫 Validating promo code:', promoCode);
+        const promoValidation = await validatePromoCode(promoCode, userDetails.collegeMailId, totalAmount);
+        
+        if (promoValidation.success) {
+          discountAmount = promoValidation.discountAmount;
+          finalAmount = Math.max(0, totalAmount - discountAmount);
+          promoCodeDetails = {
+            code: promoCode,
+            discountAmount: discountAmount
+          };
+          console.log('✅ Promo code applied:', promoCodeDetails);
+        } else {
+          console.log('⚠️ Promo code validation failed:', promoValidation.message);
+          // Continue without promo code rather than failing the entire order
+        }
+      } catch (promoError) {
+        console.error('❌ Promo code validation error:', promoError);
+        // Continue without promo code
+      }
+    }
+
+    console.log('💰 Amount calculation:', { totalAmount, discountAmount, finalAmount });
+
+    // Process uploaded files
+    const uploadedFiles = {};
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        // Store file buffer and metadata for later processing
+        uploadedFiles[file.fieldname] = {
+          buffer: file.buffer,
+          originalname: file.originalname,
+          mimetype: file.mimetype,
+          size: file.size
+        };
+      }
+    }
+
+    // Extract team members data
+    const teamMembersData = teamMembersBySignature[firstSignature] || [];
+
+    // Create purchase record with detailed information
     const purchase = new Purchase({
       orderId: orderId,
       userId: null, // Will be set after user registration
       userDetails: {
         name: userDetails.name,
-        email: userDetails.email,
-        contactNo: userDetails.contactNo,
-        gender: userDetails.gender,
-        age: userDetails.age,
-        universityName: userDetails.universityName,
-        address: userDetails.address,
-        formData: userDetails.formData || {},
-        teamMembers: userDetails.teamMembers || []
+        email: userDetails.collegeMailId,
+        contactNo: userDetails.contactNo || '',
+        gender: userDetails.gender || '',
+        age: userDetails.age ? parseInt(userDetails.age) : null,
+        universityName: userDetails.universityName || '',
+        address: userDetails.address || '',
+        formData: formsBySignature,
+        teamMembers: teamMembersData
       },
       items: items.map(item => ({
         type: 'event',
-        itemId: item.eventId,
-        itemName: item.eventName,
-        price: item.price,
+        itemId: item.id || item.eventId,
+        itemName: item.title || item.eventName || item.name,
+        price: typeof item.price === 'string' ? 
+          parseFloat(item.price.replace(/[₹,]/g, '')) || 0 : 
+          item.price || 0,
         quantity: 1
       })),
-      subtotal: subtotal,
-      promoCode: promoCode ? {
-        code: promoCode.code,
-        discountAmount: promoCode.discountAmount
-      } : null,
+      subtotal: totalAmount,
+      promoCode: promoCodeDetails,
       totalAmount: finalAmount,
       paymentStatus: 'pending',
       metadata: {
         userAgent: req.headers['user-agent'],
         ipAddress: req.ip,
-        source: metadata?.source || 'checkout',
-        ...metadata
+        source: 'checkout_new',
+        filesUploaded: Object.keys(uploadedFiles).length,
+        teamMembersCount: teamMembersData.length
       }
     });
 
     await purchase.save();
     console.log('✅ Purchase record saved with ID:', purchase._id);
 
-    // Create Cashfree order request (as per docs)
-    const cashfreeRequest = {
+    // Create Cashfree order request following the official documentation
+    const createOrderRequest = {
       order_amount: finalAmount,
       order_currency: "INR",
-      order_id: orderId,
       customer_details: {
         customer_id: `customer_${Date.now()}`,
         customer_name: userDetails.name,
-        customer_email: userDetails.email,
+        customer_email: userDetails.collegeMailId,
         customer_phone: userDetails.contactNo || "9999999999"
       },
       order_meta: {
-        return_url: `${process.env.FRONTEND_URL || process.env.frontendurl || 'http://localhost:3000'}/payment/success?order_id={order_id}`,
-        payment_methods: "cc,dc,upi,nb,wallet"
+        return_url: `${process.env.FRONTEND_URL || process.env.frontendurl || 'http://localhost:3000'}/payment/success?order_id={order_id}`
       }
     };
 
-    console.log('🔄 Creating Cashfree order with:', JSON.stringify(cashfreeRequest, null, 2));
+    console.log('🔄 Creating Cashfree order with request:', JSON.stringify(createOrderRequest, null, 2));
 
-    // Create order with Cashfree (server-side as per docs)
-    const response = await cashfree.PGCreateOrder(cashfreeRequest);
-    console.log('📨 Cashfree response:', JSON.stringify(response, null, 2));
+    // Create order with Cashfree using direct API call
+    const response = await makeCashfreeRequest('/orders', 'POST', createOrderRequest);
+    console.log('📨 Cashfree API response status:', response.status);
+    console.log('📨 Cashfree API response data:', JSON.stringify(response.data, null, 2));
     
     if (response.data && response.data.payment_session_id) {
-      // Update purchase with payment session ID
+      // Update purchase record with Cashfree response
       purchase.paymentSessionId = response.data.payment_session_id;
       purchase.cashfreeOrderId = response.data.order_id;
+      
+      // Store file information for later processing after payment success
+      if (Object.keys(uploadedFiles).length > 0) {
+        purchase.metadata.uploadedFiles = Object.keys(uploadedFiles);
+        // Store files temporarily (in a real system, you'd want to use cloud storage)
+        purchase.metadata.fileData = uploadedFiles;
+      }
+      
       await purchase.save();
 
       console.log('✅ Order created successfully:', {
@@ -240,17 +284,18 @@ router.post('/create-session', async (req, res) => {
         amount: finalAmount
       });
 
+      // Return payment session details for frontend
       res.json({
         success: true,
-        data: {
-          paymentSessionId: response.data.payment_session_id,
-          orderId: orderId,
-          amount: finalAmount,
-          cashfreeOrderId: response.data.order_id
-        }
+        order_token: response.data.payment_session_id, // Frontend expects this field
+        payment_session_id: response.data.payment_session_id,
+        orderId: orderId,
+        amount: finalAmount,
+        cashfreeOrderId: response.data.order_id,
+        mode: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
       });
     } else {
-      console.log('❌ Invalid Cashfree response structure:', response);
+      console.log('❌ Invalid Cashfree response structure:', response.data);
       throw new Error('Failed to create order with Cashfree - invalid response structure');
     }
 
@@ -277,150 +322,29 @@ router.post('/create-session', async (req, res) => {
   }
 });
 
-// Alias route for create-order (same functionality as create-session)
-router.post('/create-order', async (req, res) => {
+// Fetch order details from Cashfree
+router.get('/fetch-order/:orderId', async (req, res) => {
   try {
-    console.log('🛒 Creating Cashfree order via /create-order endpoint');
-    console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
-
-    const { 
-      userDetails,
-      items,
-      totalAmount,
-      promoCode,
-      metadata 
-    } = req.body;
-
-    // Validate input
-    if (!userDetails || !userDetails.email || !userDetails.name) {
-      console.log('❌ Validation failed: Missing user details');
-      return res.status(400).json({ 
-        success: false, 
-        message: 'User details are required' 
-      });
-    }
-
-    if (!items || items.length === 0) {
-      console.log('❌ Validation failed: No events selected');
-      return res.status(400).json({ 
-        success: false, 
-        message: 'No events selected' 
-      });
-    }
-
-    if (!totalAmount || totalAmount <= 0) {
-      console.log('❌ Validation failed: Invalid amount');
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid amount' 
-      });
-    }
-
-    console.log('✅ Input validation passed');
-
-    // Generate unique order ID
-    const orderId = `SABRANG_${shortid.generate()}_${Date.now()}`;
-    console.log('🆔 Generated order ID:', orderId);
-
-    // Calculate amounts
-    const subtotal = promoCode?.discountAmount ? totalAmount + promoCode.discountAmount : totalAmount;
-    const finalAmount = totalAmount;
-    console.log('💰 Amount calculation:', { subtotal, finalAmount, promoCode });
-
-    console.log('💾 Creating purchase record...');
-    // Create purchase record with all details
-    const purchase = new Purchase({
-      orderId: orderId,
-      userId: null, // Will be set after user registration
-      userDetails: {
-        name: userDetails.name,
-        email: userDetails.email,
-        contactNo: userDetails.contactNo,
-        gender: userDetails.gender,
-        age: userDetails.age,
-        universityName: userDetails.universityName,
-        address: userDetails.address,
-        formData: userDetails.formData || {},
-        teamMembers: userDetails.teamMembers || []
-      },
-      items: items.map(item => ({
-        type: 'event',
-        itemId: item.eventId,
-        itemName: item.eventName,
-        price: item.price,
-        quantity: 1
-      })),
-      subtotal: subtotal,
-      promoCode: promoCode ? {
-        code: promoCode.code,
-        discountAmount: promoCode.discountAmount
-      } : null,
-      totalAmount: finalAmount,
-      paymentStatus: 'pending',
-      metadata: {
-        userAgent: req.headers['user-agent'],
-        ipAddress: req.ip,
-        source: metadata?.source || 'checkout',
-        ...metadata
-      }
-    });
-
-    await purchase.save();
-    console.log('✅ Purchase record saved with ID:', purchase._id);
-
-    // Create Cashfree order request (as per docs)
-    const cashfreeRequest = {
-      order_amount: finalAmount,
-      order_currency: "INR",
-      order_id: orderId,
-      customer_details: {
-        customer_id: `customer_${Date.now()}`,
-        customer_name: userDetails.name,
-        customer_email: userDetails.email,
-        customer_phone: userDetails.contactNo || "9999999999"
-      },
-      order_meta: {
-        return_url: `${process.env.FRONTEND_URL || process.env.frontendurl || 'http://localhost:3000'}/payment/success?order_id={order_id}`,
-        payment_methods: "cc,dc,upi,nb,wallet"
-      }
-    };
-
-    console.log('🔄 Creating Cashfree order with:', JSON.stringify(cashfreeRequest, null, 2));
-
-    // Create order with Cashfree (server-side as per docs)
-    const response = await cashfree.PGCreateOrder(cashfreeRequest);
-    console.log('📨 Cashfree response:', JSON.stringify(response, null, 2));
+    const { orderId } = req.params;
     
-    if (response.data && response.data.payment_session_id) {
-      // Update purchase with payment session ID
-      purchase.paymentSessionId = response.data.payment_session_id;
-      purchase.cashfreeOrderId = response.data.order_id;
-      await purchase.save();
-
-      console.log('✅ Order created successfully:', {
-        orderId,
-        sessionId: response.data.payment_session_id,
-        amount: finalAmount
-      });
-
+    console.log(`🔍 Fetching order details for: ${orderId}`);
+    
+    // Fetch order details from Cashfree using direct API
+    const response = await makeCashfreeRequest(`/orders/${orderId}`, 'GET');
+    
+    if (response.data) {
+      console.log('✅ Order details fetched successfully:', response.data);
+      
       res.json({
         success: true,
-        data: {
-          paymentSessionId: response.data.payment_session_id,
-          orderId: orderId,
-          amount: finalAmount,
-          cashfreeOrderId: response.data.order_id
-        }
+        data: response.data
       });
     } else {
-      console.log('❌ Invalid Cashfree response structure:', response);
-      throw new Error('Failed to create order with Cashfree - invalid response structure');
+      throw new Error('Invalid response from Cashfree API');
     }
 
   } catch (error) {
-    console.error('❌ Cashfree order creation error:');
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
+    console.error('❌ Failed to fetch order details:', error);
     
     // Log specific Cashfree errors
     if (error.response) {
@@ -428,27 +352,23 @@ router.post('/create-order', async (req, res) => {
       console.error('Cashfree API Status:', error.response.status);
     }
     
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to create Cashfree order',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? {
-        stack: error.stack,
-        cashfreeError: error.response?.data
-      } : undefined
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch order details',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 });
 
-// Fetch payment details from Cashfree (as per docs)
+// Fetch payment details from Cashfree
 router.get('/fetch-payments/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
     
     console.log(`🔍 Fetching payment details for order: ${orderId}`);
     
-    // Fetch payment details from Cashfree (as per docs)
-    const response = await cashfree.PGOrderFetchPayments(orderId);
+    // Fetch payment details from Cashfree using direct API
+    const response = await makeCashfreeRequest(`/orders/${orderId}/payments`, 'GET');
     
     if (response.data) {
       console.log('✅ Payment details fetched successfully:', response.data);
@@ -485,8 +405,8 @@ router.get('/verify-payment/:orderId', async (req, res) => {
     
     console.log(`🔍 Verifying payment for order: ${orderId}`);
     
-    // Fetch payment details from Cashfree
-    const response = await cashfree.PGOrderFetchPayments(orderId);
+    // Fetch payment details from Cashfree using direct API
+    const response = await makeCashfreeRequest(`/orders/${orderId}/payments`, 'GET');
     console.log('💳 Cashfree payment details:', JSON.stringify(response.data, null, 2));
     
     // Find the purchase record
@@ -555,6 +475,69 @@ router.get('/verify-payment/:orderId', async (req, res) => {
     });
   }
 });
+
+// Helper function to validate promo codes
+async function validatePromoCode(code, userEmail, orderAmount) {
+  try {
+    const promoCode = await PromoCode.findOne({
+      code: code.toUpperCase(),
+      isActive: true
+    });
+
+    if (!promoCode) {
+      return { success: false, message: 'Invalid promo code' };
+    }
+
+    const currentDate = new Date();
+    
+    // Check validity period
+    if (currentDate < promoCode.validFrom || currentDate > promoCode.validUntil) {
+      return { success: false, message: 'Promo code has expired' };
+    }
+
+    // Check usage limit
+    if (promoCode.usedCount >= promoCode.usageLimit) {
+      return { success: false, message: 'Promo code usage limit exceeded' };
+    }
+
+    // Check minimum order amount
+    if (orderAmount < promoCode.minOrderAmount) {
+      return { success: false, message: `Minimum order amount is ₹${promoCode.minOrderAmount}` };
+    }
+
+    // Check email domain restriction
+    if (promoCode.allowedEmailDomains.length > 0) {
+      const userDomain = userEmail.split('@')[1];
+      if (!promoCode.allowedEmailDomains.includes(userDomain)) {
+        return { success: false, message: 'This promo code is not valid for your email domain' };
+      }
+    }
+
+    // Calculate discount
+    let discountAmount;
+    if (promoCode.discountType === 'percentage') {
+      discountAmount = (orderAmount * promoCode.discountValue) / 100;
+      if (promoCode.maxDiscountAmount && discountAmount > promoCode.maxDiscountAmount) {
+        discountAmount = promoCode.maxDiscountAmount;
+      }
+    } else {
+      discountAmount = promoCode.discountValue;
+    }
+
+    // Ensure discount doesn't exceed order amount
+    discountAmount = Math.min(discountAmount, orderAmount);
+
+    return { 
+      success: true, 
+      discountAmount, 
+      finalAmount: orderAmount - discountAmount 
+    };
+
+  } catch (error) {
+    console.error('Promo code validation error:', error);
+    return { success: false, message: 'Error validating promo code' };
+  }
+}
 
 // Generate QR code for user
 async function generateQRCode(userId, userData) {

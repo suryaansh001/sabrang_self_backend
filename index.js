@@ -426,9 +426,9 @@ app.post("/register", upload.any(), async (req, res) => {
 app.use("/api", apirouter);
 app.use("/admin", adminrouter);
 
-// Payment routes (mount payment router)
-const paymentRouter = require("./routes/payment");
-app.use("/api/payment", paymentRouter);
+// Payment routes (mount new payment router)
+const paymentRouter = require("./routes/payment_new");
+app.use("/api/payments", paymentRouter);
 
 
 //GOOGLE AUTHENTICATION 
@@ -582,6 +582,29 @@ app.use((req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
+  
+  // Handle multer errors
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        message: "File too large. Maximum size is 5MB."
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      message: err.message
+    });
+  }
+  
+  // Handle other errors
+  if (err.message === 'Only image files are allowed!') {
+    return res.status(400).json({
+      success: false,
+      message: "Only image files are allowed"
+    });
+  }
+  
   res.status(500).json({
     success: false,
     message: "Internal server error"
