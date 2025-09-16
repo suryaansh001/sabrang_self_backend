@@ -271,6 +271,169 @@ router.post('/create-session', async (req, res) => {
   }
 });
 
+// Alias route for create-order (same functionality as create-session)
+router.post('/create-order', async (req, res) => {
+  try {
+    console.log('🛒 Creating Cashfree order via /create-order endpoint');
+    console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
+
+    const { 
+      userDetails,
+      items,
+      totalAmount,
+      promoCode,
+      metadata 
+    } = req.body;
+
+    // Validate input
+    if (!userDetails || !userDetails.email || !userDetails.name) {
+      console.log('❌ Validation failed: Missing user details');
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User details are required' 
+      });
+    }
+
+    if (!items || items.length === 0) {
+      console.log('❌ Validation failed: No events selected');
+      return res.status(400).json({ 
+        success: false, 
+        message: 'No events selected' 
+      });
+    }
+
+    if (!totalAmount || totalAmount <= 0) {
+      console.log('❌ Validation failed: Invalid amount');
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid amount' 
+      });
+    }
+
+    console.log('✅ Input validation passed');
+
+    // Generate unique order ID
+    const orderId = `SABRANG_${shortid.generate()}_${Date.now()}`;
+    console.log('🆔 Generated order ID:', orderId);
+
+    // Calculate amounts
+    const subtotal = promoCode?.discountAmount ? totalAmount + promoCode.discountAmount : totalAmount;
+    const finalAmount = totalAmount;
+    console.log('💰 Amount calculation:', { subtotal, finalAmount, promoCode });
+
+    console.log('💾 Creating purchase record...');
+    // Create purchase record with all details
+    const purchase = new Purchase({
+      orderId: orderId,
+      userId: null, // Will be set after user registration
+      userDetails: {
+        name: userDetails.name,
+        email: userDetails.email,
+        contactNo: userDetails.contactNo,
+        gender: userDetails.gender,
+        age: userDetails.age,
+        universityName: userDetails.universityName,
+        address: userDetails.address,
+        formData: userDetails.formData || {},
+        teamMembers: userDetails.teamMembers || []
+      },
+      items: items.map(item => ({
+        type: 'event',
+        itemId: item.eventId,
+        itemName: item.eventName,
+        price: item.price,
+        quantity: 1
+      })),
+      subtotal: subtotal,
+      promoCode: promoCode ? {
+        code: promoCode.code,
+        discountAmount: promoCode.discountAmount
+      } : null,
+      totalAmount: finalAmount,
+      paymentStatus: 'pending',
+      metadata: {
+        userAgent: req.headers['user-agent'],
+        ipAddress: req.ip,
+        source: metadata?.source || 'checkout',
+        ...metadata
+      }
+    });
+
+    await purchase.save();
+    console.log('✅ Purchase record saved with ID:', purchase._id);
+
+    // Create Cashfree order request (as per docs)
+    const cashfreeRequest = {
+      order_amount: finalAmount,
+      order_currency: "INR",
+      order_id: orderId,
+      customer_details: {
+        customer_id: `customer_${Date.now()}`,
+        customer_name: userDetails.name,
+        customer_email: userDetails.email,
+        customer_phone: userDetails.contactNo || "9999999999"
+      },
+      order_meta: {
+        return_url: `${process.env.FRONTEND_URL || process.env.frontendurl || 'http://localhost:3000'}/payment/success?order_id={order_id}`,
+        payment_methods: "cc,dc,upi,nb,wallet"
+      }
+    };
+
+    console.log('🔄 Creating Cashfree order with:', JSON.stringify(cashfreeRequest, null, 2));
+
+    // Create order with Cashfree (server-side as per docs)
+    const response = await cashfree.PGCreateOrder(cashfreeRequest);
+    console.log('📨 Cashfree response:', JSON.stringify(response, null, 2));
+    
+    if (response.data && response.data.payment_session_id) {
+      // Update purchase with payment session ID
+      purchase.paymentSessionId = response.data.payment_session_id;
+      purchase.cashfreeOrderId = response.data.order_id;
+      await purchase.save();
+
+      console.log('✅ Order created successfully:', {
+        orderId,
+        sessionId: response.data.payment_session_id,
+        amount: finalAmount
+      });
+
+      res.json({
+        success: true,
+        data: {
+          paymentSessionId: response.data.payment_session_id,
+          orderId: orderId,
+          amount: finalAmount,
+          cashfreeOrderId: response.data.order_id
+        }
+      });
+    } else {
+      console.log('❌ Invalid Cashfree response structure:', response);
+      throw new Error('Failed to create order with Cashfree - invalid response structure');
+    }
+
+  } catch (error) {
+    console.error('❌ Cashfree order creation error:');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    
+    // Log specific Cashfree errors
+    if (error.response) {
+      console.error('Cashfree API Error Response:', error.response.data);
+      console.error('Cashfree API Status:', error.response.status);
+    }
+    
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to create Cashfree order',
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      details: process.env.NODE_ENV === 'development' ? {
+        stack: error.stack,
+        cashfreeError: error.response?.data
+      } : undefined
+    });
+  }
+});
+
 // Fetch payment details from Cashfree (as per docs)
 router.get('/fetch-payments/:orderId', async (req, res) => {
   try {
