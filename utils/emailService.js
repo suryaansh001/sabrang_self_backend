@@ -216,10 +216,10 @@ async function sendRegistrationEmail(userEmail, userData) {
 }
 
 /**
- * Generate payment initiation email content
+ * Generate payment initiation email content (simplified like test-email.js)
  */
 function generatePaymentInitiationEmailContent(paymentData) {
-    const { name, orderId, amount, paymentSessionId, environment } = paymentData;
+    const { name, orderId, amount, paymentSessionId, environment, qrCodeBase64, purchaseId } = paymentData;
     
     const htmlContent = `
     <!DOCTYPE html>
@@ -227,7 +227,7 @@ function generatePaymentInitiationEmailContent(paymentData) {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Payment Initiated - Sabrang'25</title>
+        <title>🎉 Welcome to Sabrang'25!</title>
         <style>
             body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
             .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
@@ -237,31 +237,44 @@ function generatePaymentInitiationEmailContent(paymentData) {
             .footer { background-color: #2c3e50; color: white; padding: 20px; text-align: center; }
             .highlight { color: #667eea; font-weight: bold; }
             .amount { font-size: 24px; color: #27ae60; font-weight: bold; }
+            .qr-section { background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">
-                <h1>🎊 Payment Initiated</h1>
-                <h2>Sabrang'25</h2>
+                <h1>🎉 Welcome to Sabrang'25!</h1>
+                <h2>Thank you for registering with us</h2>
             </div>
             <div class="content">
-                <h3>Hello ${name}!</h3>
-                <p>Your payment has been successfully initiated for Sabrang'25. Please complete the payment to confirm your registration.</p>
+                <h2>Registration Confirmed!</h2>
+                <p><strong>Dear ${name},</strong></p>
+                <p>Thanks for registering for Sabrang'25. We're excited to have you join us for this amazing event!</p>
                 
                 <div class="order-details">
-                    <h4>📋 Payment Details</h4>
+                    <h3>📋 Your Registration Details:</h3>
+                    <p><strong>Name:</strong> ${name}</p>
                     <p><strong>Order ID:</strong> <span class="highlight">${orderId}</span></p>
-                    <p><strong>Amount:</strong> <span class="amount">₹${amount}</span></p>
-                    <p><strong>Environment:</strong> <span class="highlight">${environment.toUpperCase()}</span></p>
-                    <p><strong>Session ID:</strong> <code>${paymentSessionId}</code></p>
+                    <p><strong>Amount Paid:</strong> <span class="amount">₹${amount}</span></p>
                 </div>
                 
-                <p><strong>⚠️ Important:</strong> Please complete your payment within the next 30 minutes to secure your registration.</p>
+                <div class="order-details">
+                    <h3>🎭 Events Registered For:</h3>
+                    <p>Demo Event</p>
+                </div>
                 
-                <p>If you have any questions or need assistance, please contact our support team.</p>
+                <div class="qr-section">
+                    <h3>📱 Your QR Code</h3>
+                    <p>Please present this QR code at the event entrance:</p>
+                    ${qrCodeBase64 ? `<img src="data:image/png;base64,${qrCodeBase64}" alt="QR Code" style="max-width: 200px; border: 2px solid #ddd; border-radius: 8px;">` : `<p><strong>QR Code ID:</strong> ${purchaseId || orderId}</p>`}
+                    <p><em>Save this email or take a screenshot for easy access</em></p>
+                </div>
                 
-                <p>Thank you for choosing Sabrang'25!</p>
+                <p><strong>� We look forward to seeing you at Sabrang'25!</strong></p>
+                
+                <p><strong>Team Sabrang'25</strong></p>
+                
+                <p>If you have any questions, please contact our support team.</p>
             </div>
             <div class="footer">
                 <p>&copy; 2025 Sabrang'25 - JK Lakshmipat University</p>
@@ -272,23 +285,31 @@ function generatePaymentInitiationEmailContent(paymentData) {
     </html>`;
 
     const textContent = `
-Payment Initiated - Sabrang'25
+🎉 Welcome to Sabrang'25!
+Thank you for registering with us
 
-Hello ${name}!
+Registration Confirmed!
+Dear ${name},
 
-Your payment has been successfully initiated for Sabrang'25. Please complete the payment to confirm your registration.
+Thanks for registering for Sabrang'25. We're excited to have you join us for this amazing event!
 
-Payment Details:
-- Order ID: ${orderId}
-- Amount: ₹${amount}
-- Environment: ${environment.toUpperCase()}
-- Session ID: ${paymentSessionId}
+📋 Your Registration Details:
+Name: ${name}
 
-Important: Please complete your payment within the next 30 minutes to secure your registration.
+🎭 Events Registered For:
+Demo Event
 
-If you have any questions or need assistance, please contact our support team.
+📱 Your QR Code
+Please present this QR code at the event entrance:
 
-Thank you for choosing Sabrang'25!
+${qrCodeBase64 ? 'QR Code attached above in the HTML version' : `QR Code ID: ${purchaseId || orderId}`}
+Save this email or take a screenshot for easy access
+
+🎊 We look forward to seeing you at Sabrang'25!
+
+Team Sabrang'25
+
+If you have any questions, please contact our support team.
 
 © 2025 Sabrang'25 - JK Lakshmipat University
 For support: support@sabrang.com`;
@@ -297,12 +318,13 @@ For support: support@sabrang.com`;
 }
 
 /**
- * Send payment initiation email
+ * Send payment initiation email (using same pattern as working test-email.js)
  */
 async function sendPaymentInitiatedEmail(paymentData) {
     const { email: userEmail } = paymentData;
     
     try {
+        // Use the same configuration pattern as the working test-email.js
         const config = {
             clientId: process.env.CLIENT_ID,
             clientSecret: process.env.CLIENT_SECRET,
@@ -310,7 +332,7 @@ async function sendPaymentInitiatedEmail(paymentData) {
             userEmail: process.env.FROM_EMAIL
         };
 
-        // Validate required environment variables
+        // Validate required environment variables (same as test-email.js)
         const requiredEnvVars = ['CLIENT_ID', 'CLIENT_SECRET', 'TENANT_ID', 'FROM_EMAIL'];
         const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
         
@@ -318,16 +340,18 @@ async function sendPaymentInitiatedEmail(paymentData) {
             throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
         }
 
+        // Use the same mailer pattern as test-email.js
         const mailer = new MicrosoftOAuthMailer(config);
         const { htmlContent, textContent } = generatePaymentInitiationEmailContent(paymentData);
 
         const mailOptions = {
             to: userEmail,
-            subject: '💳 Payment Initiated - Sabrang\'25',
+            subject: '🎉 Welcome to Sabrang\'25! Registration Confirmed',
             text: textContent,
             html: htmlContent
         };
 
+        // Use the same sending method as test-email.js
         const result = await mailer.sendEmailGraph(mailOptions);
         console.log(`✅ Payment initiation email sent successfully to ${userEmail}`);
         return { success: true, result };

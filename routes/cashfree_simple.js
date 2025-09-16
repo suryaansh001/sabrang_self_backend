@@ -2,6 +2,9 @@ const express = require('express');
 const crypto = require('crypto');
 const { Cashfree, CFEnvironment } = require('cashfree-pg');
 const { User, Purchase } = require('../models/models');
+const qr = require('qr-image');
+const fs = require('fs');
+const path = require('path');
 const router = express.Router();
 
 // Initialize Cashfree with production credentials
@@ -93,7 +96,7 @@ router.post('/create-order', async (req, res) => {
                 customer_phone: customerPhone || "9999999999"
             },
             order_meta: {
-                return_url: `${process.env.FRONTEND_URL || 'https://sabrang25-first-draft.vercel.app'}/payment/success?order_id=${orderId}`
+                return_url: `${(process.env.frontendurl || 'https://sabrang.jklu.edu.in').split(',')[0]}/payment/success?order_id=${orderId}`
             }
         };
 
@@ -160,7 +163,32 @@ router.post('/create-order', async (req, res) => {
             await newPurchase.save();
             console.log('✅ Order saved to database:', response.data.order_id);
 
-            // Send confirmation email
+            // Generate QR code for the purchase using MongoDB ObjectID
+            let qrCodeBase64 = null;
+            try {
+                const qrResult = await generateQRCode(newPurchase._id, {
+                    name: customerName,
+                    email: customerEmail,
+                    orderId: response.data.order_id
+                });
+                
+                // Read QR code file and convert to base64 for email
+                if (fs.existsSync(qrResult.qrFilePath)) {
+                    const qrBuffer = fs.readFileSync(qrResult.qrFilePath);
+                    qrCodeBase64 = qrBuffer.toString('base64');
+                    console.log('✅ QR code generated and converted to base64');
+                }
+                
+                // Update purchase record with QR path
+                newPurchase.qrPath = qrResult.qrPath;
+                await newPurchase.save();
+                
+            } catch (qrError) {
+                console.error('❌ Failed to generate QR code:', qrError.message);
+                // Continue without QR code
+            }
+
+            // Send confirmation email with QR code
             try {
                 const emailService = require('../utils/emailService');
                 await emailService.sendPaymentInitiatedEmail({
@@ -169,7 +197,9 @@ router.post('/create-order', async (req, res) => {
                     orderId: response.data.order_id,
                     amount: amount,
                     paymentSessionId: response.data.payment_session_id,
-                    environment: isUsingProd ? 'production' : 'sandbox'
+                    environment: isUsingProd ? 'production' : 'sandbox',
+                    qrCodeBase64: qrCodeBase64,
+                    purchaseId: newPurchase._id
                 });
                 console.log('✅ Confirmation email sent to:', customerEmail);
             } catch (emailError) {
@@ -218,7 +248,49 @@ router.post('/create-order', async (req, res) => {
     }
 });
 
-// Step 3: Verify Payment (Following official documentation with fallback)
+// Generate QR code for user using MongoDB ObjectID
+async function generateQRCode(purchaseId, userData) {
+    try {
+        const qrDir = path.join(__dirname, '../public/qrcodes');
+        if (!fs.existsSync(qrDir)) {
+            fs.mkdirSync(qrDir, { recursive: true });
+        }
+
+        const qrData = JSON.stringify({
+            id: purchaseId,
+            name: userData.name,
+            email: userData.email,
+            orderId: userData.orderId,
+            timestamp: Date.now()
+        });
+
+        const qrFilename = `${purchaseId}.png`;
+        const qrPath = path.join(qrDir, qrFilename);
+        const qrRelativePath = `/public/qrcodes/${qrFilename}`;
+
+        return new Promise((resolve, reject) => {
+            const qrPng = qr.image(qrData, { type: 'png', size: 10 });
+            const writeStream = fs.createWriteStream(qrPath);
+            
+            qrPng.pipe(writeStream);
+            
+            writeStream.on('finish', () => {
+                console.log(`✅ QR code generated: ${qrRelativePath}`);
+                resolve({ qrPath: qrRelativePath, qrFilePath: qrPath });
+            });
+            
+            writeStream.on('error', (error) => {
+                console.error('❌ QR code generation failed:', error);
+                reject(error);
+            });
+        });
+    } catch (error) {
+        console.error('❌ QR code generation error:', error);
+        throw error;
+    }
+}
+
+// Step 1: Create Payment Order (Following official documentation with fallback)
 router.get('/verify/:orderId', async (req, res) => {
     try {
         const { orderId } = req.params;
