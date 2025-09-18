@@ -426,9 +426,13 @@ app.post("/register", upload.any(), async (req, res) => {
 app.use("/api", apirouter);
 app.use("/admin", adminrouter);
 
-// Payment routes (mount new payment router)
+// Payment routes
 const paymentRouter = require("./routes/cashfree_simple");
 app.use("/api/payments", paymentRouter);
+
+// Advanced payment router: saves registrations after successful payment
+const advancedPaymentRouter = require("./routes/payment");
+app.use("/api/payment", advancedPaymentRouter);
 
 
 //GOOGLE AUTHENTICATION 
