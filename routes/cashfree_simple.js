@@ -1,11 +1,29 @@
 const express = require('express');
 const crypto = require('crypto');
 const { Cashfree, CFEnvironment } = require('cashfree-pg');
-const { User, Purchase } = require('../models/models');
+const { User, Purchase, TeamMember, PromoCode } = require('../models/models');
+const { sendRegistrationEmail } = require('../utils/emailService');
 const qr = require('qr-image');
 const fs = require('fs');
 const path = require('path');
+const bcrypt = require('bcrypt');
+const multer = require('multer');
 const router = express.Router();
+
+// Configure multer for file uploads (from direct_payment_new.js)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
 
 // Initialize Cashfree with production credentials
 let cashfree;
@@ -53,12 +71,112 @@ function generateOrderId() {
     return orderId.substr(0, 12);
 }
 
+// Helper function to validate promo codes (from direct_payment_new.js)
+async function validatePromoCode(code, userEmail, orderAmount) {
+  try {
+    const promoCode = await PromoCode.findOne({
+      code: code.toUpperCase(),
+      isActive: true
+    });
+
+    if (!promoCode) {
+      return { success: false, message: 'Invalid promo code' };
+    }
+
+    const currentDate = new Date();
+    
+    // Check validity period
+    if (currentDate < promoCode.validFrom || currentDate > promoCode.validUntil) {
+      return { success: false, message: 'Promo code has expired' };
+    }
+
+    // Check usage limit
+    if (promoCode.usedCount >= promoCode.usageLimit) {
+      return { success: false, message: 'Promo code usage limit exceeded' };
+    }
+
+    // Check minimum order amount
+    if (orderAmount < promoCode.minOrderAmount) {
+      return { success: false, message: `Minimum order amount is ₹${promoCode.minOrderAmount}` };
+    }
+
+    // Check email domain restriction
+    if (promoCode.allowedEmailDomains.length > 0) {
+      const userDomain = userEmail.split('@')[1];
+      if (!promoCode.allowedEmailDomains.includes(userDomain)) {
+        return { success: false, message: 'This promo code is not valid for your email domain' };
+      }
+    }
+
+    // Calculate discount
+    let discountAmount;
+    if (promoCode.discountType === 'percentage') {
+      discountAmount = (orderAmount * promoCode.discountValue) / 100;
+      if (promoCode.maxDiscountAmount && discountAmount > promoCode.maxDiscountAmount) {
+        discountAmount = promoCode.maxDiscountAmount;
+      }
+    } else {
+      discountAmount = promoCode.discountValue;
+    }
+
+    // Ensure discount doesn't exceed order amount
+    discountAmount = Math.min(discountAmount, orderAmount);
+
+    return { 
+      success: true, 
+      discountAmount, 
+      finalAmount: orderAmount - discountAmount 
+    };
+
+  } catch (error) {
+    console.error('Promo code validation error:', error);
+    return { success: false, message: 'Error validating promo code' };
+  }
+}
+
 // Test route
 router.get('/', (req, res) => {
     res.json({ 
         message: 'Cashfree Simple Payment Gateway Ready!',
         environment: process.env.NODE_ENV || 'development'
     });
+});
+
+// Validate promo code endpoint (from direct_payment_new.js)
+router.post('/validate-promo', async (req, res) => {
+  try {
+    const { code, userEmail, orderAmount } = req.body;
+
+    if (!code || !userEmail || !orderAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+
+    const validationResult = await validatePromoCode(code, userEmail, orderAmount);
+    
+    if (validationResult.success) {
+      res.json({
+        success: true,
+        message: 'Promo code is valid',
+        discountAmount: validationResult.discountAmount,
+        finalAmount: validationResult.finalAmount
+      });
+    } else {
+      res.status(200).json({
+        success: false,
+        message: validationResult.message
+      });
+    }
+
+  } catch (error) {
+    console.error('Error validating promo code:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
 });
 
 // Create payment order - Following latest Cashfree docs with fallback
@@ -192,24 +310,9 @@ router.post('/create-order', async (req, res) => {
                 // Continue without QR code
             }
 
-            // Send confirmation email with QR code
-            try {
-                const emailService = require('../utils/emailService');
-                await emailService.sendPaymentInitiatedEmail({
-                    email: customerEmail,
-                    name: customerName,
-                    orderId: response.data.order_id,
-                    amount: amount,
-                    paymentSessionId: response.data.payment_session_id,
-                    environment: isUsingProd ? 'production' : 'sandbox',
-                    qrCodeBase64: qrCodeBase64,
-                    purchaseId: newPurchase._id
-                });
-                console.log('✅ Confirmation email sent to:', customerEmail);
-            } catch (emailError) {
-                console.error('❌ Failed to send email:', emailError.message);
-                // Don't fail the order creation if email fails
-            }
+            // Note: Email will be sent after successful payment verification
+            // instead of sending it immediately when creating the order
+            console.log('📧 Email will be sent after payment verification for:', customerEmail);
 
         } catch (dbError) {
             console.error('❌ Failed to save order to database:', dbError.message);
@@ -252,7 +355,7 @@ router.post('/create-order', async (req, res) => {
     }
 });
 
-// Generate QR code for user using MongoDB ObjectID
+// Generate QR code for user using MongoDB ObjectID (Enhanced from direct_payment_new.js)
 async function generateQRCode(purchaseId, userData) {
     try {
         const qrDir = path.join(__dirname, '../public/qrcodes');
@@ -294,6 +397,198 @@ async function generateQRCode(purchaseId, userData) {
     }
 }
 
+// Process successful payment - register user, generate QR, send email (Enhanced from direct_payment_new.js)
+async function processSuccessfulPayment(purchase) {
+  try {
+    console.log(`🔄 Processing successful payment for order: ${purchase.orderId}`);
+    
+    const userData = purchase.userDetails;
+    const eventNames = purchase.items.map(item => item.itemName);
+
+    // Step 1: Register user in the system
+    let user;
+    const existingUser = await User.findOne({ email: userData.email });
+    
+    if (existingUser) {
+      // Update existing user
+      user = existingUser;
+      user.name = userData.name;
+      user.contactNo = userData.contactNo;
+      user.gender = userData.gender;
+      user.age = userData.age;
+      user.universityName = userData.universityName;
+      user.address = userData.address;
+      user.events = [...new Set([...user.events, ...eventNames])];
+      user.finalPrice = (user.finalPrice || 0) + purchase.totalAmount;
+      user.isvalidated = true;
+      user.extraDetails = userData.formData;
+      user.rawRegistration = purchase.userDetails;
+    } else {
+      // Create new user
+      const hashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
+      
+      user = new User({
+        name: userData.name,
+        email: userData.email,
+        password: hashedPassword,
+        contactNo: userData.contactNo,
+        gender: userData.gender,
+        age: userData.age,
+        universityName: userData.universityName,
+        address: userData.address,
+        events: eventNames,
+        finalPrice: purchase.totalAmount,
+        isvalidated: true,
+        extraDetails: userData.formData,
+        rawRegistration: purchase.userDetails,
+        teamMembers: userData.teamMembers || []
+      });
+    }
+
+    await user.save();
+    
+    // Update purchase with user ID
+    purchase.userId = user._id;
+    purchase.mainPersonId = user._id;
+    purchase.userRegistered = true;
+
+    // Step 2: Generate QR code (if not already generated)
+    if (!purchase.qrPath && !user.qrPath) {
+      try {
+        const qrResult = await generateQRCode(user._id, userData);
+        user.qrPath = qrResult.qrPath;
+        await user.save();
+        
+        purchase.qrGenerated = true;
+        purchase.qrPath = qrResult.qrPath;
+        console.log(`✅ QR code generated for user: ${user.email}`);
+      } catch (qrError) {
+        console.error('❌ QR code generation failed:', qrError);
+        purchase.qrGenerated = false;
+      }
+    }
+
+    // Step 3: Process team members if any
+    if (userData.teamMembers && userData.teamMembers.length > 0) {
+      user.isMainPerson = true;
+      user.teamId = `TEAM_${user._id}_${Date.now()}`;
+      user.teamSize = userData.teamMembers.length + 1;
+      await user.save();
+
+      // Create team member records
+      for (const memberData of userData.teamMembers) {
+        try {
+          const hashedMemberPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
+          
+          const teamMember = new TeamMember({
+            mainPersonId: user._id,
+            name: memberData.name || 'Team Member',
+            email: memberData.email || memberData.collegeMailId || `${(memberData.name || 'member')?.toLowerCase().replace(/\s+/g, '')}@team.local`,
+            contactNo: memberData.contactNo || "",
+            gender: memberData.gender || "",
+            age: memberData.age ? Number(memberData.age) : null,
+            universityName: memberData.universityName || user.universityName,
+            address: memberData.address || user.address,
+            events: user.events || []
+          });
+
+          await teamMember.save();
+
+          // Generate QR code for team member
+          try {
+            const memberQrResult = await generateQRCode(teamMember._id, {
+              name: teamMember.name,
+              email: teamMember.email,
+              orderId: purchase.orderId
+            });
+            teamMember.qrPath = memberQrResult.qrPath;
+            await teamMember.save();
+            console.log(`✅ QR code generated for team member: ${teamMember.email}`);
+          } catch (memberQrError) {
+            console.error(`❌ QR code generation failed for team member: ${teamMember.email}`, memberQrError);
+          }
+        } catch (memberError) {
+          console.error('Failed to create team member:', memberError);
+        }
+      }
+    }
+
+    // Step 4: Update promo code usage if applicable
+    if (purchase.promoCode && purchase.promoCode.code) {
+      try {
+        await PromoCode.findOneAndUpdate(
+          { code: purchase.promoCode.code },
+          { 
+            $inc: { usedCount: 1 },
+            $push: {
+              usedBy: {
+                userId: user._id,
+                usedAt: new Date(),
+                orderAmount: purchase.subtotal,
+                discountApplied: purchase.promoCode.discountAmount
+              }
+            }
+          }
+        );
+        console.log(`✅ Promo code usage updated: ${purchase.promoCode.code}`);
+      } catch (promoError) {
+        console.error('Failed to update promo code usage:', promoError);
+      }
+    }
+
+    // Step 5: Send registration email
+    try {
+      // Get QR code as base64 for email
+      let qrCodeBase64 = null;
+      if (user.qrPath) {
+        try {
+          const qrFilePath = path.join(__dirname, '..', user.qrPath);
+          if (fs.existsSync(qrFilePath)) {
+            const qrBuffer = fs.readFileSync(qrFilePath);
+            qrCodeBase64 = qrBuffer.toString('base64');
+          }
+        } catch (qrReadError) {
+          console.log('Could not read QR code for email');
+        }
+      }
+
+      const emailData = {
+        name: user.name,
+        events: user.events,
+        qrCodeBase64: qrCodeBase64
+      };
+
+      const emailResult = await sendRegistrationEmail(user.email, emailData);
+      
+      if (emailResult.success) {
+        purchase.emailSent = true;
+        purchase.emailSentAt = new Date();
+        
+        // Update user email status
+        user.emailSent = true;
+        user.emailSentAt = new Date();
+        await user.save();
+        
+        console.log(`✅ Registration email sent to ${user.email}`);
+      } else {
+        console.error('Failed to send registration email:', emailResult.error);
+      }
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+    }
+
+    await purchase.save();
+    console.log(`✅ Payment processing completed for order: ${purchase.orderId}`);
+    
+    return { success: true, user: user };
+  } catch (error) {
+    console.error('❌ Payment processing error:', error);
+    purchase.registrationError = error.message;
+    await purchase.save();
+    return { success: false, error: error.message };
+  }
+}
+
 // Step 1: Create Payment Order (Following official documentation with fallback)
 router.get('/verify/:orderId', async (req, res) => {
     try {
@@ -329,6 +624,15 @@ router.get('/verify/:orderId', async (req, res) => {
                         purchase.transactionId = latest.cf_payment_id;
                         purchase.paymentMethod = latest.payment_method || 'unknown';
                         await purchase.save();
+                        
+                        // Process the successful payment (register user, generate QR, send email)
+                        const result = await processSuccessfulPayment(purchase);
+                        
+                        if (result.success) {
+                          console.log(`✅ Payment verified and processed successfully for order: ${orderId}`);
+                        } else {
+                          console.error(`❌ Payment processing failed for order: ${orderId}, error: ${result.error}`);
+                        }
                     } else if (latest.payment_status === 'FAILED') {
                         purchase.paymentStatus = 'failed';
                         await purchase.save();
@@ -341,6 +645,15 @@ router.get('/verify/:orderId', async (req, res) => {
                     purchase.paymentStatus = 'completed';
                     purchase.paymentCompletedAt = new Date();
                     await purchase.save();
+                    
+                    // Process the successful payment (register user, generate QR, send email)
+                    const result = await processSuccessfulPayment(purchase);
+                    
+                    if (result.success) {
+                      console.log(`✅ Payment verified and processed successfully for order: ${orderId}`);
+                    } else {
+                      console.error(`❌ Payment processing failed for order: ${orderId}, error: ${result.error}`);
+                    }
                 }
             }
         } catch (persistErr) {
@@ -431,6 +744,15 @@ router.get('/status/:orderId', async (req, res) => {
                         purchase.paymentStatus = 'completed';
                         purchase.paymentCompletedAt = new Date();
                         await purchase.save();
+                        
+                        // Process the successful payment (register user, generate QR, send email)
+                        const result = await processSuccessfulPayment(purchase);
+                        
+                        if (result.success) {
+                          console.log(`✅ Payment verified and processed successfully for order: ${orderId}`);
+                        } else {
+                          console.error(`❌ Payment processing failed for order: ${orderId}, error: ${result.error}`);
+                        }
                     }
                 } catch (refreshErr) {
                     console.log('Non-fatal: status refresh failed:', refreshErr.message);
