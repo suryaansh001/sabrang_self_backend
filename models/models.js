@@ -273,6 +273,13 @@ const purchaseSchema = new mongoose.Schema({
     required: false, // Will be set after user registration
     default: null
   },
+  // Link purchase to the main person (team leader) similar to TeamMember.mainPersonId
+  mainPersonId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    default: null
+  },
   
   // User details captured during checkout
   userDetails: {
@@ -380,6 +387,7 @@ const purchaseSchema = new mongoose.Schema({
 // Add indexes for better performance
 purchaseSchema.index({ orderId: 1 });
 purchaseSchema.index({ userId: 1 });
+purchaseSchema.index({ mainPersonId: 1 });
 purchaseSchema.index({ paymentSessionId: 1 });
 purchaseSchema.index({ paymentStatus: 1 });
 purchaseSchema.index({ purchaseDate: -1 });
