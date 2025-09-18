@@ -632,6 +632,8 @@ async function processSuccessfulPayment(purchase) {
     
     // Update purchase with user ID
     purchase.userId = user._id;
+    // Map purchase to main person as well
+    purchase.mainPersonId = user._id;
     purchase.userRegistered = true;
 
     // Step 2: Generate QR code
@@ -825,8 +827,9 @@ router.get('/status/:orderId', async (req, res) => {
   try {
     const { orderId } = req.params;
     
-    const purchase = await Purchase.findOne({ orderId: orderId })
-      .populate('userId', 'name email qrPath events');
+  const purchase = await Purchase.findOne({ orderId: orderId })
+      .populate('userId', 'name email qrPath events')
+      .populate('mainPersonId', 'name email qrPath events');
 
     if (!purchase) {
       return res.status(404).json({ 
@@ -851,6 +854,12 @@ router.get('/status/:orderId', async (req, res) => {
           email: purchase.userId.email,
           events: purchase.userId.events,
           qrPath: purchase.userId.qrPath
+        } : null,
+        mainPerson: purchase.mainPersonId ? {
+          name: purchase.mainPersonId.name,
+          email: purchase.mainPersonId.email,
+          events: purchase.mainPersonId.events,
+          qrPath: purchase.mainPersonId.qrPath
         } : null,
         paymentCompletedAt: purchase.paymentCompletedAt,
         emailSentAt: purchase.emailSentAt
