@@ -423,6 +423,20 @@ router.get('/status/:orderId', async (req, res) => {
         // Prefer DB state if available
         const purchase = await Purchase.findOne({ orderId });
         if (purchase) {
+            // If still pending, try a live refresh from Cashfree once
+            if (purchase.paymentStatus === 'pending') {
+                try {
+                    let orderResp = await cashfree.PGFetchOrder(orderId);
+                    if (orderResp?.data?.order_status === 'PAID') {
+                        purchase.paymentStatus = 'completed';
+                        purchase.paymentCompletedAt = new Date();
+                        await purchase.save();
+                    }
+                } catch (refreshErr) {
+                    console.log('Non-fatal: status refresh failed:', refreshErr.message);
+                }
+            }
+
             return res.json({
                 success: true,
                 data: {
