@@ -226,8 +226,7 @@ app.post("/register", upload.any(), async (req, res) => {
     if (!password) password = Math.random().toString(36).slice(-10) + 'A1!';
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Generate unique team ID
-    const teamId = shortid.generate();
+    // Removed teamId field from User
 
     // Process team members data but preserve signature and index for image mapping
     const teamMembersBySigArray = [];
@@ -267,14 +266,8 @@ app.post("/register", upload.any(), async (req, res) => {
       universityName: mainPersonUniversity,
       address: mainPersonAddress,
       isMainPerson: true,
-      teamId: teamId,
       teamSize: teamMembersBySigArray.length + 1, // +1 for main person
-      extraDetails: formsBySignature || null,
-      rawRegistration: {
-        formsBySignature,
-        teamMembersBySignature,
-        items
-      }
+      
     };
 
     // Add profile image for main person
@@ -283,31 +276,17 @@ app.post("/register", upload.any(), async (req, res) => {
       if (pf) mainPersonPayload.profileImage = `/public/profile/${pf.filename}`;
     }
 
-    // Add events and compute finalPrice for main person
+    // Add events for main person
     if (Array.isArray(items)) {
       const eventNames = items.map(it => it.title).filter(Boolean);
       if (eventNames.length) mainPersonPayload.events = eventNames;
-      // Compute final price from items.price numbers if present
-      const numeric = items
-        .map(it => {
-          if (typeof it.price === 'number') return it.price;
-          if (typeof it.price === 'string') {
-            const match = String(it.price).match(/\d+/);
-            return match ? Number(match[0]) : 0;
-          }
-          return 0;
-        })
-        .filter(v => Number.isFinite(v));
-      const subtotal = numeric.reduce((a, b) => a + b, 0);
-      mainPersonPayload.finalPrice = subtotal;
     }
 
     if (!mainPerson) {
-      const referralID = shortid.generate();
       mainPerson = new User({
         ...mainPersonPayload,
         password: hashedPassword,
-        referalID: referralID
+        
       });
       await mainPerson.save();
     } else {
@@ -353,8 +332,7 @@ app.post("/register", upload.any(), async (req, res) => {
         universityName: member.universityName || mainPersonUniversity,
         address: member.address || mainPersonAddress,
         profileImage: memberImage || "",
-        events: mainPerson.events || [],
-        extraDetails: member.extraDetails || null
+        events: mainPerson.events || []
       });
 
       await teamMember.save();
@@ -379,12 +357,10 @@ app.post("/register", upload.any(), async (req, res) => {
       success: true,
       message: "Team registered successfully",
       team: {
-        teamId: teamId,
         mainPerson: {
           id: mainPerson._id,
           name: mainPerson.name,
           email: mainPerson.email,
-          referalID: mainPerson.referalID,
           profileImage: mainPerson.profileImage,
           qrPath: mainPerson.qrPath,
           contactNo: mainPerson.contactNo,
@@ -393,7 +369,6 @@ app.post("/register", upload.any(), async (req, res) => {
           universityName: mainPerson.universityName,
           address: mainPerson.address,
           events: mainPerson.events || [],
-          finalPrice: mainPerson.finalPrice || 0,
         },
         teamMembers: createdTeamMembers.map(member => ({
           id: member._id,
