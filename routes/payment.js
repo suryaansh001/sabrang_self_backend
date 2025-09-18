@@ -620,10 +620,9 @@ async function processSuccessfulPayment(purchase) {
       user.address = userData.address;
       user.events = [...new Set([...user.events, ...eventNames])];
       // Save final price for this registration as the net paid amount after promo
-      user.finalPrice = purchase.totalAmount;
+      
       user.isvalidated = true;
-      user.extraDetails = userData.formData;
-      user.rawRegistration = purchase.userDetails;
+      
     } else {
       // Create new user
       const hashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
@@ -639,10 +638,8 @@ async function processSuccessfulPayment(purchase) {
         address: userData.address,
         events: eventNames,
         // Save final price for this registration as the net paid amount after promo
-        finalPrice: purchase.totalAmount,
+        
         isvalidated: true,
-        extraDetails: userData.formData,
-        rawRegistration: purchase.userDetails,
         teamMembers: userData.teamMembers || []
       });
     }
@@ -669,7 +666,6 @@ async function processSuccessfulPayment(purchase) {
     // Step 3: Process team members if any
     if (userData.teamMembers && userData.teamMembers.length > 0) {
       user.isMainPerson = true;
-      user.teamId = `TEAM_${user._id}_${Date.now()}`;
       user.teamSize = userData.teamMembers.length + 1;
       await user.save();
 
@@ -687,7 +683,6 @@ async function processSuccessfulPayment(purchase) {
             address: memberData.address,
             events: eventNames,
             isvalidated: true,
-            extraDetails: memberData
           });
 
           await teamMember.save();
