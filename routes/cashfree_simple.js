@@ -319,9 +319,9 @@ router.get('/verify/:orderId', async (req, res) => {
 
         // Persist status to DB when possible
         try {
+            const purchase = await Purchase.findOne({ orderId });
             if (Array.isArray(response.data) && response.data.length > 0) {
                 const latest = response.data[0];
-                const purchase = await Purchase.findOne({ orderId });
                 if (purchase) {
                     if (latest.payment_status === 'SUCCESS') {
                         purchase.paymentStatus = 'completed';
@@ -333,6 +333,14 @@ router.get('/verify/:orderId', async (req, res) => {
                         purchase.paymentStatus = 'failed';
                         await purchase.save();
                     }
+                }
+            } else {
+                // Fallback: check order status directly
+                const orderResp = await cashfree.PGFetchOrder(orderId);
+                if (purchase && orderResp?.data?.order_status === 'PAID') {
+                    purchase.paymentStatus = 'completed';
+                    purchase.paymentCompletedAt = new Date();
+                    await purchase.save();
                 }
             }
         } catch (persistErr) {
@@ -412,13 +420,32 @@ router.get('/status/:orderId', async (req, res) => {
         const { orderId } = req.params;
         console.log('Checking payment status for order:', orderId);
 
+        // Prefer DB state if available
+        const purchase = await Purchase.findOne({ orderId });
+        if (purchase) {
+            return res.json({
+                success: true,
+                data: {
+                    orderId: purchase.orderId,
+                    paymentStatus: purchase.paymentStatus,
+                    totalAmount: purchase.totalAmount,
+                    items: purchase.items,
+                    transactionId: purchase.transactionId,
+                    userRegistered: purchase.userRegistered,
+                    qrGenerated: purchase.qrGenerated,
+                    emailSent: purchase.emailSent,
+                    paymentCompletedAt: purchase.paymentCompletedAt,
+                    environment: isUsingProd ? 'production' : 'sandbox'
+                }
+            });
+        }
+
+        // Fallback to Cashfree if no DB record found
         let response;
         try {
-            // Try with current environment first
             response = await cashfree.PGFetchOrder(orderId);
             console.log('Cashfree order status response:', response.data);
         } catch (error) {
-            // If failed and not using prod, try with prod credentials
             if (!isUsingProd && process.env.CASHFREE_PROD_CLIENT_ID) {
                 console.log('🔄 Status check fallback to PRODUCTION...');
                 initializeCashfree(true);
@@ -436,16 +463,15 @@ router.get('/status/:orderId', async (req, res) => {
                 paymentStatus: response.data.order_status === 'PAID' ? 'completed' : 'pending',
                 totalAmount: response.data.order_amount,
                 items: [{ itemName: `Order ${orderId}`, price: response.data.order_amount }],
-                userRegistered: true,
-                qrGenerated: true,
-                emailSent: true,
+                userRegistered: false,
+                qrGenerated: false,
+                emailSent: false,
                 environment: isUsingProd ? 'production' : 'sandbox'
             }
         });
 
     } catch (error) {
         console.error('Get order status error:', error);
-        
         if (error.response && error.response.data) {
             console.error('Cashfree error:', error.response.data);
             return res.status(400).json({
@@ -454,7 +480,6 @@ router.get('/status/:orderId', async (req, res) => {
                 error: error.response.data
             });
         }
-
         res.status(500).json({
             success: false,
             message: 'Internal server error',
