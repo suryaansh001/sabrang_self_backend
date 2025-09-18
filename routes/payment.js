@@ -41,7 +41,7 @@ router.post('/validate-promo', async (req, res) => {
     });
 
     if (!promoCode) {
-pu      return res.status(200).json({
+      return res.status(200).json({
         success: false,
         message: 'Invalid promo code'
       });
@@ -619,7 +619,8 @@ async function processSuccessfulPayment(purchase) {
       user.universityName = userData.universityName;
       user.address = userData.address;
       user.events = [...new Set([...user.events, ...eventNames])];
-      user.finalPrice = (user.finalPrice || 0) + purchase.totalAmount;
+      // Save final price for this registration as the net paid amount after promo
+      user.finalPrice = purchase.totalAmount;
       user.isvalidated = true;
       user.extraDetails = userData.formData;
       user.rawRegistration = purchase.userDetails;
@@ -637,6 +638,7 @@ async function processSuccessfulPayment(purchase) {
         universityName: userData.universityName,
         address: userData.address,
         events: eventNames,
+        // Save final price for this registration as the net paid amount after promo
         finalPrice: purchase.totalAmount,
         isvalidated: true,
         extraDetails: userData.formData,
