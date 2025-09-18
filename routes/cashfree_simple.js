@@ -317,6 +317,28 @@ router.get('/verify/:orderId', async (req, res) => {
             }
         }
 
+        // Persist status to DB when possible
+        try {
+            if (Array.isArray(response.data) && response.data.length > 0) {
+                const latest = response.data[0];
+                const purchase = await Purchase.findOne({ orderId });
+                if (purchase) {
+                    if (latest.payment_status === 'SUCCESS') {
+                        purchase.paymentStatus = 'completed';
+                        purchase.paymentCompletedAt = new Date();
+                        purchase.transactionId = latest.cf_payment_id;
+                        purchase.paymentMethod = latest.payment_method || 'unknown';
+                        await purchase.save();
+                    } else if (latest.payment_status === 'FAILED') {
+                        purchase.paymentStatus = 'failed';
+                        await purchase.save();
+                    }
+                }
+            }
+        } catch (persistErr) {
+            console.log('Non-fatal: failed to persist verify status:', persistErr.message);
+        }
+
         res.json({
             success: true,
             data: response.data,
