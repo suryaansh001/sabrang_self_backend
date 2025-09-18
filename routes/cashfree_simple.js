@@ -133,6 +133,7 @@ router.post('/create-order', async (req, res) => {
 
         // Save order to database
         try {
+            const parsedAmount = parseFloat(amount);
             const newPurchase = new Purchase({
                 orderId: response.data.order_id,
                 paymentSessionId: response.data.payment_session_id,
@@ -146,9 +147,12 @@ router.post('/create-order', async (req, res) => {
                     type: 'event',
                     itemName: 'Demo Payment', // You can customize this based on the request
                     quantity: 1,
-                    price: parseFloat(amount)
+                    price: parsedAmount
                 }],
-                totalAmount: parseFloat(amount),
+                // Required by schema
+                subtotal: parsedAmount,
+                totalAmount: parsedAmount,
+                // Optional extras (ignored if not in schema)
                 currency: "INR",
                 paymentStatus: 'pending',
                 environment: isUsingProd ? 'production' : 'sandbox',
