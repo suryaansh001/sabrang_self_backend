@@ -5,16 +5,6 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   events: [String],
-  // Total payable amount for the current registration (team leader only)
-  finalPrice: {
-    type: Number,
-    default: 0
-  },
-  referalID: String,
-  referalcount: {
-    type: Number,
-    default: 0
-  },
   qrPath: String,
   isvalidated: {
     type: Boolean,
@@ -57,25 +47,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
-  // Store full raw form payload from frontend to avoid data loss
-  extraDetails: {
-    type: mongoose.Schema.Types.Mixed,
-    default: null
-  },
+  
   teamMembers: {
     type: [mongoose.Schema.Types.Mixed],
     default: []
   },
-  // Full raw payload snapshot for audit/debugging
-  rawRegistration: {
-    type: mongoose.Schema.Types.Mixed,
-    default: null
-  },
   // Team management fields
-  teamId: {
-    type: String,
-    default: null // Unique team identifier for main person
-  },
   isMainPerson: {
     type: Boolean,
     default: true // True for main person, false for individual registrations
