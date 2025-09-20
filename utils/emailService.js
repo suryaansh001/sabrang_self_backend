@@ -233,66 +233,147 @@ async function sendRegistrationEmail(userEmail, userData) {
  * Generate payment initiation email content (simplified like test-email.js)
  */
 function generatePaymentInitiationEmailContent(paymentData) {
-    const { name } = paymentData;
+    const { name, otp } = paymentData;
     
-    const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>🎉 Welcome to Sabrang'25!</title>
-        <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
-            .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
-            .content { padding: 30px; }
-            .order-details { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-            .footer { text-align: center; margin-top: 30px; color: #666; }
-            .events-list { background-color: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 10px 0; }
-            .ticket-section { background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
-            .ticket-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 10px 0; }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h1>🎉 Welcome to Sabrang'25!</h1>
-                <p>Thanks for registering — you're officially part of the fest where the unseen comes to life.</p>
-            </div>
-            <div class="content">
-                <h2>Registration Confirmed!</h2>
-                <p><strong>Hi ${name},</strong></p>
-                <p>We're thrilled to have you join us for Sabrang'25 — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.</p>
-                
-                <div class="order-details">
-                    <h3>Your Registration Details:</h3>
-                    <p><strong>Name:</strong> ${name}</p>
-                    <div class="events-list">
-                        <strong>Events Registered:</strong><br />
-                        Dance Competition, Coding Contest, Business Plan
+    // If OTP is provided, send OTP email, otherwise send registration email
+    if (otp) {
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>🔐 Your Sabrang'25 Ticket Access OTP</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+                .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+                .content { padding: 30px; }
+                .otp-section { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
+                .otp-code { font-size: 32px; font-weight: bold; color: #667eea; letter-spacing: 5px; margin: 10px 0; }
+                .footer { text-align: center; margin-top: 30px; color: #666; }
+                .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🔐 Ticket Access OTP</h1>
+                    <p>Your secure access code for Sabrang'25 tickets</p>
+                </div>
+                <div class="content">
+                    <h2>Hello ${name},</h2>
+                    <p>You've requested access to view your Sabrang'25 tickets. Please use the following OTP to verify your identity:</p>
+                    
+                    <div class="otp-section">
+                        <h3>Your OTP Code:</h3>
+                        <div class="otp-code">${otp}</div>
+                        <p><strong>This OTP is valid for 10 minutes only.</strong></p>
+                    </div>
+                    
+                    <div class="warning">
+                        <strong>Security Notice:</strong>
+                        <ul style="text-align: left; margin: 10px 0;">
+                            <li>Do not share this OTP with anyone</li>
+                            <li>OTP expires in 10 minutes</li>
+                            <li>Maximum 3 attempts allowed</li>
+                            <li>If you didn't request this, please ignore this email</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer">
+                        <p><strong>—<br>Team Sabrang'25<br>✨ Witness the Unseen</strong></p>
+                        <p>Need help? Contact us anytime.</p>
                     </div>
                 </div>
-                
-                <div class="ticket-section">
-                    <h3>Your QR Code:</h3>
-                    <p>Please download the ticket for a smooth check-in.</p>
-                    <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">Download Your Ticket Here</a>
+            </div>
+        </body>
+        </html>`;
+
+        const textContent = `
+🔐 Ticket Access OTP - Sabrang'25
+
+Hello ${name},
+
+You've requested access to view your Sabrang'25 tickets. Please use the following OTP to verify your identity:
+
+Your OTP Code: ${otp}
+
+This OTP is valid for 10 minutes only.
+
+Security Notice:
+- Do not share this OTP with anyone
+- OTP expires in 10 minutes
+- Maximum 3 attempts allowed
+- If you didn't request this, please ignore this email
+
+—
+Team Sabrang'25
+✨ Witness the Unseen
+
+Need help? Contact us anytime.`;
+
+        return { htmlContent, textContent };
+    } else {
+        // Original registration email content
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>🎉 Welcome to Sabrang'25!</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
+                .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
+                .content { padding: 30px; }
+                .order-details { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                .footer { text-align: center; margin-top: 30px; color: #666; }
+                .events-list { background-color: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 10px 0; }
+                .ticket-section { background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
+                .ticket-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 10px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>🎉 Welcome to Sabrang'25!</h1>
+                    <p>Thanks for registering — you're officially part of the fest where the unseen comes to life.</p>
                 </div>
-                
-                <div class="footer">
-                    <p><strong>🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.</strong></p>
+                <div class="content">
+                    <h2>Registration Confirmed!</h2>
+                    <p><strong>Hi ${name},</strong></p>
+                    <p>We're thrilled to have you join us for Sabrang'25 — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.</p>
                     
-                    <p><strong>—<br>Team Sabrang'25<br>✨ Witness the Unseen</strong></p>
+                    <div class="order-details">
+                        <h3>Your Registration Details:</h3>
+                        <p><strong>Name:</strong> ${name}</p>
+                        <div class="events-list">
+                            <strong>Events Registered:</strong><br />
+                            Dance Competition, Coding Contest, Business Plan
+                        </div>
+                    </div>
                     
-                    <p>Need help or have a question? Reach out to us anytime.</p>
+                    <div class="ticket-section">
+                        <h3>Your QR Code:</h3>
+                        <p>Please download the ticket for a smooth check-in.</p>
+                        <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">Download Your Ticket Here</a>
+                    </div>
+                    
+                    <div class="footer">
+                        <p><strong>🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.</strong></p>
+                        
+                        <p><strong>—<br>Team Sabrang'25<br>✨ Witness the Unseen</strong></p>
+                        
+                        <p>Need help or have a question? Reach out to us anytime.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </body>
-    </html>`;
+        </body>
+        </html>`;
 
-    const textContent = `
+        const textContent = `
 🎉 Welcome to Sabrang'25!
 Thanks for registering — you're officially part of the fest where the unseen comes to life.
 
@@ -319,14 +400,15 @@ Team Sabrang'25
 
 Need help or have a question? Reach out to us anytime.`;
 
-    return { htmlContent, textContent };
+        return { htmlContent, textContent };
+    }
 }
 
 /**
  * Send payment initiation email (using same pattern as working test-email.js)
  */
 async function sendPaymentInitiatedEmail(paymentData) {
-    const { email: userEmail } = paymentData;
+    const { email: userEmail, otp } = paymentData;
     
     try {
         // Use the same configuration pattern as the working test-email.js
@@ -351,18 +433,18 @@ async function sendPaymentInitiatedEmail(paymentData) {
 
         const mailOptions = {
             to: userEmail,
-            subject: '🎉 Welcome to Sabrang\'25! Registration Confirmed',
+            subject: otp ? '🔐 Your Sabrang\'25 Ticket Access OTP' : '🎉 Welcome to Sabrang\'25! Registration Confirmed',
             text: textContent,
             html: htmlContent
         };
 
         // Use the same sending method as test-email.js
         const result = await mailer.sendEmailGraph(mailOptions);
-        console.log(`✅ Payment initiation email sent successfully to ${userEmail}`);
+        console.log(`✅ ${otp ? 'OTP' : 'Payment initiation'} email sent successfully to ${userEmail}`);
         return { success: true, result };
 
     } catch (error) {
-        console.error(`❌ Failed to send payment initiation email to ${userEmail}:`, error.message);
+        console.error(`❌ Failed to send ${otp ? 'OTP' : 'payment initiation'} email to ${userEmail}:`, error.message);
         return { success: false, error: error.message };
     }
 }

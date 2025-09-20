@@ -4,9 +4,158 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { User, Event, TeamMember } = require("../models/models");
 const { verifyToken,verifyAdmin } = require("../middleware/auth");
+const { sendPaymentInitiatedEmail } = require("../utils/emailService");
 const path = require('path');
 const fs = require('fs');
 const qr = require('qr-image');
+
+// In-memory OTP storage (secure and simple without DB changes)
+const otpStore = new Map();
+
+// Generate 6-digit OTP
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+// Send OTP for ticket access
+router.post('/send-ticket-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    // Check if user exists (team leader or individual)
+    const user = await User.findOne({ 
+      email: email.toLowerCase().trim()
+    });
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No registration found for this email address'
+      });
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+    const otpExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes expiry
+
+    // Store OTP in memory
+    otpStore.set(email.toLowerCase().trim(), {
+      otp,
+      expiry: otpExpiry,
+      attempts: 0
+    });
+
+    // Send OTP via email
+    const emailResult = await sendPaymentInitiatedEmail({
+      email: email.toLowerCase().trim(),
+      name: user.name,
+      otp: otp
+    });
+
+    if (emailResult.success) {
+      console.log(`✅ OTP sent to ${email}: ${otp}`);
+      res.json({
+        success: true,
+        message: 'OTP sent successfully to your email'
+      });
+    } else {
+      // Remove OTP from store if email failed
+      otpStore.delete(email.toLowerCase().trim());
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send OTP. Please try again.'
+      });
+    }
+
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Verify OTP and return session token
+router.post('/verify-ticket-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    
+    if (!email || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and OTP are required'
+      });
+    }
+
+    const emailKey = email.toLowerCase().trim();
+    const storedOtpData = otpStore.get(emailKey);
+
+    if (!storedOtpData) {
+      return res.status(400).json({
+        success: false,
+        message: 'OTP not found or expired. Please request a new OTP.'
+      });
+    }
+
+    // Check expiry
+    if (Date.now() > storedOtpData.expiry) {
+      otpStore.delete(emailKey);
+      return res.status(400).json({
+        success: false,
+        message: 'OTP has expired. Please request a new OTP.'
+      });
+    }
+
+    // Check attempts (max 3 attempts)
+    if (storedOtpData.attempts >= 3) {
+      otpStore.delete(emailKey);
+      return res.status(400).json({
+        success: false,
+        message: 'Maximum OTP attempts exceeded. Please request a new OTP.'
+      });
+    }
+
+    // Verify OTP
+    if (otp !== storedOtpData.otp) {
+      storedOtpData.attempts++;
+      return res.status(400).json({
+        success: false,
+        message: `Invalid OTP. ${3 - storedOtpData.attempts} attempts remaining.`
+      });
+    }
+
+    // OTP verified successfully
+    otpStore.delete(emailKey);
+
+    // Generate temporary access token (valid for 30 minutes)
+    const tempToken = jwt.sign(
+      { email: emailKey, purpose: 'ticket-access' },
+      process.env.jwtkey || 'fallback-secret',
+      { expiresIn: '30m' }
+    );
+
+    res.json({
+      success: true,
+      message: 'OTP verified successfully',
+      accessToken: tempToken
+    });
+
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
 
 // QR code endpoint (publicly accessible)
 router.get('/qrcode/:id', async (req, res) => {
@@ -356,15 +505,30 @@ router.get('/team/:teamId', verifyToken, async (req, res) => {
   }
 });
 
-// Get team data by team leader email (publicly accessible for ticket viewing)
+// Get team data by team leader email (requires OTP verification)
 router.post('/team-by-email', async (req, res) => {
   try {
-    const { email } = req.body;
+    const { accessToken } = req.body;
     
-    if (!email) {
-      return res.status(400).json({
+    if (!accessToken) {
+      return res.status(401).json({
         success: false,
-        message: 'Email is required'
+        message: 'Access token required. Please verify OTP first.'
+      });
+    }
+
+    // Verify the temporary access token
+    let email;
+    try {
+      const decoded = jwt.verify(accessToken, process.env.jwtkey || 'fallback-secret');
+      if (decoded.purpose !== 'ticket-access') {
+        throw new Error('Invalid token purpose');
+      }
+      email = decoded.email;
+    } catch (tokenError) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid or expired access token. Please verify OTP again.'
       });
     }
 
