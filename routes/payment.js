@@ -2,6 +2,7 @@ const express = require('express');
 const { Cashfree, CFEnvironment } = require('cashfree-pg');
 const { Purchase, User, Event, TeamMember, PromoCode } = require('../models/models');
 const { sendRegistrationEmail } = require('../utils/emailService');
+const { generateUserQRCode } = require('../utils/qrCodeService');
 const shortid = require('shortid');
 const qr = require('qr-image');
 const path = require('path');
@@ -556,50 +557,12 @@ router.get('/verify-payment/:orderId', async (req, res) => {
   }
 });
 
-// Generate QR code for user
+// Generate QR code for user as base64
 async function generateQRCode(userId, userData) {
   try {
-    // Use Railway volume in production, local path in development
-    const qrDir = process.env.NODE_ENV === 'production' 
-      ? '/app/qrcodes' 
-      : path.join(__dirname, '../public/qrcodes');
-      
-    if (!fs.existsSync(qrDir)) {
-      fs.mkdirSync(qrDir, { recursive: true });
-      console.log(`📁 Created QR directory: ${qrDir}`);
-    }
-
-    const qrData = JSON.stringify({
-      id: userId,
-      name: userData.name,
-      email: userData.email,
-      timestamp: Date.now()
-    });
-
-    const qrFilename = `${userId}.png`;
-    const qrPath = path.join(qrDir, qrFilename);
-    
-    // Update relative path for serving
-    const qrRelativePath = process.env.NODE_ENV === 'production'
-      ? `/qrcodes/${qrFilename}`
-      : `/public/qrcodes/${qrFilename}`;
-
-    return new Promise((resolve, reject) => {
-      const qrPng = qr.image(qrData, { type: 'png', size: 10 });
-      const writeStream = fs.createWriteStream(qrPath);
-      
-      qrPng.pipe(writeStream);
-      
-      writeStream.on('finish', () => {
-        console.log(`✅ QR code generated: ${qrRelativePath}`);
-        resolve(qrRelativePath);
-      });
-      
-      writeStream.on('error', (error) => {
-        console.error('❌ QR code generation failed:', error);
-        reject(error);
-      });
-    });
+    const qrCodeBase64 = await generateUserQRCode(userId, userData);
+    console.log(`✅ QR code generated as base64 for user: ${userId}`);
+    return qrCodeBase64;
   } catch (error) {
     console.error('❌ QR code generation error:', error);
     throw error;
@@ -663,12 +626,14 @@ async function processSuccessfulPayment(purchase) {
 
     // Step 2: Generate QR code
     try {
-      const qrPath = await generateQRCode(user._id, userData);
-      user.qrPath = qrPath;
+      const qrCodeBase64 = await generateQRCode(user._id, userData);
+      user.qrPath = `${user._id}`; // Keep for backward compatibility
+      user.qrCodeBase64 = qrCodeBase64;
       await user.save();
       
       purchase.qrGenerated = true;
-      purchase.qrPath = qrPath;
+      purchase.qrPath = `${user._id}`; // Keep for backward compatibility
+      purchase.qrCodeBase64 = qrCodeBase64;
     } catch (qrError) {
       console.error('QR generation failed, but continuing:', qrError);
       purchase.qrGenerated = false;
@@ -700,8 +665,9 @@ async function processSuccessfulPayment(purchase) {
 
           // Generate QR for team member
           try {
-            const memberQrPath = await generateQRCode(teamMember._id, memberData);
-            teamMember.qrPath = memberQrPath;
+            const memberQrCodeBase64 = await generateQRCode(teamMember._id, memberData);
+            teamMember.qrPath = `${teamMember._id}`; // Keep for backward compatibility
+            teamMember.qrCodeBase64 = memberQrCodeBase64;
             await teamMember.save();
           } catch (memberQrError) {
             console.error(`QR generation failed for team member ${memberData.name}:`, memberQrError);

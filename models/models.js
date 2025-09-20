@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   password: String,
   events: [String],
   qrPath: String,
+  qrCodeBase64: String, // Store QR code as base64 string
   isvalidated: {
     type: Boolean,
     default: false
@@ -290,6 +291,7 @@ const purchaseSchema = new mongoose.Schema({
     age: Number,
     universityName: String,
     address: String,
+    referralCode: String, // Added referral code field
     // Store complete form data
     formData: mongoose.Schema.Types.Mixed,
     teamMembers: [mongoose.Schema.Types.Mixed]
@@ -360,7 +362,8 @@ const purchaseSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  qrPath: String,
+  qrPath: String, // File path for backward compatibility
+  qrCodeBase64: String, // Store QR code as base64 string
   
   // Email notification
   emailSent: {
@@ -439,6 +442,10 @@ const teamMemberSchema = new mongoose.Schema({
   },
   // QR code for individual team member
   qrPath: {
+    type: String,
+    default: ""
+  },
+  qrCodeBase64: {
     type: String,
     default: ""
   },

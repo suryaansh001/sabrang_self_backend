@@ -9,17 +9,44 @@ const fs = require('fs');
 const qr = require('qr-image');
 
 // QR code endpoint (accessible to authenticated users)
-router.get('/qrcode/:id', verifyToken, (req, res) => {
-  const id = req.params.id;
-  const filename = `${id}.png`;
-  const filePath = path.join(__dirname, '../public/qrcodes', filename);
-
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).send('QR code not found'); 
+router.get('/qrcode/:id', verifyToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    // Try to find user first
+    let user = await User.findById(id);
+    if (!user) {
+      // If not found in User, try TeamMember
+      const TeamMember = require('../models/models').TeamMember;
+      user = await TeamMember.findById(id);
+    }
+    
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    
+    // Check if QR code exists as base64
+    if (user.qrCodeBase64) {
+      res.type('png');
+      res.send(Buffer.from(user.qrCodeBase64, 'base64'));
+      return;
+    }
+    
+    // Fallback to file system for backward compatibility
+    const filename = `${id}.png`;
+    const filePath = path.join(__dirname, '../public/qrcodes', filename);
+    
+    if (fs.existsSync(filePath)) {
+      res.type('png');
+      fs.createReadStream(filePath).pipe(res);
+      return;
+    }
+    
+    return res.status(404).send('QR code not found');
+  } catch (error) {
+    console.error('Error serving QR code:', error);
+    res.status(500).send('Internal server error');
   }
-
-  res.type('png');
-  fs.createReadStream(filePath).pipe(res);
 });
 
 router.get('/profile/:id', verifyAdmin, async (req, res) => {
@@ -178,17 +205,40 @@ router.post("/register-event", verifyToken, async (req, res) => {
 });
 
 // Get team member QR code (accessible to authenticated users)
-router.get('/team-member-qrcode/:id', verifyToken, (req, res) => {
-  const id = req.params.id;
-  const filename = `${id}.png`;
-  const filePath = path.join(__dirname, '../public/qrcodes', filename);
-
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).send('QR code not found'); 
+router.get('/team-member-qrcode/:id', verifyToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    // Find team member
+    const TeamMember = require('../models/models').TeamMember;
+    const teamMember = await TeamMember.findById(id);
+    
+    if (!teamMember) {
+      return res.status(404).send('Team member not found');
+    }
+    
+    // Check if QR code exists as base64
+    if (teamMember.qrCodeBase64) {
+      res.type('png');
+      res.send(Buffer.from(teamMember.qrCodeBase64, 'base64'));
+      return;
+    }
+    
+    // Fallback to file system for backward compatibility
+    const filename = `${id}.png`;
+    const filePath = path.join(__dirname, '../public/qrcodes', filename);
+    
+    if (fs.existsSync(filePath)) {
+      res.type('png');
+      fs.createReadStream(filePath).pipe(res);
+      return;
+    }
+    
+    return res.status(404).send('QR code not found');
+  } catch (error) {
+    console.error('Error serving team member QR code:', error);
+    res.status(500).send('Internal server error');
   }
-
-  res.type('png');
-  fs.createReadStream(filePath).pipe(res);
 });
 
 // Get team member profile image (accessible to authenticated users)

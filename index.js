@@ -14,6 +14,7 @@ const multer = require("multer");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
 const { User, TeamMember } = require("./models/models");
+const { generateUserQRCode } = require("./utils/qrCodeService");
 
 const app = express();
 
@@ -306,33 +307,24 @@ app.post("/register", upload.any(), async (req, res) => {
       mainPerson = await User.findByIdAndUpdate(mainPerson._id, mainPersonPayload, { new: true });
     }
 
-    // Generate QR code for main person
-    const qr = require('qr-image');
-    const mainPersonQrFilename = `${mainPerson._id}.png`;
-    
-    // Use Railway volume in production, local path in development
-    const qrDir = process.env.NODE_ENV === 'production' 
-      ? '/app/qrcodes' 
-      : path.join(__dirname, 'public/qrcodes');
-    const mainPersonQrPath = path.join(qrDir, mainPersonQrFilename);
-    
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(qrDir)) {
-      fs.mkdirSync(qrDir, { recursive: true });
-      console.log(`📁 Created QR directory: ${qrDir}`);
-    }
-    
-    if (!fs.existsSync(mainPersonQrPath)) {
-      const qr_png = qr.image(`${mainPerson._id}`, { type: 'png' });
-      const qrStream = fs.createWriteStream(mainPersonQrPath);
-      qr_png.pipe(qrStream);
-      await new Promise((resolve, reject) => {
-        qrStream.on('finish', resolve);
-        qrStream.on('error', reject);
+    // Generate QR code as base64 for main person
+    try {
+      const qrCodeBase64 = await generateUserQRCode(mainPerson._id, {
+        name: mainPerson.name,
+        email: mainPerson.email
       });
-      console.log(`✅ QR code generated for main person: ${mainPersonQrPath}`);
+      await User.findOneAndUpdate(
+        { _id: mainPerson._id }, 
+        { 
+          qrPath: `${mainPerson._id}`, // Keep for backward compatibility
+          qrCodeBase64: qrCodeBase64 
+        }, 
+        { new: true }
+      );
+      console.log(`✅ QR code generated as base64 for main person: ${mainPerson._id}`);
+    } catch (qrError) {
+      console.error('❌ QR code generation failed for main person:', qrError);
     }
-    await User.findOneAndUpdate({ _id: mainPerson._id }, { qrPath: `${mainPerson._id}` }, { new: true });
 
     // Process team members
     const createdTeamMembers = [];
@@ -358,26 +350,19 @@ app.post("/register", upload.any(), async (req, res) => {
 
       await teamMember.save();
 
-      // Generate QR code for team member based on saved _id
-      const memberQrFilename = `${teamMember._id}.png`;
-      
-      // Use Railway volume in production, local path in development
-      const qrDir = process.env.NODE_ENV === 'production' 
-        ? '/app/qrcodes' 
-        : path.join(__dirname, 'public/qrcodes');
-      const memberQrPath = path.join(qrDir, memberQrFilename);
-      
-      const qr_png_member = qr.image(`${teamMember._id}`, { type: 'png' });
-      const qrStreamMember = fs.createWriteStream(memberQrPath);
-      qr_png_member.pipe(qrStreamMember);
-      await new Promise((resolve, reject) => {
-        qrStreamMember.on('finish', resolve);
-        qrStreamMember.on('error', reject);
-      });
-      teamMember.qrPath = `${teamMember._id}`;
-      await teamMember.save();
-      
-      console.log(`✅ QR code generated for team member: ${memberQrPath}`);
+      // Generate QR code as base64 for team member
+      try {
+        const memberQrCodeBase64 = await generateUserQRCode(teamMember._id, {
+          name: teamMember.name,
+          email: teamMember.email
+        });
+        teamMember.qrPath = `${teamMember._id}`; // Keep for backward compatibility
+        teamMember.qrCodeBase64 = memberQrCodeBase64;
+        await teamMember.save();
+        console.log(`✅ QR code generated as base64 for team member: ${teamMember._id}`);
+      } catch (memberQrError) {
+        console.error(`❌ QR code generation failed for team member ${teamMember.name}:`, memberQrError);
+      }
 
       createdTeamMembers.push(teamMember);
     }
@@ -479,41 +464,26 @@ passport.use(new GoogleStrategy({
       });
       await user.save();
       
-      // Generate QR code for the new user
-      const fs = require('fs');
-      const qr = require('qr-image');
-      
-      const qrFilename = `${user._id}.png`;
-      
-      // Use Railway volume in production, local path in development
-      const qrDir = process.env.NODE_ENV === 'production' 
-        ? '/app/qrcodes' 
-        : path.join(__dirname, 'public/qrcodes');
-      const qrPath = path.join(qrDir, qrFilename);
-      
-      // Create directories if they don't exist
-      if (!fs.existsSync(qrDir)) {
-        fs.mkdirSync(qrDir, { recursive: true });
-        console.log(`📁 Created QR directory: ${qrDir}`);
+      // Generate QR code as base64 for the new user
+      try {
+        const qrCodeBase64 = await generateUserQRCode(user._id, {
+          name: user.name,
+          email: user.email
+        });
+        
+        // Update user with QR code data
+        await User.findOneAndUpdate(
+          { _id: user._id },
+          { 
+            qrPath: `${user._id}`, // Keep for backward compatibility
+            qrCodeBase64: qrCodeBase64 
+          },
+          { new: true }
+        );
+        console.log(`✅ QR code generated as base64 for new user: ${user._id}`);
+      } catch (qrError) {
+        console.error('❌ QR code generation failed for new user:', qrError);
       }
-      
-      // Generate and save QR code
-      const qr_png = qr.image(`${user._id}`, { type: 'png' });
-      const qrStream = fs.createWriteStream(qrPath);
-      
-      qr_png.pipe(qrStream);
-      
-      await new Promise((resolve, reject) => {
-        qrStream.on('finish', resolve);
-        qrStream.on('error', reject);
-      });
-      
-      // Update user with QR path
-      await User.findOneAndUpdate(
-        { _id: user._id },
-        { qrPath: `${user._id}` },
-        { new: true }
-      );
       
       console.log('New user created with QR code:', user);
     }

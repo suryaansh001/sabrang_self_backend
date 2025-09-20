@@ -1,4 +1,5 @@
 const { User, Event } = require("../models/models");
+const { generateUserQRCode } = require("../utils/qrCodeService");
 const shortid = require("shortid");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
@@ -93,34 +94,22 @@ async function signup(req, res) {
       referalID: referralID,
     });
 
-    const qrFilename = `${newUser._id}.png`;
-    const qrPath = `public/qrcodes/${qrFilename}`;
-    
-    if (!fs.existsSync("public")) {
-      fs.mkdirSync("public");
+    // Generate QR code as base64
+    try {
+      const qrCodeBase64 = await generateUserQRCode(newUser._id, {
+        name: newUser.name,
+        email: newUser.email
+      });
+      
+      newUser.qrCode = `${newUser._id}`; // Keep for backward compatibility
+      newUser.qrPath = `${newUser._id}`; // Keep for backward compatibility
+      newUser.qrCodeBase64 = qrCodeBase64;
+      await newUser.save();
+      
+      console.log(`✅ QR code generated as base64 for new user: ${newUser._id}`);
+    } catch (qrError) {
+      console.error('❌ QR code generation failed for new user:', qrError);
     }
-    if (!fs.existsSync("public/qrcodes")) {
-      fs.mkdirSync("public/qrcodes");
-    }
-
-    const qr_png = qr.image(`${newUser._id}`, { type: 'png' });
-    const qrStream = fs.createWriteStream(qrPath);
-    
-    qr_png.pipe(qrStream);
-    
-    await new Promise((resolve, reject) => {
-      qrStream.on('finish', resolve);
-      qrStream.on('error', reject);
-    });
-
-    newUser.qrCode = qrFilename;
-    await newUser.save();
-
-    const qrupdate = await User.findOneAndUpdate(
-      { _id: newUser._id },
-      { qrPath: `${newUser._id}` },
-      { new: true }
-    );
 
     // Update referrer's count if referral code was provided
     if (req.body.referralCode) {
