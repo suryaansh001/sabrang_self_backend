@@ -95,11 +95,11 @@ class MicrosoftOAuthMailer {
  * Generate registration email content
  */
 function generateRegistrationEmailContent(userData) {
-    const { name, events, qrCodeBase64 } = userData;
+    const { name, events } = userData;
     
     const eventsText = events && events.length > 0 
         ? events.join(', ') 
-        : 'No events registered';
+        : 'Dance Competition, Coding Contest, Business Plan';
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -111,8 +111,8 @@ function generateRegistrationEmailContent(userData) {
             .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
             .details { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-            .qr-section { text-align: center; margin: 20px 0; }
-            .qr-code { max-width: 200px; border: 2px solid #ddd; border-radius: 8px; }
+            .ticket-section { text-align: center; margin: 20px 0; }
+            .ticket-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 10px 0; }
             .footer { text-align: center; margin-top: 30px; color: #666; }
             .events-list { background: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 10px 0; }
         </style>
@@ -121,35 +121,35 @@ function generateRegistrationEmailContent(userData) {
         <div class="container">
             <div class="header">
                 <h1>🎉 Welcome to Sabrang'25!</h1>
-                <p>Thank you for registering with us</p>
+                <p>Thanks for registering — you're officially part of the fest where the unseen comes to life.</p>
             </div>
             
             <div class="content">
                 <h2>Registration Confirmed!</h2>
-                <p>Dear ${name},</p>
-                <p>Thanks for registering for <strong>Sabrang'25</strong>. We're excited to have you join us for this amazing event!</p>
+                <p>Hi ${name},</p>
+                <p>We're thrilled to have you join us for <strong>Sabrang'25</strong> — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.</p>
                 
                 <div class="details">
-                    <h3>📋 Your Registration Details:</h3>
+                    <h3>Your Registration Details:</h3>
                     <p><strong>Name:</strong> ${name}</p>
                     <div class="events-list">
-                        <strong>🎭 Events Registered For:</strong><br>
+                        <strong>Events Registered:</strong><br />
                         ${eventsText}
                     </div>
                 </div>
                 
-                <div class="qr-section">
-                    <h3>📱 Your QR Code</h3>
-                    <p>Please present this QR code at the event entrance:</p>
-                    ${qrCodeBase64 ? `<img src="data:image/png;base64,${qrCodeBase64}" alt="QR Code" class="qr-code">` : '<p>QR Code will be available soon.</p>'}
-                    <p><small>Save this email or take a screenshot for easy access</small></p>
+                <div class="ticket-section">
+                    <h3>Your QR Code:</h3>
+                    <p>Please download the ticket for a smooth check-in.</p>
+                    <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">Download Your Ticket Here</a>
                 </div>
                 
                 <div class="footer">
-                    <p>🎊 We look forward to seeing you at Sabrang'25!</p>
-                    <p><strong>Team Sabrang'25</strong></p>
-                    <hr>
-                    <p><small>If you have any questions, please contact our support team.</small></p>
+                    <p><strong>🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.</strong></p>
+                    
+                    <p><strong>—<br>Team Sabrang'25<br>✨ Witness the Unseen</strong></p>
+                    
+                    <p>Need help or have a question? Reach out to us anytime.</p>
                 </div>
             </div>
         </div>
@@ -158,17 +158,31 @@ function generateRegistrationEmailContent(userData) {
     `;
 
     const textContent = `
-Thanks for registering for Sabrang'25!
+🎉 Welcome to Sabrang'25!
+Thanks for registering — you're officially part of the fest where the unseen comes to life.
 
-Here are your registration details:
+Registration Confirmed!
+Hi ${name},
 
+We're thrilled to have you join us for Sabrang'25 — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.
+
+Your Registration Details:
 Name: ${name}
-Events registered for: ${eventsText}
 
-Please save your QR code for event entry.
+Events Registered:
+${eventsText}
 
-Thanks,
+Your QR Code:
+Please download the ticket for a smooth check-in.
+Download Your Ticket Here: https://sabrang.jklu.edu.in/ticket
+
+🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.
+
+—
 Team Sabrang'25
+✨ Witness the Unseen
+
+Need help or have a question? Reach out to us anytime.
     `;
 
     return { htmlContent, textContent };
@@ -219,7 +233,7 @@ async function sendRegistrationEmail(userEmail, userData) {
  * Generate payment initiation email content (simplified like test-email.js)
  */
 function generatePaymentInitiationEmailContent(paymentData) {
-    const { name, orderId, amount, paymentSessionId, environment, qrCodeBase64, purchaseId } = paymentData;
+    const { name } = paymentData;
     
     const htmlContent = `
     <!DOCTYPE html>
@@ -234,51 +248,45 @@ function generatePaymentInitiationEmailContent(paymentData) {
             .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
             .content { padding: 30px; }
             .order-details { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-            .footer { background-color: #2c3e50; color: white; padding: 20px; text-align: center; }
-            .highlight { color: #667eea; font-weight: bold; }
-            .amount { font-size: 24px; color: #27ae60; font-weight: bold; }
-            .qr-section { background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
+            .footer { text-align: center; margin-top: 30px; color: #666; }
+            .events-list { background-color: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 10px 0; }
+            .ticket-section { background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
+            .ticket-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 10px 0; }
         </style>
     </head>
     <body>
         <div class="container">
             <div class="header">
                 <h1>🎉 Welcome to Sabrang'25!</h1>
-                <h2>Thank you for registering with us</h2>
+                <p>Thanks for registering — you're officially part of the fest where the unseen comes to life.</p>
             </div>
             <div class="content">
                 <h2>Registration Confirmed!</h2>
-                <p><strong>Dear ${name},</strong></p>
-                <p>Thanks for registering for Sabrang'25. We're excited to have you join us for this amazing event!</p>
+                <p><strong>Hi ${name},</strong></p>
+                <p>We're thrilled to have you join us for Sabrang'25 — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.</p>
                 
                 <div class="order-details">
-                    <h3>📋 Your Registration Details:</h3>
+                    <h3>Your Registration Details:</h3>
                     <p><strong>Name:</strong> ${name}</p>
-                    <p><strong>Order ID:</strong> <span class="highlight">${orderId}</span></p>
-                    <p><strong>Amount Paid:</strong> <span class="amount">₹${amount}</span></p>
+                    <div class="events-list">
+                        <strong>Events Registered:</strong><br />
+                        Dance Competition, Coding Contest, Business Plan
+                    </div>
                 </div>
                 
-                <div class="order-details">
-                    <h3>🎭 Events Registered For:</h3>
-                    <p>Demo Event</p>
+                <div class="ticket-section">
+                    <h3>Your QR Code:</h3>
+                    <p>Please download the ticket for a smooth check-in.</p>
+                    <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">Download Your Ticket Here</a>
                 </div>
                 
-                <div class="qr-section">
-                    <h3>📱 Your QR Code</h3>
-                    <p>Please present this QR code at the event entrance:</p>
-                    ${qrCodeBase64 ? `<img src="data:image/png;base64,${qrCodeBase64}" alt="QR Code" style="max-width: 200px; border: 2px solid #ddd; border-radius: 8px;">` : `<p><strong>QR Code ID:</strong> ${purchaseId || orderId}</p>`}
-                    <p><em>Save this email or take a screenshot for easy access</em></p>
+                <div class="footer">
+                    <p><strong>🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.</strong></p>
+                    
+                    <p><strong>—<br>Team Sabrang'25<br>✨ Witness the Unseen</strong></p>
+                    
+                    <p>Need help or have a question? Reach out to us anytime.</p>
                 </div>
-                
-                <p><strong>� We look forward to seeing you at Sabrang'25!</strong></p>
-                
-                <p><strong>Team Sabrang'25</strong></p>
-                
-                <p>If you have any questions, please contact our support team.</p>
-            </div>
-            <div class="footer">
-                <p>&copy; 2025 Sabrang'25 - JK Lakshmipat University</p>
-                <p>For support: support@sabrang.com</p>
             </div>
         </div>
     </body>
@@ -286,33 +294,30 @@ function generatePaymentInitiationEmailContent(paymentData) {
 
     const textContent = `
 🎉 Welcome to Sabrang'25!
-Thank you for registering with us
+Thanks for registering — you're officially part of the fest where the unseen comes to life.
 
 Registration Confirmed!
-Dear ${name},
+Hi ${name},
 
-Thanks for registering for Sabrang'25. We're excited to have you join us for this amazing event!
+We're thrilled to have you join us for Sabrang'25 — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.
 
-📋 Your Registration Details:
+Your Registration Details:
 Name: ${name}
 
-🎭 Events Registered For:
-Demo Event
+Events Registered:
+Dance Competition, Coding Contest, Business Plan
 
-📱 Your QR Code
-Please present this QR code at the event entrance:
+Your QR Code:
+Please download the ticket for a smooth check-in.
+Download Your Ticket Here: https://sabrang.jklu.edu.in/ticket
 
-${qrCodeBase64 ? 'QR Code attached above in the HTML version' : `QR Code ID: ${purchaseId || orderId}`}
-Save this email or take a screenshot for easy access
+🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.
 
-🎊 We look forward to seeing you at Sabrang'25!
-
+—
 Team Sabrang'25
+✨ Witness the Unseen
 
-If you have any questions, please contact our support team.
-
-© 2025 Sabrang'25 - JK Lakshmipat University
-For support: support@sabrang.com`;
+Need help or have a question? Reach out to us anytime.`;
 
     return { htmlContent, textContent };
 }
