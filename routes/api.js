@@ -357,7 +357,7 @@ router.get('/team/:teamId', verifyToken, async (req, res) => {
 });
 
 // Get team data by team leader email (accessible to authenticated users)
-router.post('/team-by-email', verifyToken, async (req, res) => {
+router.post('/team-by-email', async (req, res) => {
   try {
     const { email } = req.body;
     
