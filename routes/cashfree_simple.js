@@ -678,52 +678,89 @@ router.get('/success/:orderId', async (req, res) => {
                     contactNo: purchase.userDetails.contactNo || '',
                     isvalidated: true
                 });
+                // Save user first to get a valid _id
+                await user.save();
+                console.log('✅ New user created with ID:', user._id);
             }
 
-            // Generate QR code for user
+            // Generate QR code for user - now user._id is guaranteed to exist
+            let qrCodeGenerated = false;
             try {
-                const qrCodeBase64 = await generateUserQRCode(user._id, {
+                // Use multiple fallback options for QR data
+                const qrIdentifier = user._id || purchase._id || `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                console.log('🔍 Generating QR code with identifier:', qrIdentifier);
+                
+                const qrCodeBase64 = await generateUserQRCode(qrIdentifier, {
                     name: user.name,
                     email: user.email
                 });
-                user.qrPath = `${user._id}`;
-                user.qrCodeBase64 = qrCodeBase64;
-                console.log('✅ QR code generated for user:', user._id);
+                
+                if (qrCodeBase64 && qrCodeBase64.length > 0) {
+                    user.qrPath = `${qrIdentifier}`;
+                    user.qrCodeBase64 = qrCodeBase64;
+                    qrCodeGenerated = true;
+                    console.log('✅ QR code generated successfully for user:', user._id, 'base64 length:', qrCodeBase64.length);
+                } else {
+                    console.error('❌ QR code generation returned empty/null result');
+                }
             } catch (qrError) {
                 console.error('❌ QR code generation failed:', qrError);
+                // Try alternative QR generation with simpler data
+                try {
+                    console.log('🔄 Attempting fallback QR generation...');
+                    const fallbackData = user.email || `user_${Date.now()}`;
+                    const qrCodeBase64 = await generateUserQRCode(fallbackData, {
+                        name: user.name || 'User',
+                        email: user.email || 'no-email'
+                    });
+                    
+                    if (qrCodeBase64 && qrCodeBase64.length > 0) {
+                        user.qrPath = fallbackData;
+                        user.qrCodeBase64 = qrCodeBase64;
+                        qrCodeGenerated = true;
+                        console.log('✅ Fallback QR code generated successfully');
+                    }
+                } catch (fallbackError) {
+                    console.error('❌ Fallback QR generation also failed:', fallbackError);
+                }
             }
 
+            // Save user with QR code data
             await user.save();
 
             // Update purchase with user ID and QR info
             purchase.userId = user._id;
-            purchase.qrGenerated = true;
+            purchase.qrGenerated = qrCodeGenerated;
             purchase.qrCodeBase64 = user.qrCodeBase64;
             
             // Save purchase with all updates
             await purchase.save();
             console.log('✅ Purchase status updated to completed for order:', orderId);
 
-            // Send registration email
-            try {
-                const emailData = {
-                    name: user.name,
-                    email: user.email,
-                    events: ['Demo Event'], // You can customize this based on purchase items
-                    qrCodeBase64: user.qrCodeBase64
-                };
+            // Send registration email only if QR code was generated successfully
+            if (qrCodeGenerated && user.qrCodeBase64) {
+                try {
+                    const emailData = {
+                        name: user.name,
+                        email: user.email,
+                        events: ['Demo Event'], // You can customize this based on purchase items
+                        qrCodeBase64: user.qrCodeBase64
+                    };
 
-                const emailResult = await sendRegistrationEmail(user.email, emailData);
-                if (emailResult.success) {
-                    console.log('✅ Registration email sent successfully to:', user.email);
-                    user.emailSent = true;
-                    user.emailSentAt = new Date();
-                    await user.save();
-                } else {
-                    console.error('❌ Failed to send registration email:', emailResult.error);
+                    const emailResult = await sendRegistrationEmail(user.email, emailData);
+                    if (emailResult.success) {
+                        console.log('✅ Registration email with QR code sent successfully to:', user.email);
+                        user.emailSent = true;
+                        user.emailSentAt = new Date();
+                        await user.save();
+                    } else {
+                        console.error('❌ Failed to send registration email:', emailResult.error);
+                    }
+                } catch (emailError) {
+                    console.error('❌ Email sending error:', emailError);
                 }
-            } catch (emailError) {
-                console.error('❌ Email sending error:', emailError);
+            } else {
+                console.error('❌ Cannot send email: QR code generation failed. No email sent to:', user.email);
             }
 
             res.json({
