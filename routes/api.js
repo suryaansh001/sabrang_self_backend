@@ -49,6 +49,8 @@ router.get('/qrcode/:id', verifyToken, async (req, res) => {
   }
 });
 
+
+
 router.get('/profile/:id', verifyAdmin, async (req, res) => {
   try {
     const id = req.params.id;
@@ -74,10 +76,6 @@ router.get('/profile/:id', verifyAdmin, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-
-
-
 
 // Get user data (requires authentication) - UPDATED FOR TEAM SYSTEM
 router.get("/user", verifyToken, async (req,res)=>{
@@ -356,7 +354,7 @@ router.get('/team/:teamId', verifyToken, async (req, res) => {
   }
 });
 
-// Get team data by team leader email (accessible to authenticated users)
+// Get QR code by email (no authentication required)
 router.post('/team-by-email', async (req, res) => {
   try {
     const { email } = req.body;
@@ -368,75 +366,48 @@ router.post('/team-by-email', async (req, res) => {
       });
     }
 
-    // Find the main person (team leader) by email
-    const mainPerson = await User.findOne({ 
-      email: email.toLowerCase().trim(),
-      isMainPerson: true 
-    });
+    const emailLower = email.toLowerCase().trim();
+    let user = null;
+
+    // Try to find in User collection first (main person)
+    user = await User.findOne({ email: emailLower });
     
-    if (!mainPerson) {
+    // If not found in User, try TeamMember collection
+    if (!user) {
+      user = await TeamMember.findOne({ email: emailLower });
+    }
+    
+    if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'Team not found for this email address'
+        message: 'User not found with this email address'
       });
     }
-
-    // Get team members
-    const teamMembers = await TeamMember.find({ mainPersonId: mainPerson._id });
-
-    // Get events data
-    const events = mainPerson.events;
-    const eventData = [];
-    for (let i = 0; i < events.length; i++) {
-      const info = await Event.findOne({ name: events[i] });
-      if (info) {
-        eventData.push(info);
-      }
+    
+    // Check if QR code exists as base64
+    if (user.qrCodeBase64) {
+      res.type('png');
+      res.send(Buffer.from(user.qrCodeBase64, 'base64'));
+      return;
     }
-
-    res.json({
-      success: true,
-      team: {
-        teamId: mainPerson.teamId || mainPerson._id,
-        mainPerson: {
-          id: mainPerson._id,
-          name: mainPerson.name,
-          email: mainPerson.email,
-          contactNo: mainPerson.contactNo,
-          gender: mainPerson.gender,
-          age: mainPerson.age,
-          universityName: mainPerson.universityName,
-          address: mainPerson.address,
-          profileImage: mainPerson.profileImage,
-          qrPath: mainPerson.qrPath,
-          qrCodeBase64: mainPerson.qrCodeBase64,
-          hasEntered: mainPerson.hasEntered,
-          entryTime: mainPerson.entryTime,
-          events: mainPerson.events
-        },
-        teamMembers: teamMembers.map(member => ({
-          id: member._id,
-          name: member.name,
-          email: member.email,
-          contactNo: member.contactNo,
-          gender: member.gender,
-          age: member.age,
-          universityName: member.universityName,
-          address: member.address,
-          profileImage: member.profileImage,
-          qrPath: member.qrPath,
-          qrCodeBase64: member.qrCodeBase64,
-          hasEntered: member.hasEntered,
-          entryTime: member.entryTime,
-          events: member.events
-        })),
-        teamSize: mainPerson.teamSize || (1 + teamMembers.length),
-        registeredEvents: eventData
-      }
+    
+    // Fallback to file system for backward compatibility
+    const filename = `${user._id}.png`;
+    const filePath = path.join(__dirname, '../public/qrcodes', filename);
+    
+    if (fs.existsSync(filePath)) {
+      res.type('png');
+      fs.createReadStream(filePath).pipe(res);
+      return;
+    }
+    
+    return res.status(404).json({
+      success: false,
+      message: 'QR code not found for this user'
     });
 
   } catch (error) {
-    console.error('Error fetching team by email:', error);
+    console.error('Error serving QR code by email:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
