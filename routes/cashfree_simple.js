@@ -661,13 +661,12 @@ router.get('/success/:orderId', async (req, res) => {
             paymentStatus = 'pending';
         }
 
-        // Update purchase status
-        purchase.paymentStatus = paymentStatus === 'SUCCESS' ? 'completed' : 'pending';
-        purchase.paymentCompletedAt = new Date();
-        await purchase.save();
-
         if (paymentStatus === 'SUCCESS') {
             console.log('✅ Payment confirmed as successful for order:', orderId);
+            
+            // Update purchase status to completed
+            purchase.paymentStatus = 'completed';
+            purchase.paymentCompletedAt = new Date();
             
             // Create or find user
             let user = await User.findOne({ email: purchase.userDetails.email });
@@ -696,10 +695,14 @@ router.get('/success/:orderId', async (req, res) => {
 
             await user.save();
 
-            // Update purchase with user ID
+            // Update purchase with user ID and QR info
             purchase.userId = user._id;
             purchase.qrGenerated = true;
+            purchase.qrCodeBase64 = user.qrCodeBase64;
+            
+            // Save purchase with all updates
             await purchase.save();
+            console.log('✅ Purchase status updated to completed for order:', orderId);
 
             // Send registration email
             try {
@@ -738,6 +741,11 @@ router.get('/success/:orderId', async (req, res) => {
             });
         } else {
             console.log('⏳ Payment still pending for order:', orderId);
+            
+            // Update purchase status to pending if not successful
+            purchase.paymentStatus = 'pending';
+            await purchase.save();
+            
             res.json({
                 success: true,
                 message: 'Payment is still pending',
