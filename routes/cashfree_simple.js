@@ -678,10 +678,40 @@ router.get('/success/:orderId', async (req, res) => {
                     contactNo: purchase.userDetails.contactNo || '',
                     isvalidated: true
                 });
-                // Save user first to get a valid _id
-                await user.save();
-                console.log('✅ New user created with ID:', user._id);
+                
+                // Save user with comprehensive error handling
+                try {
+                    const savedUser = await user.save();
+                    if (!savedUser || !savedUser._id) {
+                        throw new Error('User save returned invalid result');
+                    }
+                    console.log('✅ New user created with ID:', savedUser._id);
+                    user = savedUser; // Ensure we have the saved user with _id
+                } catch (saveError) {
+                    console.error('❌ Failed to save new user:', saveError);
+                    // Try to save again with retry mechanism
+                    try {
+                        console.log('🔄 Retrying user save...');
+                        const retrySavedUser = await user.save();
+                        if (!retrySavedUser || !retrySavedUser._id) {
+                            throw new Error('Retry user save also returned invalid result');
+                        }
+                        console.log('✅ User save retry successful:', retrySavedUser._id);
+                        user = retrySavedUser;
+                    } catch (retryError) {
+                        console.error('❌ User save retry also failed:', retryError);
+                        throw new Error(`Cannot proceed without valid user ID: ${retryError.message}`);
+                    }
+                }
             }
+
+            // Verify user has valid _id
+            if (!user._id) {
+                console.error('❌ User exists but has no _id:', user);
+                throw new Error('User object is invalid - missing _id');
+            }
+
+            console.log('✅ User verified with valid ID:', user._id);
 
             // Generate QR code for user - now user._id is guaranteed to exist
             let qrCodeGenerated = false;
@@ -725,17 +755,61 @@ router.get('/success/:orderId', async (req, res) => {
                 }
             }
 
-            // Save user with QR code data
-            await user.save();
+            // Save user with QR code data - with comprehensive error handling
+            try {
+                const updatedUser = await user.save();
+                if (!updatedUser) {
+                    throw new Error('User update save returned null');
+                }
+                console.log('✅ User successfully updated with QR code data');
+                user = updatedUser; // Ensure we have the latest saved user
+            } catch (userSaveError) {
+                console.error('❌ Failed to save user with QR code:', userSaveError);
+                // Try to save again
+                try {
+                    console.log('🔄 Retrying user save with QR code...');
+                    const retryUpdatedUser = await user.save();
+                    if (!retryUpdatedUser) {
+                        throw new Error('User update retry save also returned null');
+                    }
+                    console.log('✅ User QR code save retry successful');
+                    user = retryUpdatedUser;
+                } catch (retryUserError) {
+                    console.error('❌ User QR code save retry also failed:', retryUserError);
+                    // Set flag that user save failed but continue with purchase
+                    qrCodeGenerated = false;
+                    console.log('⚠️ Continuing without user QR code save due to persistent errors');
+                }
+            }
 
             // Update purchase with user ID and QR info
             purchase.userId = user._id;
             purchase.qrGenerated = qrCodeGenerated;
             purchase.qrCodeBase64 = user.qrCodeBase64;
             
-            // Save purchase with all updates
-            await purchase.save();
-            console.log('✅ Purchase status updated to completed for order:', orderId);
+            // Save purchase with comprehensive error handling
+            try {
+                const savedPurchase = await purchase.save();
+                if (!savedPurchase) {
+                    throw new Error('Purchase save returned null');
+                }
+                console.log('✅ Purchase status updated to completed for order:', orderId);
+            } catch (purchaseSaveError) {
+                console.error('❌ Failed to save purchase:', purchaseSaveError);
+                // Try to save again
+                try {
+                    console.log('🔄 Retrying purchase save...');
+                    const retrySavedPurchase = await purchase.save();
+                    if (!retrySavedPurchase) {
+                        throw new Error('Purchase retry save also returned null');
+                    }
+                    console.log('✅ Purchase save retry successful');
+                } catch (retryPurchaseError) {
+                    console.error('❌ Purchase save retry also failed:', retryPurchaseError);
+                    // This is more serious - log but continue
+                    console.log('⚠️ Purchase save failed but continuing with email send');
+                }
+            }
 
             // Send registration email only if QR code was generated successfully
             if (qrCodeGenerated && user.qrCodeBase64) {
@@ -752,7 +826,16 @@ router.get('/success/:orderId', async (req, res) => {
                         console.log('✅ Registration email with QR code sent successfully to:', user.email);
                         user.emailSent = true;
                         user.emailSentAt = new Date();
-                        await user.save();
+                        
+                        // Save email status with error handling
+                        try {
+                            await user.save();
+                            console.log('✅ User email status updated successfully');
+                        } catch (emailStatusSaveError) {
+                            console.error('❌ Failed to save email status:', emailStatusSaveError);
+                            // This is not critical - email was sent, just status update failed
+                            console.log('⚠️ Email was sent successfully but status update failed');
+                        }
                     } else {
                         console.error('❌ Failed to send registration email:', emailResult.error);
                     }
