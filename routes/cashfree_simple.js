@@ -621,24 +621,16 @@ router.get('/success/:orderId', async (req, res) => {
     try {
         const { orderId } = req.params;
         console.log('🎉 Processing payment success for order:', orderId);
-        console.log('🔍 Success endpoint called with orderId:', orderId);
-        console.log('🔍 Request URL:', req.url);
-        console.log('🔍 Request method:', req.method);
 
         // Find the purchase record
-        console.log('🔍 Searching for purchase with orderId:', orderId);
         const purchase = await Purchase.findOne({ orderId: orderId });
         if (!purchase) {
             console.error('❌ Purchase not found for orderId:', orderId);
-            console.log('🔍 Available purchases in database:');
-            const allPurchases = await Purchase.find({}, { orderId: 1, paymentStatus: 1 });
-            console.log('All purchases:', allPurchases.map(p => ({ orderId: p.orderId, status: p.paymentStatus })));
             return res.status(404).json({
                 success: false,
                 message: 'Purchase not found'
             });
         }
-        console.log('✅ Purchase found:', { orderId: purchase.orderId, status: purchase.paymentStatus });
 
         // Check if payment is already processed
         if (purchase.paymentStatus === 'completed') {
@@ -653,24 +645,19 @@ router.get('/success/:orderId', async (req, res) => {
         // Verify payment status with Cashfree
         let paymentStatus;
         try {
-            console.log('🔍 Verifying payment status with Cashfree for orderId:', orderId);
             const response = await cashfree.PGOrderFetchPayments(orderId);
             const payments = response.data;
-            console.log('🔍 Cashfree response:', JSON.stringify(response.data, null, 2));
             
             if (payments && payments.length > 0) {
                 const latestPayment = payments[payments.length - 1];
                 paymentStatus = latestPayment.payment_status;
                 console.log('🔍 Payment status from Cashfree:', paymentStatus);
-                console.log('🔍 Latest payment details:', JSON.stringify(latestPayment, null, 2));
             } else {
                 console.log('⚠️ No payment data found for order:', orderId);
                 paymentStatus = 'pending';
             }
         } catch (error) {
             console.error('❌ Error verifying payment status:', error);
-            console.error('❌ Error details:', error.message);
-            console.error('❌ Error response:', error.response?.data);
             paymentStatus = 'pending';
         }
 
@@ -719,30 +706,24 @@ router.get('/success/:orderId', async (req, res) => {
 
             // Send registration email
             try {
-                console.log('📧 Preparing to send registration email to:', user.email);
                 const emailData = {
                     name: user.name,
                     email: user.email,
                     events: ['Demo Event'], // You can customize this based on purchase items
                     qrCodeBase64: user.qrCodeBase64
                 };
-                console.log('📧 Email data prepared:', { name: emailData.name, email: emailData.email, hasQR: !!emailData.qrCodeBase64 });
 
                 const emailResult = await sendRegistrationEmail(user.email, emailData);
-                console.log('📧 Email sending result:', emailResult);
-                
                 if (emailResult.success) {
                     console.log('✅ Registration email sent successfully to:', user.email);
                     user.emailSent = true;
                     user.emailSentAt = new Date();
                     await user.save();
-                    console.log('✅ User email status updated in database');
                 } else {
                     console.error('❌ Failed to send registration email:', emailResult.error);
                 }
             } catch (emailError) {
                 console.error('❌ Email sending error:', emailError);
-                console.error('❌ Email error stack:', emailError.stack);
             }
 
             res.json({
@@ -777,41 +758,6 @@ router.get('/success/:orderId', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Internal server error',
-            error: error.message
-        });
-    }
-});
-
-// Test endpoint to check if success handler is working
-router.get('/test-success/:orderId', async (req, res) => {
-    try {
-        const { orderId } = req.params;
-        console.log('🧪 Test success endpoint called with orderId:', orderId);
-        
-        const purchase = await Purchase.findOne({ orderId: orderId });
-        if (!purchase) {
-            return res.json({
-                success: false,
-                message: 'Purchase not found',
-                orderId: orderId
-            });
-        }
-        
-        res.json({
-            success: true,
-            message: 'Test endpoint working',
-            purchase: {
-                orderId: purchase.orderId,
-                status: purchase.paymentStatus,
-                userId: purchase.userId,
-                qrGenerated: purchase.qrGenerated
-            }
-        });
-    } catch (error) {
-        console.error('❌ Test endpoint error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Test endpoint error',
             error: error.message
         });
     }

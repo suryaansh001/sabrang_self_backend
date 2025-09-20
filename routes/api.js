@@ -356,4 +356,92 @@ router.get('/team/:teamId', verifyToken, async (req, res) => {
   }
 });
 
+// Get team data by team leader email (accessible to authenticated users)
+router.post('/team-by-email', verifyToken, async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+
+    // Find the main person (team leader) by email
+    const mainPerson = await User.findOne({ 
+      email: email.toLowerCase().trim(),
+      isMainPerson: true 
+    });
+    
+    if (!mainPerson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Team not found for this email address'
+      });
+    }
+
+    // Get team members
+    const teamMembers = await TeamMember.find({ mainPersonId: mainPerson._id });
+
+    // Get events data
+    const events = mainPerson.events;
+    const eventData = [];
+    for (let i = 0; i < events.length; i++) {
+      const info = await Event.findOne({ name: events[i] });
+      if (info) {
+        eventData.push(info);
+      }
+    }
+
+    res.json({
+      success: true,
+      team: {
+        teamId: mainPerson.teamId || mainPerson._id,
+        mainPerson: {
+          id: mainPerson._id,
+          name: mainPerson.name,
+          email: mainPerson.email,
+          contactNo: mainPerson.contactNo,
+          gender: mainPerson.gender,
+          age: mainPerson.age,
+          universityName: mainPerson.universityName,
+          address: mainPerson.address,
+          profileImage: mainPerson.profileImage,
+          qrPath: mainPerson.qrPath,
+          qrCodeBase64: mainPerson.qrCodeBase64,
+          hasEntered: mainPerson.hasEntered,
+          entryTime: mainPerson.entryTime,
+          events: mainPerson.events
+        },
+        teamMembers: teamMembers.map(member => ({
+          id: member._id,
+          name: member.name,
+          email: member.email,
+          contactNo: member.contactNo,
+          gender: member.gender,
+          age: member.age,
+          universityName: member.universityName,
+          address: member.address,
+          profileImage: member.profileImage,
+          qrPath: member.qrPath,
+          qrCodeBase64: member.qrCodeBase64,
+          hasEntered: member.hasEntered,
+          entryTime: member.entryTime,
+          events: member.events
+        })),
+        teamSize: mainPerson.teamSize || (1 + teamMembers.length),
+        registeredEvents: eventData
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching team by email:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 module.exports = router;
