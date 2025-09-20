@@ -763,29 +763,37 @@ async function processSuccessfulPayment(purchase) {
     }
 
     // Step 6: Send emails to all team members if any
-    if (userData.teamMembers && userData.teamMembers.length > 0) {
+    // Check if user is a main person (has team members) and send emails
+    if (user.isMainPerson && user.teamSize > 1) {
       try {
-        console.log(`📧 Sending emails to ${userData.teamMembers.length} team members...`);
-        
-        // Get all team members for this user
+        // Get all team members for this user from database
         const teamMembers = await TeamMember.find({ mainPersonId: user._id });
+        console.log(`📧 Found ${teamMembers.length} team members for user ${user.name}, sending emails...`);
         
         for (const member of teamMembers) {
           try {
+            console.log(`📧 Processing team member: ${member.name} (${member.email})`);
+            
             // Get QR code for team member
             let memberQrCodeBase64 = null;
             if (member.qrCodeBase64) {
               memberQrCodeBase64 = member.qrCodeBase64;
+              console.log(`   ✅ Found QR code in database for ${member.name}`);
             } else if (member.qrPath) {
               try {
                 const memberQrFilePath = path.join(__dirname, '../public/qrcodes', `${member._id}.png`);
                 if (fs.existsSync(memberQrFilePath)) {
                   const qrBuffer = fs.readFileSync(memberQrFilePath);
                   memberQrCodeBase64 = qrBuffer.toString('base64');
+                  console.log(`   ✅ Found QR code file for ${member.name}`);
+                } else {
+                  console.log(`   ⚠️ QR code file not found for ${member.name} at: ${memberQrFilePath}`);
                 }
               } catch (qrReadError) {
-                console.log(`Could not read QR code for team member ${member.name}:`, qrReadError.message);
+                console.log(`   ❌ Could not read QR code for team member ${member.name}:`, qrReadError.message);
               }
+            } else {
+              console.log(`   ⚠️ No QR code data found for ${member.name}`);
             }
 
             const memberEmailData = {
@@ -801,6 +809,7 @@ async function processSuccessfulPayment(purchase) {
               teamLeader: user.name // Add team leader info
             };
 
+            console.log(`   📤 Sending email to ${member.email}...`);
             const memberEmailResult = await sendTeamMemberEmail(member.email, memberEmailData);
             
             if (memberEmailResult.success) {
@@ -808,16 +817,16 @@ async function processSuccessfulPayment(purchase) {
               member.emailSentAt = new Date();
               member.emailSentBy = user._id;
               await member.save();
-              console.log(`✅ Registration email sent to team member ${member.name} (${member.email})`);
+              console.log(`   ✅ Registration email sent successfully to team member ${member.name} (${member.email})`);
             } else {
-              console.error(`Failed to send email to team member ${member.name}:`, memberEmailResult.error);
+              console.error(`   ❌ Failed to send email to team member ${member.name}:`, memberEmailResult.error);
             }
             
             // Add small delay to avoid overwhelming the email service
             await new Promise(resolve => setTimeout(resolve, 1000));
             
           } catch (memberEmailError) {
-            console.error(`Error sending email to team member ${member.name}:`, memberEmailError);
+            console.error(`   ❌ Error sending email to team member ${member.name}:`, memberEmailError);
           }
         }
         
