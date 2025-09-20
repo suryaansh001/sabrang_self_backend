@@ -92,10 +92,126 @@ class MicrosoftOAuthMailer {
 }
 
 /**
+ * Generate registration email content for team members with full personal details
+ */
+function generateTeamMemberEmailContent(memberData) {
+    const { 
+        name, 
+        email, 
+        contactNo, 
+        gender, 
+        age, 
+        universityName, 
+        address, 
+        events, 
+        qrCodeBase64, 
+        teamLeader, 
+        customMessage 
+    } = memberData;
+    
+    const eventsText = events && events.length > 0 
+        ? events.join(', ') 
+        : 'No events registered';
+
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .details { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .qr-section { text-align: center; margin: 20px 0; }
+            .qr-code { max-width: 200px; border: 2px solid #ddd; border-radius: 8px; }
+            .footer { text-align: center; margin-top: 30px; color: #666; }
+            .events-list { background: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 10px 0; }
+            .team-info { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 15px 0; border-radius: 4px; }
+            .personal-details { background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎉 Welcome to Sabrang'25!</h1>
+                <p>Thank you for registering with us</p>
+            </div>
+            
+            <div class="content">
+                <h2>Registration Confirmed!</h2>
+                <p>Dear <strong>${name}</strong>,</p>
+                <p>Thanks for registering for <strong>Sabrang'25</strong>. We're excited to have you join us for this amazing event!</p>
+                
+                ${teamLeader ? `<div class="team-info"><p><strong>👥 Team Information:</strong></p><p>You are part of a team led by <strong>${teamLeader}</strong></p></div>` : ''}
+                ${customMessage ? `<div class="custom-message" style="background: #e8f5e8; padding: 15px; border-left: 4px solid #4caf50; margin: 15px 0; border-radius: 4px;"><p><strong>Special Message:</strong> ${customMessage}</p></div>` : ''}
+                
+                <div class="details">
+                    <h3>📋 Your Personal Registration Details:</h3>
+                    <div class="personal-details">
+                        <p><strong>Name:</strong> ${name}</p>
+                        <p><strong>Email:</strong> ${email}</p>
+                        ${contactNo ? `<p><strong>Contact Number:</strong> ${contactNo}</p>` : ''}
+                        ${gender ? `<p><strong>Gender:</strong> ${gender}</p>` : ''}
+                        ${age ? `<p><strong>Age:</strong> ${age}</p>` : ''}
+                        ${universityName ? `<p><strong>University:</strong> ${universityName}</p>` : ''}
+                        ${address ? `<p><strong>Address:</strong> ${address}</p>` : ''}
+                    </div>
+                    <div class="events-list">
+                        <strong>🎭 Events Registered For:</strong><br>
+                        ${eventsText}
+                    </div>
+                </div>
+                
+                <div class="qr-section">
+                    <h3>📱 Your Personal QR Code</h3>
+                    <p>Please present this QR code at the event entrance:</p>
+                    ${qrCodeBase64 ? `<img src="data:image/png;base64,${qrCodeBase64}" alt="QR Code" class="qr-code">` : '<p>QR Code will be available soon.</p>'}
+                    <p><small>Save this email or take a screenshot for easy access</small></p>
+                </div>
+                
+                <div class="footer">
+                    <p>🎊 We look forward to seeing you at Sabrang'25!</p>
+                    <p><strong>Team Sabrang'25</strong></p>
+                    <hr>
+                    <p><small>If you have any questions, please contact our support team.</small></p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+
+    const textContent = `
+Thanks for registering for Sabrang'25!
+
+Here are your personal registration details:
+
+Name: ${name}
+Email: ${email}
+${contactNo ? `Contact Number: ${contactNo}` : ''}
+${gender ? `Gender: ${gender}` : ''}
+${age ? `Age: ${age}` : ''}
+${universityName ? `University: ${universityName}` : ''}
+${address ? `Address: ${address}` : ''}
+${teamLeader ? `Team Leader: ${teamLeader}` : ''}
+Events registered for: ${eventsText}
+${customMessage ? `\nSpecial Message: ${customMessage}` : ''}
+
+Please save your QR code for event entry.
+
+Thanks,
+Team Sabrang'25
+    `;
+
+    return { htmlContent, textContent };
+}
+
+/**
  * Generate registration email content
  */
 function generateRegistrationEmailContent(userData) {
-    const { name, events, qrCodeBase64 } = userData;
+    const { name, events, qrCodeBase64, teamLeader, customMessage } = userData;
     
     const eventsText = events && events.length > 0 
         ? events.join(', ') 
@@ -128,6 +244,8 @@ function generateRegistrationEmailContent(userData) {
                 <h2>Registration Confirmed!</h2>
                 <p>Dear ${name},</p>
                 <p>Thanks for registering for <strong>Sabrang'25</strong>. We're excited to have you join us for this amazing event!</p>
+                ${teamLeader ? `<p><strong>Team Leader:</strong> ${teamLeader}</p>` : ''}
+                ${customMessage ? `<div class="custom-message" style="background: #e8f5e8; padding: 15px; border-left: 4px solid #4caf50; margin: 15px 0; border-radius: 4px;"><p><strong>Special Message:</strong> ${customMessage}</p></div>` : ''}
                 
                 <div class="details">
                     <h3>📋 Your Registration Details:</h3>
@@ -163,7 +281,9 @@ Thanks for registering for Sabrang'25!
 Here are your registration details:
 
 Name: ${name}
+${teamLeader ? `Team Leader: ${teamLeader}` : ''}
 Events registered for: ${eventsText}
+${customMessage ? `\nSpecial Message: ${customMessage}` : ''}
 
 Please save your QR code for event entry.
 
@@ -172,6 +292,47 @@ Team Sabrang'25
     `;
 
     return { htmlContent, textContent };
+}
+
+/**
+ * Send registration email to team member with full personal details
+ */
+async function sendTeamMemberEmail(memberEmail, memberData) {
+    try {
+        // Configuration from environment variables
+        const config = {
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            tenantId: process.env.TENANT_ID,
+            userEmail: process.env.FROM_EMAIL
+        };
+
+        // Validate required environment variables
+        const requiredEnvVars = ['CLIENT_ID', 'CLIENT_SECRET', 'TENANT_ID', 'FROM_EMAIL'];
+        const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+        
+        if (missingVars.length > 0) {
+            throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+        }
+
+        const mailer = new MicrosoftOAuthMailer(config);
+        const { htmlContent, textContent } = generateTeamMemberEmailContent(memberData);
+
+        const mailOptions = {
+            to: memberEmail,
+            subject: '🎉 Registration Confirmed - Sabrang\'25 (Team Member)',
+            text: textContent,
+            html: htmlContent
+        };
+
+        const result = await mailer.sendEmailGraph(mailOptions);
+        console.log(`✅ Team member registration email sent successfully to ${memberEmail}`);
+        return { success: true, result };
+
+    } catch (error) {
+        console.error(`❌ Failed to send team member registration email to ${memberEmail}:`, error.message);
+        return { success: false, error: error.message };
+    }
 }
 
 /**
@@ -365,7 +526,9 @@ async function sendPaymentInitiatedEmail(paymentData) {
 module.exports = {
     MicrosoftOAuthMailer,
     generateRegistrationEmailContent,
+    generateTeamMemberEmailContent,
     sendRegistrationEmail,
+    sendTeamMemberEmail,
     generatePaymentInitiationEmailContent,
     sendPaymentInitiatedEmail
 };

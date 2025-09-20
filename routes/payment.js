@@ -1,7 +1,7 @@
 const express = require('express');
 const { Cashfree, CFEnvironment } = require('cashfree-pg');
 const { Purchase, User, Event, TeamMember, PromoCode } = require('../models/models');
-const { sendRegistrationEmail } = require('../utils/emailService');
+const { sendRegistrationEmail, sendTeamMemberEmail } = require('../utils/emailService');
 const { generateUserQRCode } = require('../utils/qrCodeService');
 const shortid = require('shortid');
 const qr = require('qr-image');
@@ -783,6 +783,71 @@ async function processSuccessfulPayment(purchase) {
       }
     } catch (emailError) {
       console.error('Email sending error:', emailError);
+    }
+
+    // Step 6: Send emails to all team members if any
+    if (userData.teamMembers && userData.teamMembers.length > 0) {
+      try {
+        console.log(`📧 Sending emails to ${userData.teamMembers.length} team members...`);
+        
+        // Get all team members for this user
+        const teamMembers = await TeamMember.find({ mainPersonId: user._id });
+        
+        for (const member of teamMembers) {
+          try {
+            // Get QR code for team member
+            let memberQrCodeBase64 = null;
+            if (member.qrCodeBase64) {
+              memberQrCodeBase64 = member.qrCodeBase64;
+            } else if (member.qrPath) {
+              try {
+                const memberQrFilePath = path.join(__dirname, '../public/qrcodes', `${member._id}.png`);
+                if (fs.existsSync(memberQrFilePath)) {
+                  const qrBuffer = fs.readFileSync(memberQrFilePath);
+                  memberQrCodeBase64 = qrBuffer.toString('base64');
+                }
+              } catch (qrReadError) {
+                console.log(`Could not read QR code for team member ${member.name}:`, qrReadError.message);
+              }
+            }
+
+            const memberEmailData = {
+              name: member.name,
+              email: member.email,
+              contactNo: member.contactNo,
+              gender: member.gender,
+              age: member.age,
+              universityName: member.universityName,
+              address: member.address,
+              events: member.events || eventNames,
+              qrCodeBase64: memberQrCodeBase64,
+              teamLeader: user.name // Add team leader info
+            };
+
+            const memberEmailResult = await sendTeamMemberEmail(member.email, memberEmailData);
+            
+            if (memberEmailResult.success) {
+              member.emailSent = true;
+              member.emailSentAt = new Date();
+              member.emailSentBy = user._id;
+              await member.save();
+              console.log(`✅ Registration email sent to team member ${member.name} (${member.email})`);
+            } else {
+              console.error(`Failed to send email to team member ${member.name}:`, memberEmailResult.error);
+            }
+            
+            // Add small delay to avoid overwhelming the email service
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+          } catch (memberEmailError) {
+            console.error(`Error sending email to team member ${member.name}:`, memberEmailError);
+          }
+        }
+        
+        console.log(`📧 Completed sending emails to team members`);
+      } catch (teamEmailError) {
+        console.error('Error processing team member emails:', teamEmailError);
+      }
     }
 
     // Save user with all updates
