@@ -2,6 +2,8 @@ const express = require('express');
 const crypto = require('crypto');
 const { Cashfree, CFEnvironment } = require('cashfree-pg');
 const { User, Purchase } = require('../models/models');
+const { sendRegistrationEmail } = require('../utils/emailService');
+const { generateUserQRCode } = require('../utils/qrCodeService');
 const qr = require('qr-image');
 const fs = require('fs');
 const path = require('path');
@@ -301,6 +303,7 @@ router.post('/create-order', async (req, res) => {
 
         // Save order to database
         try {
+            console.log('🔍 Creating purchase record for orderId:', response.data.order_id);
             const newPurchase = new Purchase({
                 orderId: response.data.order_id,
                 paymentSessionId: response.data.payment_session_id,
@@ -317,6 +320,7 @@ router.post('/create-order', async (req, res) => {
                     quantity: 1,
                     price: parseFloat(amount)
                 }],
+                subtotal: parseFloat(amount), // Add required subtotal field
                 totalAmount: parseFloat(amount),
                 currency: "INR",
                 paymentStatus: 'pending',
@@ -329,8 +333,19 @@ router.post('/create-order', async (req, res) => {
                 }
             });
 
-            await newPurchase.save();
-            console.log('✅ Order saved to database:', response.data.order_id);
+            try {
+                console.log('🔍 Attempting to save purchase with orderId:', newPurchase.orderId);
+                await newPurchase.save();
+                console.log('✅ Order saved to database:', response.data.order_id);
+            } catch (error) {
+                console.error('❌ Error saving purchase:', error);
+                console.error('Purchase orderId:', newPurchase.orderId);
+                console.error('Error details:', error.message);
+                if (error.code === 11000) {
+                    console.error('❌ Duplicate orderId error - orderId already exists:', newPurchase.orderId);
+                }
+                throw error;
+            }
 
             // Generate QR code for the purchase using MongoDB ObjectID
             let qrCodeBase64 = null;
@@ -357,38 +372,7 @@ router.post('/create-order', async (req, res) => {
             }
 
             // Send confirmation email with QR code
-            try {
-                const emailService = require('../utils/emailService');
-                
-                console.log('📧 Attempting to send email to:', customerEmail);
-                console.log('📧 Environment variables check:', {
-                    CLIENT_ID: process.env.CLIENT_ID ? 'SET' : 'MISSING',
-                    CLIENT_SECRET: process.env.CLIENT_SECRET ? 'SET' : 'MISSING', 
-                    TENANT_ID: process.env.TENANT_ID ? 'SET' : 'MISSING',
-                    FROM_EMAIL: process.env.FROM_EMAIL ? 'SET' : 'MISSING'
-                });
-                
-                const emailResult = await emailService.sendPaymentInitiatedEmail({
-                    email: customerEmail,
-                    name: customerName,
-                    orderId: response.data.order_id,
-                    amount: amount,
-                    paymentSessionId: response.data.payment_session_id,
-                    environment: isUsingProd ? 'production' : 'sandbox',
-                    qrCodeBase64: qrCodeBase64,
-                    purchaseId: newPurchase._id
-                });
-                
-                if (emailResult.success) {
-                    console.log('✅ Confirmation email sent successfully to:', customerEmail);
-                } else {
-                    console.error('❌ Email sending failed:', emailResult.error);
-                }
-            } catch (emailError) {
-                console.error('❌ Failed to send email:', emailError.message);
-                console.error('❌ Email error stack:', emailError.stack);
-                // Don't fail the order creation if email fails
-            }
+            // Note: Email will be sent after payment completion via /success/:orderId endpoint
 
         } catch (dbError) {
             console.error('❌ Failed to save order to database:', dbError.message);
@@ -624,6 +608,145 @@ router.get('/status/:orderId', async (req, res) => {
             });
         }
 
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+});
+
+// Payment success handler - processes completed payments and sends emails
+router.get('/success/:orderId', async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        console.log('🎉 Processing payment success for order:', orderId);
+
+        // Find the purchase record
+        const purchase = await Purchase.findOne({ orderId: orderId });
+        if (!purchase) {
+            console.error('❌ Purchase not found for orderId:', orderId);
+            return res.status(404).json({
+                success: false,
+                message: 'Purchase not found'
+            });
+        }
+
+        // Check if payment is already processed
+        if (purchase.paymentStatus === 'completed') {
+            console.log('✅ Payment already processed for order:', orderId);
+            return res.json({
+                success: true,
+                message: 'Payment already processed',
+                purchase: purchase
+            });
+        }
+
+        // Verify payment status with Cashfree
+        let paymentStatus;
+        try {
+            const response = await cashfree.PGOrderFetchPayments(orderId);
+            const payments = response.data;
+            
+            if (payments && payments.length > 0) {
+                const latestPayment = payments[payments.length - 1];
+                paymentStatus = latestPayment.payment_status;
+                console.log('🔍 Payment status from Cashfree:', paymentStatus);
+            } else {
+                console.log('⚠️ No payment data found for order:', orderId);
+                paymentStatus = 'pending';
+            }
+        } catch (error) {
+            console.error('❌ Error verifying payment status:', error);
+            paymentStatus = 'pending';
+        }
+
+        // Update purchase status
+        purchase.paymentStatus = paymentStatus === 'SUCCESS' ? 'completed' : 'pending';
+        purchase.paymentCompletedAt = new Date();
+        await purchase.save();
+
+        if (paymentStatus === 'SUCCESS') {
+            console.log('✅ Payment confirmed as successful for order:', orderId);
+            
+            // Create or find user
+            let user = await User.findOne({ email: purchase.userDetails.email });
+            if (!user) {
+                console.log('👤 Creating new user for email:', purchase.userDetails.email);
+                user = new User({
+                    name: purchase.userDetails.name,
+                    email: purchase.userDetails.email,
+                    contactNo: purchase.userDetails.contactNo || '',
+                    isvalidated: true
+                });
+            }
+
+            // Generate QR code for user
+            try {
+                const qrCodeBase64 = await generateUserQRCode(user._id, {
+                    name: user.name,
+                    email: user.email
+                });
+                user.qrPath = `${user._id}`;
+                user.qrCodeBase64 = qrCodeBase64;
+                console.log('✅ QR code generated for user:', user._id);
+            } catch (qrError) {
+                console.error('❌ QR code generation failed:', qrError);
+            }
+
+            await user.save();
+
+            // Update purchase with user ID
+            purchase.userId = user._id;
+            purchase.qrGenerated = true;
+            await purchase.save();
+
+            // Send registration email
+            try {
+                const emailData = {
+                    name: user.name,
+                    email: user.email,
+                    events: ['Demo Event'], // You can customize this based on purchase items
+                    qrCodeBase64: user.qrCodeBase64
+                };
+
+                const emailResult = await sendRegistrationEmail(user.email, emailData);
+                if (emailResult.success) {
+                    console.log('✅ Registration email sent successfully to:', user.email);
+                    user.emailSent = true;
+                    user.emailSentAt = new Date();
+                    await user.save();
+                } else {
+                    console.error('❌ Failed to send registration email:', emailResult.error);
+                }
+            } catch (emailError) {
+                console.error('❌ Email sending error:', emailError);
+            }
+
+            res.json({
+                success: true,
+                message: 'Payment processed successfully',
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email
+                },
+                purchase: {
+                    orderId: purchase.orderId,
+                    status: purchase.paymentStatus
+                }
+            });
+        } else {
+            console.log('⏳ Payment still pending for order:', orderId);
+            res.json({
+                success: true,
+                message: 'Payment is still pending',
+                status: 'pending'
+            });
+        }
+
+    } catch (error) {
+        console.error('❌ Payment success processing error:', error);
         res.status(500).json({
             success: false,
             message: 'Internal server error',

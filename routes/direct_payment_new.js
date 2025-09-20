@@ -240,8 +240,19 @@ router.post('/cashfree/create-order', upload.any(), async (req, res) => {
       }
     });
 
-    await purchase.save();
-    console.log('✅ Purchase record saved with ID:', purchase._id);
+    try {
+      console.log('🔍 Attempting to save purchase with orderId:', purchase.orderId);
+      await purchase.save();
+      console.log('✅ Purchase record saved with ID:', purchase._id);
+    } catch (error) {
+      console.error('❌ Error saving purchase:', error);
+      console.error('Purchase orderId:', purchase.orderId);
+      console.error('Error details:', error.message);
+      if (error.code === 11000) {
+        console.error('❌ Duplicate orderId error - orderId already exists:', purchase.orderId);
+      }
+      throw error;
+    }
 
     // Create Cashfree order request following the official documentation
     const createOrderRequest = {
@@ -543,8 +554,9 @@ async function validatePromoCode(code, userEmail, orderAmount) {
 // Generate QR code for user as base64
 async function generateQRCode(userId, userData) {
   try {
+    console.log(`🔍 Generating QR code for user: ${userId}`);
     const qrCodeBase64 = await generateUserQRCode(userId, userData);
-    console.log(`✅ QR code generated as base64 for user: ${userId}`);
+    console.log(`✅ QR code generated as base64 for user: ${userId}, length: ${qrCodeBase64 ? qrCodeBase64.length : 'null'}`);
     return qrCodeBase64;
   } catch (error) {
     console.error('❌ QR code generation error:', error);
@@ -610,17 +622,24 @@ async function processSuccessfulPayment(purchase) {
 
     // Step 2: Generate QR code
     try {
+      console.log(`🔍 Attempting QR generation for user ID: ${user._id} (type: ${typeof user._id})`);
       const qrCodeBase64 = await generateQRCode(user._id, userData);
+      console.log(`🔍 Generated QR base64 length: ${qrCodeBase64 ? qrCodeBase64.length : 'null'}`);
       user.qrPath = `${user._id}`; // Keep for backward compatibility
       user.qrCodeBase64 = qrCodeBase64;
-      await user.save();
       
       purchase.qrGenerated = true;
       purchase.qrPath = `${user._id}`; // Keep for backward compatibility
       purchase.qrCodeBase64 = qrCodeBase64;
+      console.log(`🔍 Set qrCodeBase64 on user and purchase`);
     } catch (qrError) {
       console.error('QR generation failed, but continuing:', qrError);
+      console.error('User ID that failed:', user._id);
+      console.error('User ID type:', typeof user._id);
       purchase.qrGenerated = false;
+      // Set empty values to avoid undefined issues
+      user.qrCodeBase64 = '';
+      purchase.qrCodeBase64 = '';
     }
 
     // Step 3: Process team members if any
@@ -628,7 +647,6 @@ async function processSuccessfulPayment(purchase) {
       user.isMainPerson = true;
       user.teamId = `TEAM_${user._id}_${Date.now()}`;
       user.teamSize = userData.teamMembers.length + 1;
-      await user.save();
 
       // Create team member records
       for (const memberData of userData.teamMembers) {
@@ -744,7 +762,14 @@ async function processSuccessfulPayment(purchase) {
       console.error('Email sending error:', emailError);
     }
 
+    // Save user with all updates
+    console.log(`🔍 Saving user with qrCodeBase64: ${user.qrCodeBase64 ? 'present' : 'missing'}`);
+    await user.save();
+    console.log(`🔍 User saved successfully`);
+    
+    console.log(`🔍 Saving purchase with qrCodeBase64: ${purchase.qrCodeBase64 ? 'present' : 'missing'}`);
     await purchase.save();
+    console.log(`🔍 Purchase saved successfully`);
     console.log(`✅ Payment processing completed for order: ${purchase.orderId}`);
     
     return { success: true, user: user };
