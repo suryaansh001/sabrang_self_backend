@@ -358,9 +358,14 @@ router.post('/create-order', async (req, res) => {
 // Generate QR code for user using MongoDB ObjectID (Enhanced from direct_payment_new.js)
 async function generateQRCode(purchaseId, userData) {
     try {
-        const qrDir = path.join(__dirname, '../public/qrcodes');
+        // Use Railway permanent volume path in production, fallback to local path in development
+        const qrDir = process.env.NODE_ENV === 'production' 
+            ? '/app/qrcodes' 
+            : path.join(__dirname, '../public/qrcodes');
+            
         if (!fs.existsSync(qrDir)) {
             fs.mkdirSync(qrDir, { recursive: true });
+            console.log(`📁 Created QR directory: ${qrDir}`);
         }
 
         const qrData = JSON.stringify({
@@ -373,7 +378,11 @@ async function generateQRCode(purchaseId, userData) {
 
         const qrFilename = `${purchaseId}.png`;
         const qrPath = path.join(qrDir, qrFilename);
-        const qrRelativePath = `/public/qrcodes/${qrFilename}`;
+        
+        // Update relative path for serving
+        const qrRelativePath = process.env.NODE_ENV === 'production'
+            ? `/qrcodes/${qrFilename}`
+            : `/public/qrcodes/${qrFilename}`;
 
         return new Promise((resolve, reject) => {
             const qrPng = qr.image(qrData, { type: 'png', size: 10 });
@@ -382,7 +391,8 @@ async function generateQRCode(purchaseId, userData) {
             qrPng.pipe(writeStream);
             
             writeStream.on('finish', () => {
-                console.log(`✅ QR code generated: ${qrRelativePath}`);
+                console.log(`✅ QR code generated: ${qrPath}`);
+                console.log(`📋 QR code will be served at: ${qrRelativePath}`);
                 resolve({ qrPath: qrRelativePath, qrFilePath: qrPath });
             });
             
@@ -542,13 +552,30 @@ async function processSuccessfulPayment(purchase) {
       let qrCodeBase64 = null;
       if (user.qrPath) {
         try {
-          const qrFilePath = path.join(__dirname, '..', user.qrPath);
+          // Handle both production and development paths
+          let qrFilePath;
+          if (process.env.NODE_ENV === 'production' && user.qrPath.startsWith('/qrcodes/')) {
+            // Production: direct path to volume
+            qrFilePath = `/app${user.qrPath}`;
+          } else if (user.qrPath.startsWith('/public/qrcodes/')) {
+            // Development: relative to project root
+            qrFilePath = path.join(__dirname, '..', user.qrPath);
+          } else {
+            // Fallback: try both paths
+            const prodPath = `/app/qrcodes/${path.basename(user.qrPath)}`;
+            const devPath = path.join(__dirname, '../public/qrcodes', path.basename(user.qrPath));
+            qrFilePath = fs.existsSync(prodPath) ? prodPath : devPath;
+          }
+          
           if (fs.existsSync(qrFilePath)) {
             const qrBuffer = fs.readFileSync(qrFilePath);
             qrCodeBase64 = qrBuffer.toString('base64');
+            console.log(`✅ QR code read for email from: ${qrFilePath}`);
+          } else {
+            console.log(`⚠️ QR code file not found at: ${qrFilePath}`);
           }
         } catch (qrReadError) {
-          console.log('Could not read QR code for email');
+          console.log('Could not read QR code for email:', qrReadError.message);
         }
       }
 

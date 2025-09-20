@@ -53,7 +53,7 @@ app.use((req, res, next) => {
 // CORS configuration
 app.use(cors({
   origin: [
-    'https://sabrang25-first-draft.vercel.app', 
+    'https://sabrang.jklu.edu.in', 
     'http://localhost:3000',
     'http://localhost:3001',
     'http://127.0.0.1:3000',
@@ -71,6 +71,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Serve static files from public directory
 app.use('/public', express.static(path.join(__dirname, 'public')));
+
+// Serve QR codes from Railway volume in production, fallback to local in development
+if (process.env.NODE_ENV === 'production') {
+  app.use('/qrcodes', express.static('/app/qrcodes'));
+  console.log('🗂️ Serving QR codes from Railway volume: /app/qrcodes');
+} else {
+  app.use('/qrcodes', express.static(path.join(__dirname, 'public/qrcodes')));
+  console.log('🗂️ Serving QR codes from local directory: public/qrcodes');
+}
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -300,8 +309,19 @@ app.post("/register", upload.any(), async (req, res) => {
     // Generate QR code for main person
     const qr = require('qr-image');
     const mainPersonQrFilename = `${mainPerson._id}.png`;
-    const mainPersonQrPath = `public/qrcodes/${mainPersonQrFilename}`;
-    if (!fs.existsSync("public/qrcodes")) fs.mkdirSync("public/qrcodes", { recursive: true });
+    
+    // Use Railway volume in production, local path in development
+    const qrDir = process.env.NODE_ENV === 'production' 
+      ? '/app/qrcodes' 
+      : path.join(__dirname, 'public/qrcodes');
+    const mainPersonQrPath = path.join(qrDir, mainPersonQrFilename);
+    
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(qrDir)) {
+      fs.mkdirSync(qrDir, { recursive: true });
+      console.log(`📁 Created QR directory: ${qrDir}`);
+    }
+    
     if (!fs.existsSync(mainPersonQrPath)) {
       const qr_png = qr.image(`${mainPerson._id}`, { type: 'png' });
       const qrStream = fs.createWriteStream(mainPersonQrPath);
@@ -310,6 +330,7 @@ app.post("/register", upload.any(), async (req, res) => {
         qrStream.on('finish', resolve);
         qrStream.on('error', reject);
       });
+      console.log(`✅ QR code generated for main person: ${mainPersonQrPath}`);
     }
     await User.findOneAndUpdate({ _id: mainPerson._id }, { qrPath: `${mainPerson._id}` }, { new: true });
 
@@ -339,7 +360,13 @@ app.post("/register", upload.any(), async (req, res) => {
 
       // Generate QR code for team member based on saved _id
       const memberQrFilename = `${teamMember._id}.png`;
-      const memberQrPath = `public/qrcodes/${memberQrFilename}`;
+      
+      // Use Railway volume in production, local path in development
+      const qrDir = process.env.NODE_ENV === 'production' 
+        ? '/app/qrcodes' 
+        : path.join(__dirname, 'public/qrcodes');
+      const memberQrPath = path.join(qrDir, memberQrFilename);
+      
       const qr_png_member = qr.image(`${teamMember._id}`, { type: 'png' });
       const qrStreamMember = fs.createWriteStream(memberQrPath);
       qr_png_member.pipe(qrStreamMember);
@@ -349,6 +376,8 @@ app.post("/register", upload.any(), async (req, res) => {
       });
       teamMember.qrPath = `${teamMember._id}`;
       await teamMember.save();
+      
+      console.log(`✅ QR code generated for team member: ${memberQrPath}`);
 
       createdTeamMembers.push(teamMember);
     }
@@ -396,6 +425,7 @@ app.post("/register", upload.any(), async (req, res) => {
     });
   }
 });
+
 
 // Protected routes (authentication required)
 app.use("/api", apirouter);
@@ -454,14 +484,17 @@ passport.use(new GoogleStrategy({
       const qr = require('qr-image');
       
       const qrFilename = `${user._id}.png`;
-      const qrPath = `public/qrcodes/${qrFilename}`;
+      
+      // Use Railway volume in production, local path in development
+      const qrDir = process.env.NODE_ENV === 'production' 
+        ? '/app/qrcodes' 
+        : path.join(__dirname, 'public/qrcodes');
+      const qrPath = path.join(qrDir, qrFilename);
       
       // Create directories if they don't exist
-      if (!fs.existsSync("public")) {
-        fs.mkdirSync("public");
-      }
-      if (!fs.existsSync("public/qrcodes")) {
-        fs.mkdirSync("public/qrcodes");
+      if (!fs.existsSync(qrDir)) {
+        fs.mkdirSync(qrDir, { recursive: true });
+        console.log(`📁 Created QR directory: ${qrDir}`);
       }
       
       // Generate and save QR code
