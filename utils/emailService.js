@@ -106,15 +106,83 @@ function generateRegistrationEmailContent(userData) {
     <html>
     <head>
         <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-            .details { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-            .ticket-section { text-align: center; margin: 20px 0; }
-            .ticket-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 10px 0; }
-            .footer { text-align: center; margin-top: 30px; color: #666; }
-            .events-list { background: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 10px 0; }
+            body { 
+                font-family: Arial, sans-serif; 
+                line-height: 1.6; 
+                color: #ffffff; 
+                margin: 0; 
+                padding: 0; 
+                background-color: #1e3a8a;
+            }
+            .container { 
+                max-width: 600px; 
+                margin: 0 auto; 
+                padding: 20px; 
+                background-color: #1e3a8a;
+            }
+            .header { 
+                background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); 
+                color: white; 
+                padding: 30px; 
+                text-align: center; 
+                border-radius: 10px 10px 0 0; 
+                border: 2px solid #60a5fa;
+            }
+            .content { 
+                background-color: #2563eb; 
+                color: #ffffff; 
+                padding: 30px; 
+                border-radius: 0 0 10px 10px; 
+                border: 2px solid #60a5fa; 
+                border-top: none;
+            }
+            .details { 
+                background-color: #1d4ed8; 
+                color: #ffffff; 
+                padding: 20px; 
+                margin: 20px 0; 
+                border-radius: 8px; 
+                border: 2px solid #60a5fa;
+            }
+            .ticket-section { 
+                text-align: center; 
+                margin: 20px 0; 
+                background-color: #1e40af; 
+                padding: 20px; 
+                border-radius: 8px; 
+                border: 2px solid #60a5fa;
+            }
+            .ticket-button { 
+                display: inline-block; 
+                background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); 
+                color: #1e3a8a; 
+                padding: 15px 30px; 
+                text-decoration: none; 
+                border-radius: 25px; 
+                font-weight: bold; 
+                margin: 10px 0;
+                border: 2px solid #fcd34d;
+            }
+            .footer { 
+                text-align: center; 
+                margin-top: 30px; 
+                color: #e0e7ff; 
+                background-color: #1e40af; 
+                padding: 20px; 
+                border-radius: 8px; 
+                border: 2px solid #60a5fa;
+            }
+            .events-list { 
+                background-color: #3730a3; 
+                color: #ffffff; 
+                padding: 15px; 
+                border-left: 4px solid #fbbf24; 
+                margin: 10px 0; 
+                border-radius: 5px;
+            }
+            h1, h2, h3 { color: #ffffff; }
+            p { color: #ffffff; }
+            strong { color: #fbbf24; }
         </style>
     </head>
     <body>
@@ -126,7 +194,7 @@ function generateRegistrationEmailContent(userData) {
             
             <div class="content">
                 <h2>Registration Confirmed!</h2>
-                <p>Hi ${name},</p>
+                <p>Hi <strong>${name}</strong>,</p>
                 <p>We're thrilled to have you join us for <strong>Sabrang'25</strong> — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.</p>
                 
                 <div class="details">
@@ -249,14 +317,82 @@ function generatePaymentInitiationEmailContent(paymentData) {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>🔐 Your Sabrang'25 Ticket Access OTP</title>
             <style>
-                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
-                .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
-                .content { padding: 30px; }
-                .otp-section { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
-                .otp-code { font-size: 32px; font-weight: bold; color: #667eea; letter-spacing: 5px; margin: 10px 0; }
-                .footer { text-align: center; margin-top: 30px; color: #666; }
-                .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 20px 0; }
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    line-height: 1.6; 
+                    color: #ffffff; 
+                    margin: 0; 
+                    padding: 0; 
+                    background-color: #1e3a8a;
+                }
+                .container { 
+                    max-width: 600px; 
+                    margin: 0 auto; 
+                    background-color: #1e3a8a; 
+                    border-radius: 10px; 
+                    overflow: hidden; 
+                    border: 2px solid #60a5fa;
+                }
+                .header { 
+                    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); 
+                    color: white; 
+                    padding: 30px; 
+                    text-align: center; 
+                }
+                .content { 
+                    padding: 30px; 
+                    background-color: #2563eb; 
+                    color: #ffffff;
+                }
+                .otp-section { 
+                    background-color: #1d4ed8; 
+                    padding: 20px; 
+                    border-radius: 8px; 
+                    margin: 20px 0; 
+                    text-align: center; 
+                    border: 2px solid #60a5fa;
+                }
+                .otp-code { 
+                    font-size: 32px; 
+                    font-weight: bold; 
+                    color: #fbbf24; 
+                    letter-spacing: 5px; 
+                    margin: 10px 0; 
+                    background-color: #1e40af; 
+                    padding: 15px; 
+                    border-radius: 8px; 
+                    border: 2px solid #fcd34d;
+                }
+                .footer { 
+                    text-align: center; 
+                    margin-top: 30px; 
+                    color: #e0e7ff; 
+                    background-color: #1e40af; 
+                    padding: 20px; 
+                    border-radius: 8px; 
+                    border: 2px solid #60a5fa;
+                }
+                .warning { 
+                    background-color: #dc2626; 
+                    border: 2px solid #fca5a5; 
+                    color: #ffffff; 
+                    padding: 15px; 
+                    border-radius: 8px; 
+                    margin: 20px 0; 
+                }
+                .events-list { 
+                    background-color: #3730a3; 
+                    color: #ffffff; 
+                    padding: 15px; 
+                    border-left: 4px solid #fbbf24; 
+                    margin: 20px 0; 
+                    border-radius: 8px;
+                }
+                h1, h2, h3 { color: #ffffff; }
+                p { color: #ffffff; }
+                strong { color: #fbbf24; }
+                ul { color: #ffffff; }
+                li { color: #ffffff; }
             </style>
         </head>
         <body>
@@ -266,10 +402,10 @@ function generatePaymentInitiationEmailContent(paymentData) {
                     <p>Your secure access code for Sabrang'25 tickets</p>
                 </div>
                 <div class="content">
-                    <h2>Hello ${name},</h2>
+                    <h2>Hello <strong>${name}</strong>,</h2>
                     <p>You've requested access to view your Sabrang'25 tickets. Please use the following OTP to verify your identity:</p>
                     
-                    <div style="background-color: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 20px 0; border-radius: 8px;">
+                    <div class="events-list">
                         <strong>Your Registered Events:</strong><br />
                         ${eventsText}
                     </div>
@@ -340,15 +476,80 @@ Need help? Contact us anytime.`;
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>🎉 Welcome to Sabrang'25!</title>
             <style>
-                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f4f4; }
-                .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }
-                .content { padding: 30px; }
-                .order-details { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
-                .footer { text-align: center; margin-top: 30px; color: #666; }
-                .events-list { background-color: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 10px 0; }
-                .ticket-section { background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }
-                .ticket-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 10px 0; }
+                body { 
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                    line-height: 1.6; 
+                    color: #ffffff; 
+                    margin: 0; 
+                    padding: 0; 
+                    background-color: #1e3a8a;
+                }
+                .container { 
+                    max-width: 600px; 
+                    margin: 0 auto; 
+                    background-color: #1e3a8a; 
+                    border-radius: 10px; 
+                    overflow: hidden; 
+                    border: 2px solid #60a5fa;
+                }
+                .header { 
+                    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); 
+                    color: white; 
+                    padding: 30px; 
+                    text-align: center; 
+                }
+                .content { 
+                    padding: 30px; 
+                    background-color: #2563eb; 
+                    color: #ffffff;
+                }
+                .order-details { 
+                    background-color: #1d4ed8; 
+                    padding: 20px; 
+                    border-radius: 8px; 
+                    margin: 20px 0; 
+                    border: 2px solid #60a5fa;
+                }
+                .footer { 
+                    text-align: center; 
+                    margin-top: 30px; 
+                    color: #e0e7ff; 
+                    background-color: #1e40af; 
+                    padding: 20px; 
+                    border-radius: 8px; 
+                    border: 2px solid #60a5fa;
+                }
+                .events-list { 
+                    background-color: #3730a3; 
+                    color: #ffffff; 
+                    padding: 15px; 
+                    border-left: 4px solid #fbbf24; 
+                    margin: 10px 0; 
+                    border-radius: 8px;
+                }
+                .ticket-section { 
+                    background-color: #1d4ed8; 
+                    padding: 20px; 
+                    border-radius: 8px; 
+                    margin: 20px 0; 
+                    text-align: center; 
+                    border: 2px solid #60a5fa;
+                }
+                .ticket-button { 
+                    display: inline-block; 
+                    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); 
+                    color: #1e3a8a; 
+                    padding: 15px 30px; 
+                    text-decoration: none; 
+                    border-radius: 25px; 
+                    font-weight: bold; 
+                    margin: 10px 0; 
+                    border: 2px solid #fcd34d;
+                }
+                h1, h2, h3 { color: #ffffff; }
+                p { color: #ffffff; }
+                strong { color: #fbbf24; }
+                a { color: #1e3a8a; }
             </style>
         </head>
         <body>

@@ -1,0 +1,82 @@
+// Quick test to create a team registration and verify ticket page functionality
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+mongoose.connect(process.env.mongodb);
+
+const { User, TeamComposition } = require('./models/models');
+
+async function createTestTeamData() {
+    try {
+        console.log('🧪 Creating test team data...\n');
+
+        // Create team leader
+        const teamLeader = new User({
+            name: 'Test Team Leader',
+            email: 'testleader@example.com',
+            college: 'Test University',
+            studentId: 'TL2024001',
+            phoneNumber: '+919999999990',
+            events: ['BGMI'],
+            userType: 'participant',
+            qrCodeBase64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+        });
+        await teamLeader.save();
+        console.log('✅ Created team leader:', teamLeader.email);
+
+        // Create team members
+        const teamMembers = [];
+        for (let i = 1; i <= 3; i++) {
+            const member = new User({
+                name: `Test Team Member ${i}`,
+                email: `teammember${i}@example.com`,
+                college: 'Test University',
+                studentId: `TM2024${i.toString().padStart(3, '0')}`,
+                phoneNumber: `+91999999999${i}`,
+                events: ['BGMI'],
+                userType: 'participant',
+                qrCodeBase64: 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+            });
+            await member.save();
+            teamMembers.push(member);
+            console.log(`✅ Created team member ${i}:`, member.email);
+        }
+
+        // Create team composition
+        const teamComposition = new TeamComposition({
+            teamLeader: {
+                userId: teamLeader._id,
+                name: teamLeader.name,
+                email: teamLeader.email,
+                hasEntered: false
+            },
+            teamMembers: teamMembers.map(member => ({
+                userId: member._id,
+                name: member.name,
+                email: member.email,
+                hasEntered: false
+            })),
+            eventName: 'BGMI',
+            eventId: 'bgmi-test',
+            totalMembers: 4,
+            paymentStatus: 'completed',
+            teamEntryStatus: 'not_entered'
+        });
+        await teamComposition.save();
+        console.log('✅ Created team composition:', teamComposition._id);
+
+        console.log('\n🎯 Test data created successfully!');
+        console.log(`📧 Use email: ${teamLeader.email} to test the ticket page`);
+        console.log('🔍 You should see:');
+        console.log('   - 1 Team Leader registration');
+        console.log('   - 3 Team Members with QR codes');
+        console.log('   - All QR codes should display properly');
+
+    } catch (error) {
+        console.error('❌ Error creating test data:', error);
+    } finally {
+        mongoose.disconnect();
+    }
+}
+
+createTestTeamData();
