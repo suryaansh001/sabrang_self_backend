@@ -707,7 +707,38 @@ app.post("/register", upload.any(), async (req, res) => {
         const eventFlagshipVisitors = createdFlagshipVisitors.filter(visitor => visitor.eventName === eventName);
         const allEventMembers = [...createdTeamMembers, ...eventSupportStaff, ...eventFlagshipVisitors];
         
+        // Debug: Check all members have valid userId
+        console.log(`🔍 Debug - Event ${eventName} members:`, allEventMembers.map(m => ({ 
+          name: m.name, 
+          email: m.email, 
+          userId: m.userId, 
+          userIdType: typeof m.userId,
+          role: m.role 
+        })));
+        
         if (allEventMembers.length > 0) {
+          // Validate all members have userId
+          const membersWithoutUserId = allEventMembers.filter(member => !member.userId);
+          if (membersWithoutUserId.length > 0) {
+            console.error(`❌ Found ${membersWithoutUserId.length} members without userId:`, membersWithoutUserId);
+            console.error(`Full member details:`, JSON.stringify(membersWithoutUserId, null, 2));
+            throw new Error(`Invalid team members: ${membersWithoutUserId.length} members missing userId`);
+          }
+          
+          // Additional validation: ensure all userIds are valid ObjectIds
+          const membersWithInvalidUserId = allEventMembers.filter(member => {
+            try {
+              return !mongoose.Types.ObjectId.isValid(member.userId);
+            } catch (e) {
+              return true;
+            }
+          });
+          
+          if (membersWithInvalidUserId.length > 0) {
+            console.error(`❌ Found ${membersWithInvalidUserId.length} members with invalid userId:`, membersWithInvalidUserId);
+            throw new Error(`Invalid team members: ${membersWithInvalidUserId.length} members have invalid userId format`);
+          }
+          
           // Generate unique team ID
           const teamId = `TEAM_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
           
@@ -722,16 +753,20 @@ app.post("/register", upload.any(), async (req, res) => {
               email: mainPerson.email,
               hasEntered: false
             },
-            teamMembers: allEventMembers.map(member => ({
-              userId: member.userId,
-              name: member.name,
-              email: member.email,
-              hasEntered: false,
-              role: member.role || 'member'
-            })),
+            teamMembers: allEventMembers.map(member => {
+              console.log(`🔍 Mapping member:`, { name: member.name, userId: member.userId, type: typeof member.userId });
+              return {
+                userId: member.userId,
+                name: member.name,
+                email: member.email,
+                hasEntered: false,
+                role: member.role || 'member'
+              };
+            }),
             totalMembers: allEventMembers.length + 1, // +1 for team leader
             registrationComplete: true,
             paymentStatus: 'pending', // Will be updated after payment
+            createdAt: new Date(),
             createdAt: new Date(),
             updatedAt: new Date()
           });
