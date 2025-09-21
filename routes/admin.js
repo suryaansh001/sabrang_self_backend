@@ -109,33 +109,23 @@ router.get("/verify/:id", verifyAdmin, async (req, res) => {
     let teamInfo = null;
     
     if (!person) {
-      // If not found as User, try as TeamMember
-      const teamMember = await TeamMember.findById(id);
-      if (teamMember) {
-        person = teamMember;
-        isTeamMember = true;
-        
-        // Get team leader info for team members
-        const mainPerson = await User.findById(teamMember.mainPersonId);
-        if (mainPerson) {
+      return res.status(404).json({
+        success: false,
+        message: 'Person not found'
+      });
+    } else if (person.teamRegistrations && person.teamRegistrations.length > 0) {
+      // If person has team registrations, get team info
+      const latestTeamReg = person.teamRegistrations[person.teamRegistrations.length - 1];
+      if (latestTeamReg.teamId) {
+        const teamComposition = await TeamComposition.findOne({ teamId: latestTeamReg.teamId });
+        if (teamComposition) {
           teamInfo = {
-            teamId: mainPerson.teamId,
-            teamLeader: {
-              name: mainPerson.name,
-              email: mainPerson.email,
-              contactNo: mainPerson.contactNo
-            }
+            teamId: latestTeamReg.teamId,
+            teamSize: teamComposition.teamMembers.length,
+            isTeamLeader: teamComposition.teamLeader.toString() === person._id.toString()
           };
         }
       }
-    } else if (person.isMainPerson && person.teamId) {
-      // If it's a team leader, get team member count
-      const teamMemberCount = await TeamMember.countDocuments({ mainPersonId: person._id });
-      teamInfo = {
-        teamId: person.teamId,
-        teamSize: person.teamSize,
-        teamMemberCount: teamMemberCount
-      };
     }
     
     if (!person) {
@@ -203,18 +193,9 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     
-    // First try to find as User (main person)
+    // Try to find the user
     let user = await User.findById(id);
     let isTeamMember = false;
-    
-    if (!user) {
-      // If not found as User, try as TeamMember
-      const teamMember = await TeamMember.findById(id);
-      if (teamMember) {
-        user = teamMember;
-        isTeamMember = true;
-      }
-    }
     
     if (!user) {
       console.log(`❌ Allow entry failed - User not found: ${id}`);
@@ -224,6 +205,16 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
         playBuzzer: true
       });
     }
+
+    // Check if user is part of a team
+    const teamComposition = await TeamComposition.findOne({ 
+      $or: [
+        { teamLeader: user._id },
+        { 'teamMembers.user': user._id }
+      ]
+    });
+    
+    isTeamMember = teamComposition && teamComposition.teamLeader.toString() !== user._id.toString();
 
     console.log(`🚪 Entry attempt for ${user.name} (${user.email}):`, {
       currentStatus: user.hasEntered ? 'Already entered' : 'Not entered yet',
@@ -393,9 +384,38 @@ router.get("/users", verifyAdmin, async (req, res) => {
 // Get all team members (admin only)
 router.get("/team-members", verifyAdmin, async (req, res) => {
   try {
-    const teamMembers = await TeamMember.find({})
-      .populate('mainPersonId', 'name email teamId');
-    res.json(teamMembers);
+    // Get all team compositions with member details
+    const teamCompositions = await TeamComposition.find({})
+      .populate('teamLeader', 'name email')
+      .populate('teamMembers.user', 'name email');
+    
+    // Flatten team members for admin view
+    const allTeamMembers = [];
+    for (const composition of teamCompositions) {
+      // Add team leader
+      allTeamMembers.push({
+        _id: composition.teamLeader._id,
+        name: composition.teamLeader.name,
+        email: composition.teamLeader.email,
+        teamId: composition.teamId,
+        isTeamLeader: true,
+        teamSize: composition.teamMembers.length
+      });
+      
+      // Add team members
+      composition.teamMembers.forEach(member => {
+        allTeamMembers.push({
+          _id: member.user._id,
+          name: member.user.name,
+          email: member.user.email,
+          teamId: composition.teamId,
+          isTeamLeader: false,
+          registeredBy: composition.teamLeader.name
+        });
+      });
+    }
+    
+    res.json(allTeamMembers);
   } catch (error) {
     console.error('Error fetching team members:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -407,51 +427,51 @@ router.get("/team/:teamId", verifyAdmin, async (req, res) => {
   try {
     const teamId = req.params.teamId;
     
-    // Find main person by team ID
-    const mainPerson = await User.findOne({ teamId: teamId, isMainPerson: true });
-    if (!mainPerson) {
+    // Find team composition by team ID
+    const teamComposition = await TeamComposition.findOne({ teamId: teamId })
+      .populate('teamLeader', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events')
+      .populate('teamMembers.user', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events');
+      
+    if (!teamComposition) {
       return res.status(404).json({
         success: false,
         message: 'Team not found'
       });
     }
 
-    // Get team members
-    const teamMembers = await TeamMember.find({ mainPersonId: mainPerson._id });
-
     res.json({
       success: true,
       team: {
-        teamId: mainPerson.teamId,
+        teamId: teamComposition.teamId,
         mainPerson: {
-          id: mainPerson._id,
-          name: mainPerson.name,
-          email: mainPerson.email,
-          contactNo: mainPerson.contactNo,
-          gender: mainPerson.gender,
-          age: mainPerson.age,
-          universityName: mainPerson.universityName,
-          address: mainPerson.address,
-          profileImage: mainPerson.profileImage,
-          qrPath: mainPerson.qrPath,
-          hasEntered: mainPerson.hasEntered,
-          entryTime: mainPerson.entryTime,
-          events: mainPerson.events
+          id: teamComposition.teamLeader._id,
+          name: teamComposition.teamLeader.name,
+          email: teamComposition.teamLeader.email,
+          contactNo: teamComposition.teamLeader.contactNo,
+          gender: teamComposition.teamLeader.gender,
+          age: teamComposition.teamLeader.age,
+          universityName: teamComposition.teamLeader.universityName,
+          address: teamComposition.teamLeader.address,
+          profileImage: teamComposition.teamLeader.profileImage,
+          qrPath: teamComposition.teamLeader.qrPath,
+          hasEntered: teamComposition.teamLeader.hasEntered,
+          entryTime: teamComposition.teamLeader.entryTime,
+          events: teamComposition.teamLeader.events
         },
-        teamMembers: teamMembers.map(member => ({
-          id: member._id,
-          name: member.name,
-          email: member.email,
-          contactNo: member.contactNo,
-          gender: member.gender,
-          age: member.age,
-          universityName: member.universityName,
-          address: member.address,
-          profileImage: member.profileImage,
-          qrPath: member.qrPath,
-          hasEntered: member.hasEntered,
-          entryTime: member.entryTime,
-          events: member.events
+        teamMembers: teamComposition.teamMembers.map(member => ({
+          id: member.user._id,
+          name: member.user.name,
+          email: member.user.email,
+          contactNo: member.user.contactNo,
+          gender: member.user.gender,
+          age: member.user.age,
+          universityName: member.user.universityName,
+          address: member.user.address,
+          profileImage: member.user.profileImage,
+          qrPath: member.user.qrPath,
+          hasEntered: member.user.hasEntered,
+          entryTime: member.user.entryTime,
+          events: member.user.events
         })),
         teamSize: mainPerson.teamSize
       }
@@ -469,52 +489,46 @@ router.get("/team/:teamId", verifyAdmin, async (req, res) => {
 // Get all teams with their members (admin only)
 router.get("/teams", verifyAdmin, async (req, res) => {
   try {
-    const teams = await User.find({ isMainPerson: true, teamId: { $exists: true } })
-      .populate({
-        path: 'teamMembers',
-        model: 'TeamMember',
-        match: { mainPersonId: { $exists: true } }
-      });
+    const teams = await TeamComposition.find({})
+      .populate('teamLeader', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events')
+      .populate('teamMembers.user', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events');
 
-    const teamsWithMembers = await Promise.all(
-      teams.map(async (team) => {
-        const teamMembers = await TeamMember.find({ mainPersonId: team._id });
-        return {
-          teamId: team.teamId,
-          mainPerson: {
-            id: team._id,
-            name: team.name,
-            email: team.email,
-            contactNo: team.contactNo,
-            gender: team.gender,
-            age: team.age,
-            universityName: team.universityName,
-            address: team.address,
-            profileImage: team.profileImage,
-            qrPath: team.qrPath,
-            hasEntered: team.hasEntered,
-            entryTime: team.entryTime,
-            events: team.events
-          },
-          teamMembers: teamMembers.map(member => ({
-            id: member._id,
-            name: member.name,
-            email: member.email,
-            contactNo: member.contactNo,
-            gender: member.gender,
-            age: member.age,
-            universityName: member.universityName,
-            address: member.address,
-            profileImage: member.profileImage,
-            qrPath: member.qrPath,
-            hasEntered: member.hasEntered,
-            entryTime: member.entryTime,
-            events: member.events
-          })),
-          teamSize: team.teamSize
-        };
-      })
-    );
+    const teamsWithMembers = teams.map((teamComposition) => {
+      return {
+        teamId: teamComposition.teamId,
+        mainPerson: {
+          id: teamComposition.teamLeader._id,
+          name: teamComposition.teamLeader.name,
+          email: teamComposition.teamLeader.email,
+          contactNo: teamComposition.teamLeader.contactNo,
+          gender: teamComposition.teamLeader.gender,
+          age: teamComposition.teamLeader.age,
+          universityName: teamComposition.teamLeader.universityName,
+          address: teamComposition.teamLeader.address,
+          profileImage: teamComposition.teamLeader.profileImage,
+          qrPath: teamComposition.teamLeader.qrPath,
+          hasEntered: teamComposition.teamLeader.hasEntered,
+          entryTime: teamComposition.teamLeader.entryTime,
+          events: teamComposition.teamLeader.events
+        },
+        teamMembers: teamComposition.teamMembers.map(member => ({
+          id: member.user._id,
+          name: member.user.name,
+          email: member.user.email,
+          contactNo: member.user.contactNo,
+          gender: member.user.gender,
+          age: member.user.age,
+          universityName: member.user.universityName,
+          address: member.user.address,
+          profileImage: member.user.profileImage,
+          qrPath: member.user.qrPath,
+          hasEntered: member.user.hasEntered,
+          entryTime: member.user.entryTime,
+          events: member.user.events
+        })),
+        teamSize: teamComposition.teamMembers.length + 1
+      };
+    });
 
     res.json(teamsWithMembers);
 
@@ -1110,35 +1124,43 @@ router.get("/users-email-status", verifyAdmin, async (req, res) => {
 // Get team members with email status (admin only)
 router.get("/team-members-email-status", verifyAdmin, async (req, res) => {
   try {
-    const teamMembers = await TeamMember.find({})
-      .populate('mainPersonId', 'name email teamId')
-      .populate('emailSentBy', 'name email')
+    // Get all team compositions with member details
+    const teamCompositions = await TeamComposition.find({})
+      .populate('teamLeader', 'name email')
+      .populate('teamMembers.user', 'name email contactNo universityName events hasEntered entryTime isvalidated qrPath createdAt emailSent emailSentAt emailSentBy')
       .sort({ createdAt: -1 });
 
-    const teamMembersWithStatus = teamMembers.map(member => ({
-      _id: member._id,
-      name: member.name,
-      email: member.email,
-      contactNo: member.contactNo,
-      universityName: member.universityName,
-      events: member.events,
-      mainPersonId: member.mainPersonId,
-      emailSent: member.emailSent,
-      emailSentAt: member.emailSentAt,
-      emailSentBy: member.emailSentBy,
-      hasEntered: member.hasEntered,
-      entryTime: member.entryTime,
-      isvalidated: member.isvalidated,
-      qrPath: member.qrPath,
-      createdAt: member.createdAt || new Date()
-    }));
+    // Flatten team members for email status view
+    const allTeamMembers = [];
+    for (const composition of teamCompositions) {
+      composition.teamMembers.forEach(member => {
+        allTeamMembers.push({
+          _id: member.user._id,
+          name: member.user.name,
+          email: member.user.email,
+          contactNo: member.user.contactNo,
+          universityName: member.user.universityName,
+          events: member.user.events,
+          teamId: composition.teamId,
+          teamLeaderName: composition.teamLeader.name,
+          emailSent: member.user.emailSent || false,
+          emailSentAt: member.user.emailSentAt,
+          emailSentBy: member.user.emailSentBy,
+          hasEntered: member.user.hasEntered,
+          entryTime: member.user.entryTime,
+          isvalidated: member.user.isvalidated,
+          qrPath: member.user.qrPath,
+          createdAt: member.user.createdAt || new Date()
+        });
+      });
+    }
 
     res.json({
       success: true,
-      teamMembers: teamMembersWithStatus,
-      totalTeamMembers: teamMembersWithStatus.length,
-      emailsSent: teamMembersWithStatus.filter(m => m.emailSent).length,
-      emailsPending: teamMembersWithStatus.filter(m => !m.emailSent).length
+      teamMembers: allTeamMembers,
+      totalTeamMembers: allTeamMembers.length,
+      emailsSent: allTeamMembers.filter(m => m.emailSent).length,
+      emailsPending: allTeamMembers.filter(m => !m.emailSent).length
     });
 
   } catch (error) {
@@ -1292,7 +1314,18 @@ router.post("/send-bulk-emails", verifyAdmin, async (req, res) => {
 
     // Process team members
     if (targetType === 'team-members' || targetType === 'both') {
-      const teamMembersToEmail = await TeamMember.find({ emailSent: false });
+      // Get all team members from team compositions who haven't received emails
+      const teamCompositions = await TeamComposition.find({})
+        .populate('teamMembers.user', 'name email events qrPath emailSent');
+      
+      const teamMembersToEmail = [];
+      for (const composition of teamCompositions) {
+        for (const member of composition.teamMembers) {
+          if (!member.user.emailSent) {
+            teamMembersToEmail.push(member.user);
+          }
+        }
+      }
       
       for (const member of teamMembersToEmail) {
         try {
