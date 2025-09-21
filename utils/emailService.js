@@ -233,10 +233,14 @@ async function sendRegistrationEmail(userEmail, userData) {
  * Generate payment initiation email content (simplified like test-email.js)
  */
 function generatePaymentInitiationEmailContent(paymentData) {
-    const { name, otp } = paymentData;
+    const { name, otp, events } = paymentData;
     
     // If OTP is provided, send OTP email, otherwise send registration email
     if (otp) {
+        const eventsText = events && events.length > 0 
+            ? events.join(', ') 
+            : 'Dance Competition, Coding Contest, Business Plan';
+
         const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -264,6 +268,11 @@ function generatePaymentInitiationEmailContent(paymentData) {
                 <div class="content">
                     <h2>Hello ${name},</h2>
                     <p>You've requested access to view your Sabrang'25 tickets. Please use the following OTP to verify your identity:</p>
+                    
+                    <div style="background-color: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 20px 0; border-radius: 8px;">
+                        <strong>Your Registered Events:</strong><br />
+                        ${eventsText}
+                    </div>
                     
                     <div class="otp-section">
                         <h3>Your OTP Code:</h3>
@@ -297,6 +306,9 @@ Hello ${name},
 
 You've requested access to view your Sabrang'25 tickets. Please use the following OTP to verify your identity:
 
+Your Registered Events:
+${eventsText}
+
 Your OTP Code: ${otp}
 
 This OTP is valid for 10 minutes only.
@@ -316,6 +328,10 @@ Need help? Contact us anytime.`;
         return { htmlContent, textContent };
     } else {
         // Original registration email content
+        const eventsText = events && events.length > 0 
+            ? events.join(', ') 
+            : 'Dance Competition, Coding Contest, Business Plan';
+
         const htmlContent = `
         <!DOCTYPE html>
         <html>
@@ -351,7 +367,7 @@ Need help? Contact us anytime.`;
                         <p><strong>Name:</strong> ${name}</p>
                         <div class="events-list">
                             <strong>Events Registered:</strong><br />
-                            Dance Competition, Coding Contest, Business Plan
+                            ${eventsText}
                         </div>
                     </div>
                     
@@ -386,7 +402,7 @@ Your Registration Details:
 Name: ${name}
 
 Events Registered:
-Dance Competition, Coding Contest, Business Plan
+${eventsText}
 
 Your QR Code:
 Please download the ticket for a smooth check-in.
@@ -449,10 +465,132 @@ async function sendPaymentInitiatedEmail(paymentData) {
     }
 }
 
+/**
+ * Send email to all team members
+ */
+async function sendEmailToAllTeamMembers(teamData, emailContent) {
+    const { mainPerson, teamMembers } = teamData;
+    const results = [];
+    
+    try {
+        // Configuration from environment variables
+        const config = {
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            tenantId: process.env.TENANT_ID,
+            userEmail: process.env.FROM_EMAIL
+        };
+
+        // Validate required environment variables
+        const requiredEnvVars = ['CLIENT_ID', 'CLIENT_SECRET', 'TENANT_ID', 'FROM_EMAIL'];
+        const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+        
+        if (missingVars.length > 0) {
+            throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+        }
+
+        const mailer = new MicrosoftOAuthMailer(config);
+
+        // Send to main person (team leader)
+        if (mainPerson && mainPerson.email) {
+            try {
+                const mainPersonEmailContent = generatePaymentInitiationEmailContent({
+                    name: mainPerson.name,
+                    events: mainPerson.events || [],
+                    ...emailContent
+                });
+
+                const mailOptions = {
+                    to: mainPerson.email,
+                    subject: emailContent.subject || '🎉 Sabrang\'25 Team Registration Confirmed',
+                    text: mainPersonEmailContent.textContent,
+                    html: mainPersonEmailContent.htmlContent
+                };
+
+                const result = await mailer.sendEmailGraph(mailOptions);
+                results.push({ 
+                    email: mainPerson.email, 
+                    name: mainPerson.name, 
+                    success: true, 
+                    role: 'team-leader' 
+                });
+                console.log(`✅ Email sent to team leader: ${mainPerson.email}`);
+            } catch (error) {
+                results.push({ 
+                    email: mainPerson.email, 
+                    name: mainPerson.name, 
+                    success: false, 
+                    error: error.message,
+                    role: 'team-leader' 
+                });
+                console.error(`❌ Failed to send email to team leader ${mainPerson.email}:`, error.message);
+            }
+        }
+
+        // Send to all team members
+        if (teamMembers && teamMembers.length > 0) {
+            for (const member of teamMembers) {
+                try {
+                    const memberEmailContent = generatePaymentInitiationEmailContent({
+                        name: member.name,
+                        events: mainPerson.events || [], // Team members inherit main person's events
+                        ...emailContent
+                    });
+
+                    const mailOptions = {
+                        to: member.email,
+                        subject: emailContent.subject || '🎉 Sabrang\'25 Team Registration Confirmed',
+                        text: memberEmailContent.textContent,
+                        html: memberEmailContent.htmlContent
+                    };
+
+                    const result = await mailer.sendEmailGraph(mailOptions);
+                    results.push({ 
+                        email: member.email, 
+                        name: member.name, 
+                        success: true, 
+                        role: 'team-member' 
+                    });
+                    console.log(`✅ Email sent to team member: ${member.email}`);
+                } catch (error) {
+                    results.push({ 
+                        email: member.email, 
+                        name: member.name, 
+                        success: false, 
+                        error: error.message,
+                        role: 'team-member' 
+                    });
+                    console.error(`❌ Failed to send email to team member ${member.email}:`, error.message);
+                }
+            }
+        }
+
+        const successCount = results.filter(r => r.success).length;
+        const totalCount = results.length;
+
+        console.log(`📧 Team email summary: ${successCount}/${totalCount} emails sent successfully`);
+        
+        return { 
+            success: successCount > 0, 
+            results, 
+            summary: {
+                total: totalCount,
+                successful: successCount,
+                failed: totalCount - successCount
+            }
+        };
+
+    } catch (error) {
+        console.error('❌ Failed to send team emails:', error.message);
+        return { success: false, error: error.message, results };
+    }
+}
+
 module.exports = {
     MicrosoftOAuthMailer,
     generateRegistrationEmailContent,
     sendRegistrationEmail,
     generatePaymentInitiationEmailContent,
-    sendPaymentInitiatedEmail
+    sendPaymentInitiatedEmail,
+    sendEmailToAllTeamMembers
 };

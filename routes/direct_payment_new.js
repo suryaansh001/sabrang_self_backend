@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const { Purchase, User, Event, TeamMember, PromoCode } = require('../models/models');
-const { sendRegistrationEmail } = require('../utils/emailService');
+const { sendRegistrationEmail, sendEmailToAllTeamMembers } = require('../utils/emailService');
 const { generateUserQRCode } = require('../utils/qrCodeService');
 const shortid = require('shortid');
 const qr = require('qr-image');
@@ -704,45 +704,15 @@ async function processSuccessfulPayment(purchase) {
       }
     }
 
-    // Step 5: Send registration email
+    // Step 5: Send registration emails
     try {
-      // Get QR code as base64 for email
-      let qrCodeBase64 = null;
-      if (user.qrPath) {
-        try {
-          // Handle both production and development paths
-          let qrFilePath;
-          if (process.env.NODE_ENV === 'production' && user.qrPath.startsWith('/qrcodes/')) {
-            // Production: direct path to volume
-            qrFilePath = `/app${user.qrPath}`;
-          } else if (user.qrPath.startsWith('/public/qrcodes/')) {
-            // Development: relative to project root
-            qrFilePath = path.join(__dirname, '..', user.qrPath);
-          } else {
-            // Fallback: try both paths
-            const prodPath = `/app/qrcodes/${path.basename(user.qrPath)}`;
-            const devPath = path.join(__dirname, '../public/qrcodes', path.basename(user.qrPath));
-            qrFilePath = fs.existsSync(prodPath) ? prodPath : devPath;
-          }
-          
-          if (fs.existsSync(qrFilePath)) {
-            const qrBuffer = fs.readFileSync(qrFilePath);
-            qrCodeBase64 = qrBuffer.toString('base64');
-            console.log(`✅ QR code read for email from: ${qrFilePath}`);
-          } else {
-            console.log(`⚠️ QR code file not found at: ${qrFilePath}`);
-          }
-        } catch (qrReadError) {
-          console.log('Could not read QR code for email:', qrReadError.message);
-        }
-      }
-
       const emailData = {
         name: user.name,
         events: user.events,
-        qrCodeBase64: qrCodeBase64
+        qrCodeBase64: user.qrCodeBase64
       };
 
+      // Send email to main person (team leader or individual)
       const emailResult = await sendRegistrationEmail(user.email, emailData);
       
       if (emailResult.success) {
@@ -752,12 +722,65 @@ async function processSuccessfulPayment(purchase) {
         // Update user email status
         user.emailSent = true;
         user.emailSentAt = new Date();
-        await user.save();
         
-        console.log(`✅ Registration email sent to ${user.email}`);
+        console.log(`✅ Registration email sent to main person: ${user.email}`);
       } else {
-        console.error('Failed to send registration email:', emailResult.error);
+        console.error('Failed to send registration email to main person:', emailResult.error);
       }
+
+      // If this is a team registration, send emails to all team members
+      if (user.isMainPerson && userData.teamMembers && userData.teamMembers.length > 0) {
+        try {
+          // Get all team members from database
+          const teamMembers = await TeamMember.find({ mainPersonId: user._id });
+          
+          // Prepare team data for email service
+          const teamData = {
+            mainPerson: {
+              name: user.name,
+              email: user.email,
+              events: user.events || []
+            },
+            teamMembers: teamMembers.map(member => ({
+              name: member.name,
+              email: member.email
+            }))
+          };
+
+          // Send registration emails to all team members
+          const teamEmailContent = {
+            subject: '🎉 Sabrang\'25 Team Registration Confirmed'
+          };
+
+          const teamEmailResult = await sendEmailToAllTeamMembers(teamData, teamEmailContent);
+          
+          if (teamEmailResult.success) {
+            console.log(`✅ Team registration emails sent: ${teamEmailResult.summary.successful}/${teamEmailResult.summary.total}`);
+            
+            // Update team member email status in database
+            for (const result of teamEmailResult.results) {
+              if (result.success && result.role === 'team-member') {
+                try {
+                  await TeamMember.findOneAndUpdate(
+                    { email: result.email },
+                    { 
+                      emailSent: true,
+                      emailSentAt: new Date()
+                    }
+                  );
+                } catch (updateError) {
+                  console.error(`Failed to update email status for ${result.email}:`, updateError);
+                }
+              }
+            }
+          } else {
+            console.error('Failed to send team registration emails:', teamEmailResult.error);
+          }
+        } catch (teamEmailError) {
+          console.error('Team email sending error:', teamEmailError);
+        }
+      }
+
     } catch (emailError) {
       console.error('Email sending error:', emailError);
     }
