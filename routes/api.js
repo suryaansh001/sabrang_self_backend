@@ -485,46 +485,101 @@ router.post('/team-by-email', async (req, res) => {
       }
     }
 
-    // Prepare team data if user has teams
-    const teams = teamCompositions.map(team => ({
-      teamId: team._id,
-      eventName: team.eventName,
-      teamName: team.teamName,
-      totalMembers: team.totalMembers,
-      teamMembers: team.teamMembers.map(member => ({
-        id: member.userId._id,
-        name: member.name,
-        email: member.email,
-        hasEntered: member.hasEntered,
-        entryTime: member.entryTime,
-        role: member.role,
-        qrPath: member.userId.qrPath,
-        qrCodeBase64: member.userId.qrCodeBase64,
-        profileImage: member.userId.profileImage
-      })),
-      teamEntryStatus: team.teamEntryStatus
-    }));
+    // Build registrations array in the format expected by frontend
+    const registrations = [];
+    let registrationCount = 1;
 
-    res.json({
-      success: true,
-      user: {
+    // Check if user has individual registrations (events without teams)
+    const teamEventNames = teamCompositions.map(team => team.eventName);
+    const individualEvents = user.events.filter(eventName => !teamEventNames.includes(eventName));
+
+    // Add individual registration if user has non-team events
+    if (individualEvents.length > 0) {
+      registrations.push({
         id: user._id,
+        type: 'individual',
+        registrationId: user._id,
+        registrationDate: user.createdAt,
+        registrationCount: registrationCount++,
         name: user.name,
         email: user.email,
-        contactNo: user.contactNo,
-        gender: user.gender,
-        age: user.age,
-        universityName: user.universityName,
-        address: user.address,
-        profileImage: user.profileImage,
+        contactNo: user.contactNo || '',
+        gender: user.gender || '',
+        age: user.age || 0,
+        universityName: user.universityName || '',
+        address: user.address || '',
+        profileImage: user.profileImage || '',
         qrPath: user.qrPath,
         qrCodeBase64: user.qrCodeBase64,
         hasEntered: user.hasEntered,
         entryTime: user.entryTime,
-        events: user.events,
-        registeredEvents: eventData,
-        teamRegistrations: user.teamRegistrations,
-        teams: teams
+        events: individualEvents,
+        registeredEvents: eventData.filter(event => individualEvents.includes(event.name))
+      });
+    }
+
+    // Add team leader registrations
+    for (const teamComposition of teamCompositions) {
+      const teamMembers = await Promise.all(teamComposition.teamMembers.map(async (member) => {
+        const memberUser = await User.findById(member.userId);
+        return {
+          id: member.userId,
+          name: member.name,
+          email: member.email,
+          contactNo: memberUser?.contactNo || '',
+          gender: memberUser?.gender || '',
+          age: memberUser?.age || 0,
+          universityName: memberUser?.universityName || '',
+          address: memberUser?.address || '',
+          profileImage: memberUser?.profileImage || '',
+          qrPath: memberUser?.qrPath || '',
+          qrCodeBase64: memberUser?.qrCodeBase64 || '',
+          hasEntered: member.hasEntered,
+          entryTime: member.entryTime,
+          events: [teamComposition.eventName],
+          role: member.role || ''
+        };
+      }));
+
+      registrations.push({
+        id: user._id,
+        type: 'team-leader',
+        registrationId: teamComposition._id,
+        registrationDate: teamComposition.createdAt,
+        registrationCount: registrationCount++,
+        name: user.name,
+        email: user.email,
+        contactNo: user.contactNo || '',
+        gender: user.gender || '',
+        age: user.age || 0,
+        universityName: user.universityName || '',
+        address: user.address || '',
+        profileImage: user.profileImage || '',
+        qrPath: user.qrPath,
+        qrCodeBase64: user.qrCodeBase64,
+        hasEntered: user.hasEntered,
+        entryTime: user.entryTime,
+        events: [teamComposition.eventName],
+        registeredEvents: eventData.filter(event => event.name === teamComposition.eventName),
+        teamMembers: teamMembers,
+        teamSize: teamComposition.totalMembers
+      });
+    }
+
+    // Calculate summary
+    const individualCount = registrations.filter(r => r.type === 'individual').length;
+    const teamLeaderCount = registrations.filter(r => r.type === 'team-leader').length;
+    const teamMemberCount = 0; // This user is accessing by their email, so they won't be a team member
+
+    res.json({
+      success: true,
+      registrations: registrations,
+      summary: {
+        totalRegistrations: registrations.length,
+        individualRegistrations: individualCount,
+        teamLeaderRegistrations: teamLeaderCount,
+        teamMemberRegistrations: teamMemberCount,
+        accessedBy: user.email
       }
     });
 
