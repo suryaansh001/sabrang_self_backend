@@ -684,8 +684,12 @@ async function processSuccessfulPayment(purchase) {
     if (userData.teamMembers && userData.teamMembers.length > 0) {
       console.log(`👥 Processing team registration with ${userData.teamMembers.length} members`);
       
-      // Determine which events are team events (for now, assume all events in this purchase are team events)
-      const teamEvents = eventNames;
+      // Define which events are team events (exclude individual events like VISITOR_PASS)
+      const INDIVIDUAL_EVENTS = ['VISITOR_PASS', 'STEP UP', 'ECHOES OF NOOR', 'VERSEVAAD'];
+      const teamEvents = eventNames.filter(eventName => !INDIVIDUAL_EVENTS.includes(eventName));
+      
+      console.log(`🎯 Team events to process: ${teamEvents.join(', ')}`);
+      console.log(`🎯 Individual events (skipped for team processing): ${eventNames.filter(eventName => INDIVIDUAL_EVENTS.includes(eventName)).join(', ')}`);
       
       for (const eventName of teamEvents) {
         // Create team composition for this event

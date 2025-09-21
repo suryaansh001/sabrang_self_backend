@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema({
   // Support staff fields
   userType: {
     type: String,
-    enum: ['participant', 'support_staff'],
+    enum: ['participant', 'support_staff', 'flagship_visitor', 'flagship_solo_visitor'],
     default: 'participant'
   },
   supportRole: {

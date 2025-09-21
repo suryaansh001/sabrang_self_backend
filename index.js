@@ -465,12 +465,14 @@ app.post("/register", upload.any(), async (req, res) => {
       }
     }
 
-    // Process support staff from flagship benefits
+    // Process support staff and flagship benefits
     const createdSupportStaff = [];
+    const createdFlagshipVisitors = [];
     if (flagshipBenefitsByEvent && typeof flagshipBenefitsByEvent === 'object') {
       for (const [eventId, benefits] of Object.entries(flagshipBenefitsByEvent)) {
         const eventName = items?.find(item => item.id === parseInt(eventId))?.title || `Event_${eventId}`;
         
+        // Process support artists
         if (benefits.supportArtistDetails && Array.isArray(benefits.supportArtistDetails)) {
           for (const supportArtist of benefits.supportArtistDetails) {
             const supportEmail = supportArtist.email || '';
@@ -542,46 +544,202 @@ app.post("/register", upload.any(), async (req, res) => {
             }
           }
         }
+
+        // Process flagship visitor passes
+        if (benefits.flagshipVisitorPassDetails && Array.isArray(benefits.flagshipVisitorPassDetails)) {
+          for (const flagshipVisitor of benefits.flagshipVisitorPassDetails) {
+            const visitorEmail = flagshipVisitor.collegeMailId || '';
+            const visitorName = flagshipVisitor.name || 'Flagship Visitor';
+
+            if (visitorEmail) {
+              let visitorUser = await User.findOne({ email: visitorEmail });
+
+              const visitorPayload = {
+                name: visitorName,
+                email: visitorEmail,
+                contactNo: flagshipVisitor.contactNo || "",
+                gender: flagshipVisitor.gender || "",
+                age: flagshipVisitor.age ? Number(flagshipVisitor.age) : null,
+                universityName: flagshipVisitor.universityName || "",
+                address: flagshipVisitor.address || "",
+                userType: 'flagship_visitor',
+                events: [eventName],
+                isvalidated: true
+              };
+
+              if (!visitorUser) {
+                const visitorPassword = Math.random().toString(36).slice(-10) + 'A1!';
+                const visitorHashedPassword = await bcrypt.hash(visitorPassword, 12);
+                
+                visitorUser = new User({
+                  ...visitorPayload,
+                  password: visitorHashedPassword
+                });
+                await visitorUser.save();
+                console.log(`✅ Created flagship visitor user: ${visitorName} (${visitorEmail}) for ${eventName}`);
+              } else {
+                // Add new event to existing visitor
+                if (Array.isArray(visitorUser.events)) {
+                  visitorPayload.events = Array.from(new Set([...visitorUser.events, eventName]));
+                }
+                visitorUser = await User.findByIdAndUpdate(visitorUser._id, visitorPayload, { new: true });
+                console.log(`✅ Updated flagship visitor user: ${visitorName} (${visitorEmail}) for ${eventName}`);
+              }
+
+              // Generate QR code for flagship visitor
+              try {
+                const visitorQrCodeBase64 = await generateUserQRCode(visitorUser._id, {
+                  name: visitorUser.name,
+                  email: visitorUser.email
+                });
+                await User.findOneAndUpdate(
+                  { _id: visitorUser._id }, 
+                  { 
+                    qrPath: `${visitorUser._id}`,
+                    qrCodeBase64: visitorQrCodeBase64 
+                  }, 
+                  { new: true }
+                );
+                console.log(`✅ QR code generated for flagship visitor: ${visitorUser._id}`);
+              } catch (visitorQrError) {
+                console.error(`❌ QR code generation failed for flagship visitor ${visitorUser.name}:`, visitorQrError);
+              }
+
+              createdFlagshipVisitors.push({
+                userId: visitorUser._id,
+                name: visitorUser.name,
+                email: visitorUser.email,
+                role: 'flagship_visitor',
+                eventName: eventName,
+                hasEntered: false,
+                entryTime: null
+              });
+            }
+          }
+        }
+
+        // Process flagship solo visitor passes
+        if (benefits.flagshipSoloVisitorPassDetails && Array.isArray(benefits.flagshipSoloVisitorPassDetails)) {
+          for (const flagshipSoloVisitor of benefits.flagshipSoloVisitorPassDetails) {
+            const soloVisitorEmail = flagshipSoloVisitor.collegeMailId || '';
+            const soloVisitorName = flagshipSoloVisitor.name || 'Flagship Solo Visitor';
+
+            if (soloVisitorEmail) {
+              let soloVisitorUser = await User.findOne({ email: soloVisitorEmail });
+
+              const soloVisitorPayload = {
+                name: soloVisitorName,
+                email: soloVisitorEmail,
+                contactNo: flagshipSoloVisitor.contactNo || "",
+                gender: flagshipSoloVisitor.gender || "",
+                age: flagshipSoloVisitor.age ? Number(flagshipSoloVisitor.age) : null,
+                universityName: flagshipSoloVisitor.universityName || "",
+                address: flagshipSoloVisitor.address || "",
+                userType: 'flagship_solo_visitor',
+                events: [eventName],
+                isvalidated: true
+              };
+
+              if (!soloVisitorUser) {
+                const soloVisitorPassword = Math.random().toString(36).slice(-10) + 'A1!';
+                const soloVisitorHashedPassword = await bcrypt.hash(soloVisitorPassword, 12);
+                
+                soloVisitorUser = new User({
+                  ...soloVisitorPayload,
+                  password: soloVisitorHashedPassword
+                });
+                await soloVisitorUser.save();
+                console.log(`✅ Created flagship solo visitor user: ${soloVisitorName} (${soloVisitorEmail}) for ${eventName}`);
+              } else {
+                // Add new event to existing solo visitor
+                if (Array.isArray(soloVisitorUser.events)) {
+                  soloVisitorPayload.events = Array.from(new Set([...soloVisitorUser.events, eventName]));
+                }
+                soloVisitorUser = await User.findByIdAndUpdate(soloVisitorUser._id, soloVisitorPayload, { new: true });
+                console.log(`✅ Updated flagship solo visitor user: ${soloVisitorName} (${soloVisitorEmail}) for ${eventName}`);
+              }
+
+              // Generate QR code for flagship solo visitor
+              try {
+                const soloVisitorQrCodeBase64 = await generateUserQRCode(soloVisitorUser._id, {
+                  name: soloVisitorUser.name,
+                  email: soloVisitorUser.email
+                });
+                await User.findOneAndUpdate(
+                  { _id: soloVisitorUser._id }, 
+                  { 
+                    qrPath: `${soloVisitorUser._id}`,
+                    qrCodeBase64: soloVisitorQrCodeBase64 
+                  }, 
+                  { new: true }
+                );
+                console.log(`✅ QR code generated for flagship solo visitor: ${soloVisitorUser._id}`);
+              } catch (soloVisitorQrError) {
+                console.error(`❌ QR code generation failed for flagship solo visitor ${soloVisitorUser.name}:`, soloVisitorQrError);
+              }
+
+              createdFlagshipVisitors.push({
+                userId: soloVisitorUser._id,
+                name: soloVisitorUser.name,
+                email: soloVisitorUser.email,
+                role: 'flagship_solo_visitor',
+                eventName: eventName,
+                hasEntered: false,
+                entryTime: null
+              });
+            }
+          }
+        }
       }
     }
 
-    // Create TeamComposition records for team events (if there are team members)
+    // Create TeamComposition records for team events (if there are team members, support staff, or flagship visitors)
     const teamCompositions = [];
-    if (createdTeamMembers.length > 0 && Array.isArray(mainPerson.events)) {
+    const allTeamRelatedMembers = [...createdTeamMembers, ...createdSupportStaff, ...createdFlagshipVisitors];
+    
+    if ((createdTeamMembers.length > 0 || createdSupportStaff.length > 0 || createdFlagshipVisitors.length > 0) && Array.isArray(mainPerson.events)) {
       console.log(`🏆 Creating team compositions for ${mainPerson.events.length} events`);
+      console.log(`👥 Total members: ${createdTeamMembers.length} team members, ${createdSupportStaff.length} support staff, ${createdFlagshipVisitors.length} flagship visitors`);
       
       for (const eventName of mainPerson.events) {
-        // Generate unique team ID
-        const teamId = `TEAM_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Filter members for this specific event
+        const eventSupportStaff = createdSupportStaff.filter(staff => staff.eventName === eventName);
+        const eventFlagshipVisitors = createdFlagshipVisitors.filter(visitor => visitor.eventName === eventName);
+        const allEventMembers = [...createdTeamMembers, ...eventSupportStaff, ...eventFlagshipVisitors];
         
-        console.log(`🏅 Creating team composition for event: ${eventName}`);
-        const teamComposition = new TeamComposition({
-          eventName: eventName,
-          teamName: `${mainPerson.name}'s Team`,
-          teamId: teamId,
-          teamLeader: {
-            userId: mainPerson._id,
-            name: mainPerson.name,
-            email: mainPerson.email,
-            hasEntered: false
-          },
-          teamMembers: createdTeamMembers.map(member => ({
-            userId: member._id,
-            name: member.name,
-            email: member.email,
-            hasEntered: false,
-            role: 'member'
-          })),
-          totalMembers: createdTeamMembers.length + 1, // +1 for team leader
-          registrationComplete: true,
-          paymentStatus: 'pending', // Will be updated after payment
-          createdAt: new Date(),
-          updatedAt: new Date()
-        });
-        
-        await teamComposition.save();
-        teamCompositions.push(teamComposition);
-        console.log(`✅ Team composition created for ${eventName}: ${teamId}`);
+        if (allEventMembers.length > 0) {
+          // Generate unique team ID
+          const teamId = `TEAM_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          
+          console.log(`🏅 Creating team composition for event: ${eventName} with ${allEventMembers.length} total members`);
+          const teamComposition = new TeamComposition({
+            eventName: eventName,
+            teamName: `${mainPerson.name}'s Team`,
+            teamId: teamId,
+            teamLeader: {
+              userId: mainPerson._id,
+              name: mainPerson.name,
+              email: mainPerson.email,
+              hasEntered: false
+            },
+            teamMembers: allEventMembers.map(member => ({
+              userId: member.userId,
+              name: member.name,
+              email: member.email,
+              hasEntered: false,
+              role: member.role || 'member'
+            })),
+            totalMembers: allEventMembers.length + 1, // +1 for team leader
+            registrationComplete: true,
+            paymentStatus: 'pending', // Will be updated after payment
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+          
+          await teamComposition.save();
+          teamCompositions.push(teamComposition);
+          console.log(`✅ Team composition created for ${eventName}: ${teamId} (${allEventMembers.length} members + 1 leader)`);
+        }
       }
     }
 
@@ -614,6 +772,23 @@ app.post("/register", upload.any(), async (req, res) => {
           profileImage: member.profileImage,
           qrPath: member.qrPath,
           events: member.events
+        })),
+        supportStaff: createdSupportStaff,
+        flagshipVisitors: createdFlagshipVisitors,
+        visitors: createdVisitors.map(visitor => ({
+          id: visitor._id,
+          name: visitor.name,
+          email: visitor.email,
+          contactNo: visitor.contactNo,
+          visitorPassDays: visitor.visitorPassDays,
+          qrPath: visitor.qrPath
+        })),
+        teamCompositions: teamCompositions.map(tc => ({
+          id: tc._id,
+          eventName: tc.eventName,
+          teamName: tc.teamName,
+          teamId: tc.teamId,
+          totalMembers: tc.totalMembers
         })),
         teamSize: mainPerson.teamSize
       }
