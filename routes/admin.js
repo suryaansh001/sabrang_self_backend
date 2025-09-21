@@ -1,5 +1,5 @@
 const express = require("express");
-const { User, Event, CheckoutOffer, PromoCode, Purchase, TeamMember } = require("../models/models");
+const { User, Event, CheckoutOffer, PromoCode, Purchase, TeamComposition } = require("../models/models");
 const { verifyAdmin } = require("../middleware/auth");
 const { sendRegistrationEmail } = require("../utils/emailService");
 const path = require('path');

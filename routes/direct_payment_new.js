@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
-const { Purchase, User, Event, TeamMember, PromoCode } = require('../models/models');
-const { sendRegistrationEmail, sendTeamRegistrationEmails } = require('../utils/emailService');
+const { Purchase, User, Event, TeamComposition, PromoCode } = require('../models/models');
+const { sendRegistrationEmail } = require('../utils/emailService');
 const { generateUserQRCode } = require('../utils/qrCodeService');
 const shortid = require('shortid');
 const qr = require('qr-image');
@@ -571,64 +571,74 @@ async function processSuccessfulPayment(purchase) {
     
     const userData = purchase.userDetails;
     const eventNames = purchase.items.map(item => item.itemName);
-    
-    // Add detailed logging for events data flow
-    console.log('📊 Events data flow tracking:');
-    console.log(`📋 Purchase items: ${JSON.stringify(purchase.items, null, 2)}`);
-    console.log(`📋 Extracted event names: ${JSON.stringify(eventNames)}`);
-    console.log(`📋 User data: ${JSON.stringify({
-      name: userData.name,
-      email: userData.email,
-      teamMembersCount: userData.teamMembers?.length || 0
-    }, null, 2)}`);
 
-    // Step 1: Register user in the system - ALWAYS CREATE NEW REGISTRATION
+    // Step 1: Register or update user in the unified system
     let user;
     const existingUser = await User.findOne({ email: userData.email });
     
-    console.log(`📊 Found existing user: ${existingUser ? 'Yes' : 'No'}`);
-    
-    // Always create a new user record for each registration
-    // This allows multiple registrations per email with different QR codes
-    const hashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
-    
-    user = new User({
-      name: userData.name,
-      email: userData.email,
-      password: hashedPassword,
-      contactNo: userData.contactNo,
-      gender: userData.gender,
-      age: userData.age,
-      universityName: userData.universityName,
-      address: userData.address,
-      events: eventNames,
-      finalPrice: purchase.totalAmount,
-      isvalidated: true,
-      extraDetails: userData.formData,
-      rawRegistration: purchase.userDetails,
-      teamMembers: userData.teamMembers || [],
-      // Add registration metadata
-      registrationId: purchase.orderId,
-      registrationDate: new Date(),
-      registrationCount: existingUser ? (await User.countDocuments({ email: userData.email }) + 1) : 1
-    });
+    if (existingUser) {
+      // Update existing user - add new events to their collection
+      user = existingUser;
+      user.name = userData.name; // Update name in case it changed
+      user.contactNo = userData.contactNo || user.contactNo;
+      user.gender = userData.gender || user.gender;
+      user.age = userData.age || user.age;
+      user.universityName = userData.universityName || user.universityName;
+      user.address = userData.address || user.address;
+      
+      // Add new events to the user's events array (avoid duplicates)
+      const newEvents = eventNames.filter(event => !user.events.includes(event));
+      user.events.push(...newEvents);
+      
+      user.isvalidated = true;
+      user.updatedAt = new Date();
+      
+      console.log(`📝 Updated existing user ${user.email} with new events: ${newEvents.join(', ')}`);
+    } else {
+      // Create new user with the registered events
+      const hashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
+      
+      user = new User({
+        name: userData.name,
+        email: userData.email,
+        password: hashedPassword,
+        contactNo: userData.contactNo,
+        gender: userData.gender,
+        age: userData.age,
+        universityName: userData.universityName,
+        address: userData.address,
+        events: eventNames, // Start with these events
+        isvalidated: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      
+      console.log(`🆕 Created new user ${user.email} with events: ${eventNames.join(', ')}`);
+    }
 
-    console.log(`📊 Creating new registration #${user.registrationCount} for email: ${userData.email}`);
-    console.log(`📋 Registration events: ${JSON.stringify(eventNames)}`);
-    console.log(`📋 Registration ID: ${user.registrationId}`);
+    // Add registration history entry
+    user.registrationHistory.push({
+      purchaseId: purchase._id,
+      registrationType: 'individual',
+      eventsRegistered: eventNames,
+      registeredAt: new Date()
+    });
 
     await user.save();
     
     // Update purchase with user ID
     purchase.userId = user._id;
-    // Map purchase to main person as well
     purchase.mainPersonId = user._id;
     purchase.userRegistered = true;
 
-    // Step 2: Generate QR code
+    // Step 2: Generate QR code (single QR for all events)
     try {
       console.log(`🔍 Attempting QR generation for user ID: ${user._id} (type: ${typeof user._id})`);
-      const qrCodeBase64 = await generateQRCode(user._id, userData);
+      const qrCodeBase64 = await generateQRCode(user._id, {
+        name: user.name,
+        email: user.email,
+        events: user.events // Include all events in QR
+      });
       console.log(`🔍 Generated QR base64 length: ${qrCodeBase64 ? qrCodeBase64.length : 'null'}`);
       user.qrPath = `${user._id}`; // Keep for backward compatibility
       user.qrCodeBase64 = qrCodeBase64;
@@ -647,44 +657,123 @@ async function processSuccessfulPayment(purchase) {
       purchase.qrCodeBase64 = '';
     }
 
-    // Step 3: Process team members if any
+    // Step 3: Process team registration if team members are provided
     if (userData.teamMembers && userData.teamMembers.length > 0) {
-      user.isMainPerson = true;
-      user.teamId = `TEAM_${user._id}_${Date.now()}`;
-      user.teamSize = userData.teamMembers.length + 1;
-
-      // Create team member records
-      for (const memberData of userData.teamMembers) {
-        try {
-          const teamMember = new TeamMember({
-            mainPersonId: user._id,
-            name: memberData.name,
-            email: memberData.email,
-            contactNo: memberData.contactNo,
-            gender: memberData.gender,
-            age: memberData.age,
-            universityName: memberData.universityName,
-            address: memberData.address,
-            events: eventNames,
-            isvalidated: true,
-            extraDetails: memberData
-          });
-
-          await teamMember.save();
-
-          // Generate QR for team member
+      console.log(`👥 Processing team registration with ${userData.teamMembers.length} members`);
+      
+      // Determine which events are team events (you may want to configure this)
+      const teamEvents = eventNames; // For now, assume all events in this purchase are team events
+      
+      for (const eventName of teamEvents) {
+        // Create team composition for this event
+        const teamComposition = new TeamComposition({
+          eventName: eventName,
+          teamName: `${user.name}'s Team`, // Default team name, can be customized
+          teamLeader: {
+            userId: user._id,
+            name: user.name,
+            email: user.email,
+            hasEntered: false
+          },
+          teamMembers: [],
+          totalMembers: userData.teamMembers.length + 1,
+          registrationComplete: false, // Will be updated when all members are processed
+          purchaseId: purchase._id,
+          paymentStatus: 'completed',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        
+        // Process each team member
+        for (const memberData of userData.teamMembers) {
           try {
-            const memberQrCodeBase64 = await generateQRCode(teamMember._id, memberData);
-            teamMember.qrPath = `${teamMember._id}`; // Keep for backward compatibility
-            teamMember.qrCodeBase64 = memberQrCodeBase64;
-            await teamMember.save();
-          } catch (memberQrError) {
-            console.error(`QR generation failed for team member ${memberData.name}:`, memberQrError);
+            // Find or create team member as a User
+            let memberUser = await User.findOne({ email: memberData.email });
+            
+            if (memberUser) {
+              // Update existing member user - add this event
+              if (!memberUser.events.includes(eventName)) {
+                memberUser.events.push(eventName);
+              }
+              memberUser.isvalidated = true;
+              memberUser.updatedAt = new Date();
+            } else {
+              // Create new team member user
+              const memberHashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
+              
+              memberUser = new User({
+                name: memberData.name,
+                email: memberData.email,
+                password: memberHashedPassword,
+                contactNo: memberData.contactNo,
+                gender: memberData.gender,
+                age: memberData.age,
+                universityName: memberData.universityName,
+                address: memberData.address,
+                events: [eventName], // Start with this team event
+                isvalidated: true,
+                createdAt: new Date(),
+                updatedAt: new Date()
+              });
+            }
+            
+            // Add team registration tracking to member
+            memberUser.teamRegistrations.push({
+              eventName: eventName,
+              teamLeaderId: user._id,
+              isTeamLeader: false,
+              teamName: `${user.name}'s Team`,
+              teamCompositionId: teamComposition._id,
+              registeredAt: new Date()
+            });
+            
+            // Add registration history for the member
+            memberUser.registrationHistory.push({
+              purchaseId: purchase._id,
+              registrationType: 'team-member',
+              eventsRegistered: [eventName],
+              registeredAt: new Date()
+            });
+            
+            await memberUser.save();
+            
+            // Add to team composition
+            teamComposition.teamMembers.push({
+              userId: memberUser._id,
+              name: memberUser.name,
+              email: memberUser.email,
+              hasEntered: false,
+              role: memberData.role || ''
+            });
+            
+            console.log(`✅ Processed team member: ${memberData.name} (${memberData.email})`);
+            
+          } catch (memberError) {
+            console.error(`❌ Failed to process team member ${memberData.name}:`, memberError);
           }
-        } catch (memberError) {
-          console.error(`Failed to create team member ${memberData.name}:`, memberError);
         }
+        
+        // Update team composition as complete
+        teamComposition.registrationComplete = true;
+        teamComposition.teamEntryStatus.pendingEntry = teamComposition.totalMembers;
+        await teamComposition.save();
+        
+        // Add team leader registration tracking
+        user.teamRegistrations.push({
+          eventName: eventName,
+          teamLeaderId: user._id,
+          isTeamLeader: true,
+          teamName: `${user.name}'s Team`,
+          teamCompositionId: teamComposition._id,
+          registeredAt: new Date()
+        });
+        
+        console.log(`✅ Created team composition for event: ${eventName}`);
       }
+      
+      // Update registration type for team leader
+      const teamLeaderRegistration = user.registrationHistory[user.registrationHistory.length - 1];
+      teamLeaderRegistration.registrationType = 'team-leader';
     }
 
     // Step 4: Update promo code usage if applicable
@@ -709,15 +798,45 @@ async function processSuccessfulPayment(purchase) {
       }
     }
 
-    // Step 5: Send registration emails
+    // Step 5: Send registration email to main user
     try {
+      // Get QR code as base64 for email
+      let qrCodeBase64 = null;
+      if (user.qrPath) {
+        try {
+          // Handle both production and development paths
+          let qrFilePath;
+          if (process.env.NODE_ENV === 'production' && user.qrPath.startsWith('/qrcodes/')) {
+            // Production: direct path to volume
+            qrFilePath = `/app${user.qrPath}`;
+          } else if (user.qrPath.startsWith('/public/qrcodes/')) {
+            // Development: relative to project root
+            qrFilePath = path.join(__dirname, '..', user.qrPath);
+          } else {
+            // Fallback: try both paths
+            const prodPath = `/app/qrcodes/${path.basename(user.qrPath)}`;
+            const devPath = path.join(__dirname, '../public/qrcodes', path.basename(user.qrPath));
+            qrFilePath = fs.existsSync(prodPath) ? prodPath : devPath;
+          }
+          
+          if (fs.existsSync(qrFilePath)) {
+            const qrBuffer = fs.readFileSync(qrFilePath);
+            qrCodeBase64 = qrBuffer.toString('base64');
+            console.log(`✅ QR code read for email from: ${qrFilePath}`);
+          } else {
+            console.log(`⚠️ QR code file not found at: ${qrFilePath}`);
+          }
+        } catch (qrReadError) {
+          console.log('Could not read QR code for email:', qrReadError.message);
+        }
+      }
+
       const emailData = {
         name: user.name,
         events: user.events,
-        qrCodeBase64: user.qrCodeBase64
+        qrCodeBase64: qrCodeBase64
       };
 
-      // Send email to main person (team leader or individual)
       const emailResult = await sendRegistrationEmail(user.email, emailData);
       
       if (emailResult.success) {
@@ -728,90 +847,10 @@ async function processSuccessfulPayment(purchase) {
         user.emailSent = true;
         user.emailSentAt = new Date();
         
-        console.log(`✅ Registration email sent to main person: ${user.email}`);
+        console.log(`✅ Registration email sent to ${user.email}`);
       } else {
-        console.error('Failed to send registration email to main person:', emailResult.error);
+        console.error('Failed to send registration email:', emailResult.error);
       }
-
-      // If this is a team registration, send emails to all team members
-      if (user.isMainPerson && userData.teamMembers && userData.teamMembers.length > 0) {
-        try {
-          console.log('🔄 Processing team email notifications...');
-          console.log(`📊 Team info: Leader: ${user.name} (${user.email}), Members count: ${userData.teamMembers.length}`);
-          console.log(`📋 User events: ${JSON.stringify(user.events)}`);
-          console.log(`📋 Event names from purchase: ${JSON.stringify(eventNames)}`);
-          
-          // Get all team members from database
-          const teamMembers = await TeamMember.find({ mainPersonId: user._id });
-          console.log(`📊 Found ${teamMembers.length} team members in database`);
-          
-          // Log team member details
-          teamMembers.forEach((member, index) => {
-            console.log(`👤 Team member ${index + 1}: ${member.name} (${member.email})`);
-          });
-          
-          // Prepare team data for email service
-          const teamData = {
-            mainPerson: {
-              name: user.name,
-              email: user.email,
-              events: user.events || [],
-              eventNames: eventNames || []
-            },
-            teamMembers: teamMembers.map(member => ({
-              name: member.name,
-              email: member.email,
-              events: member.events || [],
-              mainPersonId: member.mainPersonId
-            }))
-          };
-
-          console.log('📧 Team data prepared for email service:', {
-            leader: teamData.mainPerson.name,
-            memberCount: teamData.teamMembers.length,
-            memberEmails: teamData.teamMembers.map(m => m.email)
-          });
-
-          // Send registration emails to all team members using the new function
-          const teamEmailResult = await sendTeamRegistrationEmails(teamData);
-          
-          if (teamEmailResult.success) {
-            console.log(`✅ Team registration emails sent: ${teamEmailResult.summary.successful}/${teamEmailResult.summary.total}`);
-            console.log(`📊 Email results breakdown:`, teamEmailResult.results);
-            
-            // Update team member email status in database
-            for (const result of teamEmailResult.results) {
-              if (result.success && result.role === 'team-member') {
-                try {
-                  await TeamMember.findOneAndUpdate(
-                    { email: result.email },
-                    { 
-                      emailSent: true,
-                      emailSentAt: new Date()
-                    }
-                  );
-                  console.log(`✅ Updated email status for team member: ${result.email}`);
-                } catch (updateError) {
-                  console.error(`❌ Failed to update email status for ${result.email}:`, updateError);
-                }
-              }
-            }
-          } else {
-            console.error('❌ Failed to send team registration emails:', teamEmailResult.error);
-            console.error('📊 Failed email results:', teamEmailResult.results);
-          }
-        } catch (teamEmailError) {
-          console.error('❌ Team email processing error:', teamEmailError);
-          console.error('📊 Error details:', {
-            message: teamEmailError.message,
-            stack: teamEmailError.stack
-          });
-        }
-      } else {
-        console.log('ℹ️ Skipping team emails - not a team registration or no team members');
-        console.log(`📊 Check: isMainPerson=${user.isMainPerson}, teamMembers=${userData.teamMembers?.length || 0}`);
-      }
-
     } catch (emailError) {
       console.error('Email sending error:', emailError);
     }

@@ -1,6 +1,6 @@
 const express = require('express');
 const { Cashfree, CFEnvironment } = require('cashfree-pg');
-const { Purchase, User, Event, TeamMember, PromoCode } = require('../models/models');
+const { Purchase, User, Event, TeamComposition, PromoCode } = require('../models/models');
 const { sendRegistrationEmail } = require('../utils/emailService');
 const { generateUserQRCode } = require('../utils/qrCodeService');
 const shortid = require('shortid');
@@ -605,21 +605,25 @@ async function processSuccessfulPayment(purchase) {
     const existingUser = await User.findOne({ email: userData.email });
     
     if (existingUser) {
-      // Update existing user
+      // Update existing user - add new events to their collection
       user = existingUser;
-      user.name = userData.name;
-      user.contactNo = userData.contactNo;
-      user.gender = userData.gender;
-      user.age = userData.age;
-      user.universityName = userData.universityName;
-      user.address = userData.address;
-      user.events = [...new Set([...user.events, ...eventNames])];
-      // Save final price for this registration as the net paid amount after promo
+      user.name = userData.name; // Update name in case it changed
+      user.contactNo = userData.contactNo || user.contactNo;
+      user.gender = userData.gender || user.gender;
+      user.age = userData.age || user.age;
+      user.universityName = userData.universityName || user.universityName;
+      user.address = userData.address || user.address;
+      
+      // Add new events to the user's events array (avoid duplicates)
+      const newEvents = eventNames.filter(event => !user.events.includes(event));
+      user.events.push(...newEvents);
       
       user.isvalidated = true;
+      user.updatedAt = new Date();
       
+      console.log(`📝 Updated existing user ${user.email} with new events: ${newEvents.join(', ')}`);
     } else {
-      // Create new user
+      // Create new user with the registered events
       const hashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
       
       user = new User({
@@ -631,13 +635,22 @@ async function processSuccessfulPayment(purchase) {
         age: userData.age,
         universityName: userData.universityName,
         address: userData.address,
-        events: eventNames,
-        // Save final price for this registration as the net paid amount after promo
-        
+        events: eventNames, // Start with these events
         isvalidated: true,
-        teamMembers: userData.teamMembers || []
+        createdAt: new Date(),
+        updatedAt: new Date()
       });
+      
+      console.log(`🆕 Created new user ${user.email} with events: ${eventNames.join(', ')}`);
     }
+
+    // Add registration history entry
+    user.registrationHistory.push({
+      purchaseId: purchase._id,
+      registrationType: 'individual',
+      eventsRegistered: eventNames,
+      registeredAt: new Date()
+    });
 
     // Update purchase with user ID
     purchase.userId = user._id;
@@ -667,41 +680,124 @@ async function processSuccessfulPayment(purchase) {
       purchase.qrCodeBase64 = '';
     }
 
-    // Step 3: Process team members if any
+    // Step 3: Process team registration if team members are provided (using new unified schema)
     if (userData.teamMembers && userData.teamMembers.length > 0) {
-      user.isMainPerson = true;
-      user.teamSize = userData.teamMembers.length + 1;
-
-      // Create team member records
-      for (const memberData of userData.teamMembers) {
-        try {
-          const teamMember = new TeamMember({
-            mainPersonId: user._id,
-            name: memberData.name,
-            email: memberData.email,
-            contactNo: memberData.contactNo,
-            gender: memberData.gender,
-            age: memberData.age,
-            universityName: memberData.universityName,
-            address: memberData.address,
-            events: eventNames,
-            isvalidated: true,
-          });
-
-          await teamMember.save();
-
-          // Generate QR for team member
+      console.log(`👥 Processing team registration with ${userData.teamMembers.length} members`);
+      
+      // Determine which events are team events (for now, assume all events in this purchase are team events)
+      const teamEvents = eventNames;
+      
+      for (const eventName of teamEvents) {
+        // Create team composition for this event
+        const teamComposition = new TeamComposition({
+          eventName: eventName,
+          teamName: `${user.name}'s Team`, // Default team name
+          teamLeader: {
+            userId: user._id,
+            name: user.name,
+            email: user.email,
+            hasEntered: false
+          },
+          teamMembers: [],
+          totalMembers: userData.teamMembers.length + 1,
+          registrationComplete: false,
+          purchaseId: purchase._id,
+          paymentStatus: 'completed',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        
+        // Process each team member
+        for (const memberData of userData.teamMembers) {
           try {
-            const memberQrCodeBase64 = await generateQRCode(teamMember._id, memberData);
-            teamMember.qrPath = `${teamMember._id}`; // Keep for backward compatibility
-            teamMember.qrCodeBase64 = memberQrCodeBase64;
-            await teamMember.save();
-          } catch (memberQrError) {
-            console.error(`QR generation failed for team member ${memberData.name}:`, memberQrError);
+            // Find or create team member as a User
+            let memberUser = await User.findOne({ email: memberData.email });
+            
+            if (memberUser) {
+              // Update existing member user - add this event
+              if (!memberUser.events.includes(eventName)) {
+                memberUser.events.push(eventName);
+              }
+              memberUser.isvalidated = true;
+              memberUser.updatedAt = new Date();
+            } else {
+              // Create new team member user
+              const memberHashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
+              
+              memberUser = new User({
+                name: memberData.name,
+                email: memberData.email,
+                password: memberHashedPassword,
+                contactNo: memberData.contactNo,
+                gender: memberData.gender,
+                age: memberData.age,
+                universityName: memberData.universityName,
+                address: memberData.address,
+                events: [eventName],
+                isvalidated: true,
+                createdAt: new Date(),
+                updatedAt: new Date()
+              });
+            }
+            
+            // Add team registration tracking to member
+            memberUser.teamRegistrations.push({
+              eventName: eventName,
+              teamLeaderId: user._id,
+              isTeamLeader: false,
+              teamName: `${user.name}'s Team`,
+              teamCompositionId: teamComposition._id,
+              registeredAt: new Date()
+            });
+            
+            // Add registration history for the member
+            memberUser.registrationHistory.push({
+              purchaseId: purchase._id,
+              registrationType: 'team-member',
+              eventsRegistered: [eventName],
+              registeredAt: new Date()
+            });
+            
+            await memberUser.save();
+            
+            // Add to team composition
+            teamComposition.teamMembers.push({
+              userId: memberUser._id,
+              name: memberUser.name,
+              email: memberUser.email,
+              hasEntered: false,
+              role: memberData.role || ''
+            });
+            
+            console.log(`✅ Processed team member: ${memberData.name} (${memberData.email})`);
+            
+          } catch (memberError) {
+            console.error(`❌ Failed to process team member ${memberData.name}:`, memberError);
           }
-        } catch (memberError) {
-          console.error(`Failed to create team member ${memberData.name}:`, memberError);
         }
+        
+        // Update team composition as complete
+        teamComposition.registrationComplete = true;
+        teamComposition.teamEntryStatus.pendingEntry = teamComposition.totalMembers;
+        await teamComposition.save();
+        
+        // Add team leader registration tracking
+        user.teamRegistrations.push({
+          eventName: eventName,
+          teamLeaderId: user._id,
+          isTeamLeader: true,
+          teamName: `${user.name}'s Team`,
+          teamCompositionId: teamComposition._id,
+          registeredAt: new Date()
+        });
+        
+        console.log(`✅ Created team composition for event: ${eventName}`);
+      }
+      
+      // Update registration type for team leader
+      const teamLeaderRegistration = user.registrationHistory[user.registrationHistory.length - 1];
+      if (teamLeaderRegistration) {
+        teamLeaderRegistration.registrationType = 'team-leader';
       }
     }
 

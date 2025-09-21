@@ -13,7 +13,7 @@ const shortid = require("shortid"); // Add this line
 const multer = require("multer");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
-const { User, TeamMember } = require("./models/models");
+const { User } = require("./models/models");
 const { generateUserQRCode } = require("./utils/qrCodeService");
 
 const app = express();
@@ -423,6 +423,10 @@ app.use("/api/payments", paymentRouter);
 // Advanced payment router: saves registrations after successful payment
 const advancedPaymentRouter = require("./routes/payment");
 app.use("/api/payment", advancedPaymentRouter);
+
+// New direct payment router with unified schema support
+const directPaymentRouter = require("./routes/direct_payment_new");
+app.use("/api/direct-payment", directPaymentRouter);
 
 
 //GOOGLE AUTHENTICATION 
