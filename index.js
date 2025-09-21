@@ -468,18 +468,38 @@ app.post("/register", upload.any(), async (req, res) => {
     // Process support staff and flagship benefits
     const createdSupportStaff = [];
     const createdFlagshipVisitors = [];
+    
+    console.log(`🔍 Debug - Processing flagship benefits:`, JSON.stringify(flagshipBenefitsByEvent, null, 2));
+    
     if (flagshipBenefitsByEvent && typeof flagshipBenefitsByEvent === 'object') {
       for (const [eventId, benefits] of Object.entries(flagshipBenefitsByEvent)) {
         const eventName = items?.find(item => item.id === parseInt(eventId))?.title || `Event_${eventId}`;
+        console.log(`🎯 Processing flagship benefits for event: ${eventName} (ID: ${eventId})`);
         
         // Process support artists
         if (benefits.supportArtistDetails && Array.isArray(benefits.supportArtistDetails)) {
-          for (const supportArtist of benefits.supportArtistDetails) {
+          console.log(`📊 Found ${benefits.supportArtistDetails.length} support artists for ${eventName}`);
+          for (const [index, supportArtist] of benefits.supportArtistDetails.entries()) {
             const supportEmail = supportArtist.email || '';
             const supportName = supportArtist.name || 'Support Staff';
             const supportRole = supportArtist.role || 'support';
 
-            if (supportEmail) {
+            console.log(`  👨‍🎨 Processing support artist ${index + 1}: ${supportName} (${supportEmail || 'NO EMAIL'})`);
+            console.log(`    Full data:`, JSON.stringify(supportArtist, null, 2));
+
+            if (!supportEmail) {
+              console.error(`❌ Support artist ${index + 1} (${supportName}) has no email address - this will be skipped`);
+              console.error(`    This is the issue! Frontend should not allow empty emails.`);
+              
+              // Generate a fallback email to prevent skipping
+              const fallbackEmail = `support_${eventId}_${index}_${Date.now()}@temp.sabrang.com`;
+              console.log(`🔧 Generating fallback email: ${fallbackEmail}`);
+              supportArtist.email = fallbackEmail;
+              supportEmail = fallbackEmail;
+            }
+
+            // Process support artist (now guaranteed to have email)
+            {
               let supportUser = await User.findOne({ email: supportEmail });
 
               const supportPayload = {
@@ -547,11 +567,27 @@ app.post("/register", upload.any(), async (req, res) => {
 
         // Process flagship visitor passes
         if (benefits.flagshipVisitorPassDetails && Array.isArray(benefits.flagshipVisitorPassDetails)) {
-          for (const flagshipVisitor of benefits.flagshipVisitorPassDetails) {
+          console.log(`📊 Found ${benefits.flagshipVisitorPassDetails.length} flagship visitors for ${eventName}`);
+          for (const [index, flagshipVisitor] of benefits.flagshipVisitorPassDetails.entries()) {
             const visitorEmail = flagshipVisitor.collegeMailId || '';
             const visitorName = flagshipVisitor.name || 'Flagship Visitor';
 
-            if (visitorEmail) {
+            console.log(`  🎫 Processing flagship visitor ${index + 1}: ${visitorName} (${visitorEmail || 'NO EMAIL'})`);
+            console.log(`    Full data:`, JSON.stringify(flagshipVisitor, null, 2));
+
+            if (!visitorEmail) {
+              console.error(`❌ Flagship visitor ${index + 1} (${visitorName}) has no email address - this will be skipped`);
+              console.error(`    This is the issue! Frontend should not allow empty emails.`);
+              
+              // Generate a fallback email to prevent skipping
+              const fallbackEmail = `visitor_${eventId}_${index}_${Date.now()}@temp.sabrang.com`;
+              console.log(`🔧 Generating fallback email: ${fallbackEmail}`);
+              flagshipVisitor.collegeMailId = fallbackEmail;
+              visitorEmail = fallbackEmail;
+            }
+
+            // Process flagship visitor (now guaranteed to have email)
+            {
               let visitorUser = await User.findOne({ email: visitorEmail });
 
               const visitorPayload = {
@@ -620,11 +656,27 @@ app.post("/register", upload.any(), async (req, res) => {
 
         // Process flagship solo visitor passes
         if (benefits.flagshipSoloVisitorPassDetails && Array.isArray(benefits.flagshipSoloVisitorPassDetails)) {
-          for (const flagshipSoloVisitor of benefits.flagshipSoloVisitorPassDetails) {
+          console.log(`📊 Found ${benefits.flagshipSoloVisitorPassDetails.length} flagship solo visitors for ${eventName}`);
+          for (const [index, flagshipSoloVisitor] of benefits.flagshipSoloVisitorPassDetails.entries()) {
             const soloVisitorEmail = flagshipSoloVisitor.collegeMailId || '';
             const soloVisitorName = flagshipSoloVisitor.name || 'Flagship Solo Visitor';
 
-            if (soloVisitorEmail) {
+            console.log(`  🎫 Processing flagship solo visitor ${index + 1}: ${soloVisitorName} (${soloVisitorEmail || 'NO EMAIL'})`);
+            console.log(`    Full data:`, JSON.stringify(flagshipSoloVisitor, null, 2));
+
+            if (!soloVisitorEmail) {
+              console.error(`❌ Flagship solo visitor ${index + 1} (${soloVisitorName}) has no email address - this will be skipped`);
+              console.error(`    This is the issue! Frontend should not allow empty emails.`);
+              
+              // Generate a fallback email to prevent skipping
+              const fallbackEmail = `solo_visitor_${eventId}_${index}_${Date.now()}@temp.sabrang.com`;
+              console.log(`🔧 Generating fallback email: ${fallbackEmail}`);
+              flagshipSoloVisitor.collegeMailId = fallbackEmail;
+              soloVisitorEmail = fallbackEmail;
+            }
+
+            // Process flagship solo visitor (now guaranteed to have email)
+            {
               let soloVisitorUser = await User.findOne({ email: soloVisitorEmail });
 
               const soloVisitorPayload = {
