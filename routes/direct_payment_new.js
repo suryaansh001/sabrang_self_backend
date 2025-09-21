@@ -688,54 +688,101 @@ async function processSuccessfulPayment(purchase) {
         for (const memberData of userData.teamMembers) {
           try {
             // Find or create team member as a User
-            let memberUser = await User.findOne({ email: memberData.email });
+            let memberUser = await User.findOne({ email: memberData.email.toLowerCase().trim() });
             
             if (memberUser) {
-              // Update existing member user - add this event
+              // EXISTING USER: Update their event details
+              console.log(`👤 Updating existing team member: ${memberData.name} (${memberData.email})`);
+              
+              // Add this event to their events array if not already present
               if (!memberUser.events.includes(eventName)) {
                 memberUser.events.push(eventName);
+                console.log(`   ✅ Added event "${eventName}" to existing user`);
+              } else {
+                console.log(`   ℹ️ User already registered for event "${eventName}"`);
               }
+              
+              // Update user details with latest information (in case they changed)
+              memberUser.name = memberData.name || memberUser.name;
+              memberUser.contactNo = memberData.contactNo || memberUser.contactNo;
+              memberUser.gender = memberData.gender || memberUser.gender;
+              memberUser.age = memberData.age || memberUser.age;
+              memberUser.universityName = memberData.universityName || memberUser.universityName;
+              memberUser.address = memberData.address || memberUser.address;
               memberUser.isvalidated = true;
               memberUser.updatedAt = new Date();
+              
             } else {
-              // Create new team member user
+              // NEW USER: Create as new team member
+              console.log(`🆕 Creating new team member: ${memberData.name} (${memberData.email})`);
+              
               const memberHashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
               
               memberUser = new User({
                 name: memberData.name,
-                email: memberData.email,
+                email: memberData.email.toLowerCase().trim(),
                 password: memberHashedPassword,
-                contactNo: memberData.contactNo,
-                gender: memberData.gender,
-                age: memberData.age,
-                universityName: memberData.universityName,
-                address: memberData.address,
+                contactNo: memberData.contactNo || '',
+                gender: memberData.gender || '',
+                age: memberData.age || null,
+                universityName: memberData.universityName || '',
+                address: memberData.address || '',
                 events: [eventName], // Start with this team event
                 isvalidated: true,
                 createdAt: new Date(),
                 updatedAt: new Date()
               });
+              
+              console.log(`   ✅ Created new user for event "${eventName}"`);
             }
             
             // Add team registration tracking to member
-            memberUser.teamRegistrations.push({
-              eventName: eventName,
-              teamLeaderId: user._id,
-              isTeamLeader: false,
-              teamName: `${user.name}'s Team`,
-              teamCompositionId: teamComposition._id,
-              registeredAt: new Date()
-            });
+            memberUser.teamRegistrations = memberUser.teamRegistrations || [];
+            
+            // Check if this team registration already exists to avoid duplicates
+            const existingTeamReg = memberUser.teamRegistrations.find(
+              reg => reg.teamLeaderId?.toString() === user._id.toString() && 
+                     reg.eventName === eventName &&
+                     reg.teamCompositionId?.toString() === teamComposition._id.toString()
+            );
+            
+            if (!existingTeamReg) {
+              memberUser.teamRegistrations.push({
+                eventName: eventName,
+                teamLeaderId: user._id,
+                isTeamLeader: false,
+                teamName: `${user.name}'s Team`,
+                teamCompositionId: teamComposition._id,
+                registeredAt: new Date()
+              });
+              console.log(`   📝 Added team registration tracking for member`);
+            } else {
+              console.log(`   ℹ️ Team registration tracking already exists for this member`);
+            }
             
             // Add registration history for the member
-            memberUser.registrationHistory.push({
-              purchaseId: purchase._id,
-              registrationType: 'team-member',
-              eventsRegistered: [eventName],
-              registeredAt: new Date()
-            });
+            memberUser.registrationHistory = memberUser.registrationHistory || [];
             
+            // Check if this registration history already exists
+            const existingHistory = memberUser.registrationHistory.find(
+              history => history.purchaseId?.toString() === purchase._id.toString()
+            );
+            
+            if (!existingHistory) {
+              memberUser.registrationHistory.push({
+                purchaseId: purchase._id,
+                registrationType: 'team-member',
+                eventsRegistered: [eventName],
+                registeredAt: new Date()
+              });
+              console.log(`   📋 Added registration history for member`);
+            } else {
+              console.log(`   ℹ️ Registration history already exists for this member`);
+            }
+            
+            // Save the member user (existing or new)
             await memberUser.save();
+            console.log(`   💾 Member user saved successfully: ${memberUser.name}`);
             
             // Add to team composition
             teamComposition.teamMembers.push({
@@ -743,13 +790,27 @@ async function processSuccessfulPayment(purchase) {
               name: memberUser.name,
               email: memberUser.email,
               hasEntered: false,
-              role: memberData.role || ''
+              role: memberData.role || 'member'
             });
             
-            console.log(`✅ Processed team member: ${memberData.name} (${memberData.email})`);
+            console.log(`✅ Team member processed successfully: ${memberData.name} (${memberData.email})`);
             
           } catch (memberError) {
-            console.error(`❌ Failed to process team member ${memberData.name}:`, memberError);
+            console.error(`❌ Error processing team member ${memberData.name} (${memberData.email}):`, memberError);
+            
+            // Log specific error details for debugging
+            if (memberError.code === 11000) {
+              console.error('   📧 Duplicate key error:', memberError.keyPattern);
+              console.error('   💡 This should not happen with find-or-create logic');
+            } else if (memberError.name === 'ValidationError') {
+              console.error('   🔍 Validation error details:', memberError.message);
+            } else {
+              console.error('   🚨 Unexpected error type:', memberError.name, '-', memberError.message);
+            }
+            
+            // Continue with other members instead of failing entire team
+            console.log('   🔄 Continuing with next team member...');
+            continue;
           }
         }
         
