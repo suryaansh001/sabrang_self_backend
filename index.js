@@ -13,7 +13,7 @@ const shortid = require("shortid"); // Add this line
 const multer = require("multer");
 const fs = require("fs");
 const bcrypt = require("bcrypt");
-const { User } = require("./models/models");
+const { User, TeamComposition } = require("./models/models");
 const { generateUserQRCode } = require("./utils/qrCodeService");
 
 const app = express();
@@ -397,6 +397,46 @@ app.post("/register", upload.any(), async (req, res) => {
       }
 
       createdTeamMembers.push(teamMemberUser);
+    }
+
+    // Create TeamComposition records for team events (if there are team members)
+    const teamCompositions = [];
+    if (createdTeamMembers.length > 0 && Array.isArray(mainPerson.events)) {
+      console.log(`🏆 Creating team compositions for ${mainPerson.events.length} events`);
+      
+      for (const eventName of mainPerson.events) {
+        // Generate unique team ID
+        const teamId = `TEAM_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        console.log(`🏅 Creating team composition for event: ${eventName}`);
+        const teamComposition = new TeamComposition({
+          eventName: eventName,
+          teamName: `${mainPerson.name}'s Team`,
+          teamId: teamId,
+          teamLeader: {
+            userId: mainPerson._id,
+            name: mainPerson.name,
+            email: mainPerson.email,
+            hasEntered: false
+          },
+          teamMembers: createdTeamMembers.map(member => ({
+            userId: member._id,
+            name: member.name,
+            email: member.email,
+            hasEntered: false,
+            role: 'member'
+          })),
+          totalMembers: createdTeamMembers.length + 1, // +1 for team leader
+          registrationComplete: true,
+          paymentStatus: 'pending', // Will be updated after payment
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+        
+        await teamComposition.save();
+        teamCompositions.push(teamComposition);
+        console.log(`✅ Team composition created for ${eventName}: ${teamId}`);
+      }
     }
 
     res.status(201).json({

@@ -1,7 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
 const { Cashfree, CFEnvironment } = require('cashfree-pg');
-const { User, Purchase } = require('../models/models');
+const { User, Purchase, TeamComposition } = require('../models/models');
 const { sendRegistrationEmail } = require('../utils/emailService');
 const { generateUserQRCode } = require('../utils/qrCodeService');
 const qr = require('qr-image');
@@ -703,6 +703,64 @@ router.get('/success/:orderId', async (req, res) => {
             // Save purchase with all updates
             await purchase.save();
             console.log('✅ Purchase status updated to completed for order:', orderId);
+
+            // Update team compositions for this user (if any)
+            let teamMembers = [];
+            try {
+                console.log('🏆 Checking for team compositions to update for email:', user.email);
+                
+                // Find team compositions where this user is either team leader or team member
+                const teamCompositions = await TeamComposition.find({
+                    $or: [
+                        { 'teamLeader.email': user.email },
+                        { 'teamMembers.email': user.email }
+                    ],
+                    paymentStatus: 'pending'
+                }).populate('teamMembers.userId', 'name email contactNo');
+                
+                if (teamCompositions.length > 0) {
+                    console.log(`🎯 Found ${teamCompositions.length} team compositions to update`);
+                    
+                    // Extract team members for purchase record
+                    const allTeamMembers = new Set();
+                    
+                    for (const teamComp of teamCompositions) {
+                        teamComp.paymentStatus = 'completed';
+                        teamComp.purchaseId = purchase._id;
+                        teamComp.updatedAt = new Date();
+                        await teamComp.save();
+                        console.log(`✅ Updated team composition: ${teamComp.teamName} (${teamComp.eventName})`);
+                        
+                        // Collect team members (excluding the leader)
+                        teamComp.teamMembers.forEach(member => {
+                            if (member.userId && member.userId.email !== user.email) {
+                                allTeamMembers.add(JSON.stringify({
+                                    name: member.userId.name,
+                                    email: member.userId.email,
+                                    contactNo: member.userId.contactNo || ''
+                                }));
+                            }
+                        });
+                    }
+                    
+                    // Convert Set back to array of objects
+                    teamMembers = Array.from(allTeamMembers).map(memberStr => JSON.parse(memberStr));
+                    
+                    // Update purchase with team information
+                    purchase.userDetails.teamMembers = teamMembers;
+                    purchase.mainPersonId = user._id; // Set main person as team leader
+                    console.log(`🎯 Added ${teamMembers.length} team members to purchase record`);
+                    
+                } else {
+                    console.log('ℹ️ No pending team compositions found for this user');
+                }
+            } catch (teamError) {
+                console.error('❌ Error updating team compositions:', teamError);
+            }
+            
+            // Save purchase with team member updates
+            await purchase.save();
+            console.log('💾 Purchase saved with team member data');
 
             // Send registration email
             try {
