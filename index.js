@@ -204,6 +204,107 @@ app.post("/register", upload.any(), async (req, res) => {
     try { if (raw.visitorPassDetails) visitorPassDetails = JSON.parse(raw.visitorPassDetails); } catch (e) {}
     try { if (raw.items) items = JSON.parse(raw.items); } catch (e) {}
 
+    console.log('📊 Registration data received:');
+    console.log('  - Forms by signature:', Object.keys(formsBySignature || {}).length);
+    console.log('  - Team members by signature:', Object.keys(teamMembersBySignature || {}).length);
+    console.log('  - Flagship benefits by event:', Object.keys(flagshipBenefitsByEvent || {}).length);
+    
+    // Convert flagship benefits to additional team members
+    if (flagshipBenefitsByEvent && typeof flagshipBenefitsByEvent === 'object') {
+      console.log('🎯 Converting flagship benefits to team members...');
+      
+      for (const [eventId, benefits] of Object.entries(flagshipBenefitsByEvent)) {
+        console.log(`  Processing flagship benefits for event ${eventId}:`, benefits);
+        
+        // Find the signature for this event's team
+        let targetSignature = null;
+        if (formsBySignature) {
+          for (const [signature, formData] of Object.entries(formsBySignature)) {
+            // Check if this form corresponds to the event
+            if (items) {
+              const event = items.find(item => item.id === parseInt(eventId));
+              if (event) {
+                targetSignature = signature;
+                break;
+              }
+            }
+          }
+        }
+        
+        if (!targetSignature && Object.keys(formsBySignature || {}).length > 0) {
+          // Use the first available signature as fallback
+          targetSignature = Object.keys(formsBySignature)[0];
+        }
+        
+        if (targetSignature) {
+          // Initialize team members array if it doesn't exist
+          if (!teamMembersBySignature) teamMembersBySignature = {};
+          if (!teamMembersBySignature[targetSignature]) teamMembersBySignature[targetSignature] = [];
+          
+          // Add support artists as team members
+          if (benefits.supportArtistDetails && Array.isArray(benefits.supportArtistDetails)) {
+            console.log(`  Adding ${benefits.supportArtistDetails.length} support artists as team members`);
+            benefits.supportArtistDetails.forEach((artist, index) => {
+              if (artist.email && artist.name) {
+                teamMembersBySignature[targetSignature].push({
+                  name: artist.name,
+                  email: artist.email,
+                  contactNo: artist.contactNo || '',
+                  role: artist.role || 'support_staff',
+                  memberType: 'support_staff',
+                  idNumber: artist.idNumber || '',
+                  idType: artist.idType || ''
+                });
+                console.log(`    Added support artist: ${artist.name} (${artist.email})`);
+              }
+            });
+          }
+          
+          // Add flagship visitors as team members
+          if (benefits.flagshipVisitorPassDetails && Array.isArray(benefits.flagshipVisitorPassDetails)) {
+            console.log(`  Adding ${benefits.flagshipVisitorPassDetails.length} flagship visitors as team members`);
+            benefits.flagshipVisitorPassDetails.forEach((visitor, index) => {
+              if (visitor.collegeMailId && visitor.name) {
+                teamMembersBySignature[targetSignature].push({
+                  name: visitor.name,
+                  email: visitor.collegeMailId,
+                  contactNo: visitor.contactNo || '',
+                  gender: visitor.gender || '',
+                  age: visitor.age ? Number(visitor.age) : null,
+                  universityName: visitor.universityName || '',
+                  address: visitor.address || '',
+                  memberType: 'flagship_visitor'
+                });
+                console.log(`    Added flagship visitor: ${visitor.name} (${visitor.collegeMailId})`);
+              }
+            });
+          }
+          
+          // Add flagship solo visitors as team members
+          if (benefits.flagshipSoloVisitorPassDetails && Array.isArray(benefits.flagshipSoloVisitorPassDetails)) {
+            console.log(`  Adding ${benefits.flagshipSoloVisitorPassDetails.length} flagship solo visitors as team members`);
+            benefits.flagshipSoloVisitorPassDetails.forEach((visitor, index) => {
+              if (visitor.collegeMailId && visitor.name) {
+                teamMembersBySignature[targetSignature].push({
+                  name: visitor.name,
+                  email: visitor.collegeMailId,
+                  contactNo: visitor.contactNo || '',
+                  gender: visitor.gender || '',
+                  age: visitor.age ? Number(visitor.age) : null,
+                  universityName: visitor.universityName || '',
+                  address: visitor.address || '',
+                  memberType: 'flagship_solo_visitor'
+                });
+                console.log(`    Added flagship solo visitor: ${visitor.name} (${visitor.collegeMailId})`);
+              }
+            });
+          }
+          
+          console.log(`  Total team members for signature ${targetSignature}: ${teamMembersBySignature[targetSignature].length}`);
+        }
+      }
+    }
+
     // Merge all group fields to a single flat map to simplify lookups
     const mergedFormFields = (() => {
       const acc = {};
@@ -465,330 +566,109 @@ app.post("/register", upload.any(), async (req, res) => {
       }
     }
 
-    // Process support staff and flagship benefits
-    const createdSupportStaff = [];
-    const createdFlagshipVisitors = [];
-    
-    console.log(`🔍 Debug - Processing flagship benefits:`, JSON.stringify(flagshipBenefitsByEvent, null, 2));
-    
+    // Convert flagship benefits to team members (simplified approach)
+    console.log(`🎯 Processing flagship benefits as team members...`);
     if (flagshipBenefitsByEvent && typeof flagshipBenefitsByEvent === 'object') {
+      console.log(`📊 Found flagship benefits:`, JSON.stringify(flagshipBenefitsByEvent, null, 2));
+      
       for (const [eventId, benefits] of Object.entries(flagshipBenefitsByEvent)) {
         const eventName = items?.find(item => item.id === parseInt(eventId))?.title || `Event_${eventId}`;
-        console.log(`🎯 Processing flagship benefits for event: ${eventName} (ID: ${eventId})`);
+        console.log(`🏆 Processing benefits for event: ${eventName}`);
         
-        // Process support artists
+        // Convert support artists to team members
         if (benefits.supportArtistDetails && Array.isArray(benefits.supportArtistDetails)) {
-          console.log(`📊 Found ${benefits.supportArtistDetails.length} support artists for ${eventName}`);
-          for (const [index, supportArtist] of benefits.supportArtistDetails.entries()) {
-            const supportEmail = supportArtist.email || '';
-            const supportName = supportArtist.name || 'Support Staff';
-            const supportRole = supportArtist.role || 'support';
-
-            console.log(`  👨‍🎨 Processing support artist ${index + 1}: ${supportName} (${supportEmail || 'NO EMAIL'})`);
-            console.log(`    Full data:`, JSON.stringify(supportArtist, null, 2));
-
-            if (!supportEmail) {
-              console.error(`❌ Support artist ${index + 1} (${supportName}) has no email address - this will be skipped`);
-              console.error(`    This is the issue! Frontend should not allow empty emails.`);
-              
-              // Generate a fallback email to prevent skipping
-              const fallbackEmail = `support_${eventId}_${index}_${Date.now()}@temp.sabrang.com`;
-              console.log(`🔧 Generating fallback email: ${fallbackEmail}`);
-              supportArtist.email = fallbackEmail;
-              supportEmail = fallbackEmail;
-            }
-
-            // Process support artist (now guaranteed to have email)
-            {
-              let supportUser = await User.findOne({ email: supportEmail });
-
-              const supportPayload = {
-                name: supportName,
-                email: supportEmail,
-                contactNo: supportArtist.contactNo || "",
-                userType: 'support_staff',
-                supportRole: supportRole,
-                governmentId: supportArtist.idNumber || "",
-                idType: supportArtist.idType || "",
-                events: [eventName],
-                isvalidated: true
-              };
-
-              if (!supportUser) {
-                const supportPassword = Math.random().toString(36).slice(-10) + 'A1!';
-                const supportHashedPassword = await bcrypt.hash(supportPassword, 12);
-                
-                supportUser = new User({
-                  ...supportPayload,
-                  password: supportHashedPassword
-                });
-                await supportUser.save();
-                console.log(`✅ Created support staff user: ${supportName} (${supportEmail}) - ${supportRole} for ${eventName}`);
-              } else {
-                // Add new event to existing support staff
-                if (Array.isArray(supportUser.events)) {
-                  supportPayload.events = Array.from(new Set([...supportUser.events, eventName]));
-                }
-                supportUser = await User.findByIdAndUpdate(supportUser._id, supportPayload, { new: true });
-                console.log(`✅ Updated support staff user: ${supportName} (${supportEmail}) - ${supportRole} for ${eventName}`);
-              }
-
-              // Generate QR code for support staff
-              try {
-                const supportQrCodeBase64 = await generateUserQRCode(supportUser._id, {
-                  name: supportUser.name,
-                  email: supportUser.email
-                });
-                await User.findOneAndUpdate(
-                  { _id: supportUser._id }, 
-                  { 
-                    qrPath: `${supportUser._id}`,
-                    qrCodeBase64: supportQrCodeBase64 
-                  }, 
-                  { new: true }
-                );
-                console.log(`✅ QR code generated for support staff: ${supportUser._id}`);
-              } catch (supportQrError) {
-                console.error(`❌ QR code generation failed for support staff ${supportUser.name}:`, supportQrError);
-              }
-
-              createdSupportStaff.push({
-                userId: supportUser._id,
-                name: supportUser.name,
-                email: supportUser.email,
-                role: supportRole,
+          console.log(`👨‍🎨 Converting ${benefits.supportArtistDetails.length} support artists to team members`);
+          benefits.supportArtistDetails.forEach((artist, index) => {
+            if (artist.name && artist.email) {
+              const teamMember = {
+                name: artist.name,
+                email: artist.email,
+                contactNo: artist.contactNo || '',
+                role: artist.role || 'support_staff',
                 eventName: eventName,
-                hasEntered: false,
-                entryTime: null
-              });
+                userType: 'support_staff'
+              };
+              createdTeamMembers.push(teamMember);
+              console.log(`  ✅ Added support artist as team member: ${artist.name} (${artist.email})`);
+            } else {
+              console.log(`  ⚠️ Skipped support artist ${index + 1} - missing name or email`);
             }
-          }
+          });
         }
-
-        // Process flagship visitor passes
+        
+        // Convert flagship visitors to team members
         if (benefits.flagshipVisitorPassDetails && Array.isArray(benefits.flagshipVisitorPassDetails)) {
-          console.log(`📊 Found ${benefits.flagshipVisitorPassDetails.length} flagship visitors for ${eventName}`);
-          for (const [index, flagshipVisitor] of benefits.flagshipVisitorPassDetails.entries()) {
-            const visitorEmail = flagshipVisitor.collegeMailId || '';
-            const visitorName = flagshipVisitor.name || 'Flagship Visitor';
-
-            console.log(`  🎫 Processing flagship visitor ${index + 1}: ${visitorName} (${visitorEmail || 'NO EMAIL'})`);
-            console.log(`    Full data:`, JSON.stringify(flagshipVisitor, null, 2));
-
-            if (!visitorEmail) {
-              console.error(`❌ Flagship visitor ${index + 1} (${visitorName}) has no email address - this will be skipped`);
-              console.error(`    This is the issue! Frontend should not allow empty emails.`);
-              
-              // Generate a fallback email to prevent skipping
-              const fallbackEmail = `visitor_${eventId}_${index}_${Date.now()}@temp.sabrang.com`;
-              console.log(`🔧 Generating fallback email: ${fallbackEmail}`);
-              flagshipVisitor.collegeMailId = fallbackEmail;
-              visitorEmail = fallbackEmail;
-            }
-
-            // Process flagship visitor (now guaranteed to have email)
-            {
-              let visitorUser = await User.findOne({ email: visitorEmail });
-
-              const visitorPayload = {
-                name: visitorName,
-                email: visitorEmail,
-                contactNo: flagshipVisitor.contactNo || "",
-                gender: flagshipVisitor.gender || "",
-                age: flagshipVisitor.age ? Number(flagshipVisitor.age) : null,
-                universityName: flagshipVisitor.universityName || "",
-                address: flagshipVisitor.address || "",
-                userType: 'flagship_visitor',
-                events: [eventName],
-                isvalidated: true
-              };
-
-              if (!visitorUser) {
-                const visitorPassword = Math.random().toString(36).slice(-10) + 'A1!';
-                const visitorHashedPassword = await bcrypt.hash(visitorPassword, 12);
-                
-                visitorUser = new User({
-                  ...visitorPayload,
-                  password: visitorHashedPassword
-                });
-                await visitorUser.save();
-                console.log(`✅ Created flagship visitor user: ${visitorName} (${visitorEmail}) for ${eventName}`);
-              } else {
-                // Add new event to existing visitor
-                if (Array.isArray(visitorUser.events)) {
-                  visitorPayload.events = Array.from(new Set([...visitorUser.events, eventName]));
-                }
-                visitorUser = await User.findByIdAndUpdate(visitorUser._id, visitorPayload, { new: true });
-                console.log(`✅ Updated flagship visitor user: ${visitorName} (${visitorEmail}) for ${eventName}`);
-              }
-
-              // Generate QR code for flagship visitor
-              try {
-                const visitorQrCodeBase64 = await generateUserQRCode(visitorUser._id, {
-                  name: visitorUser.name,
-                  email: visitorUser.email
-                });
-                await User.findOneAndUpdate(
-                  { _id: visitorUser._id }, 
-                  { 
-                    qrPath: `${visitorUser._id}`,
-                    qrCodeBase64: visitorQrCodeBase64 
-                  }, 
-                  { new: true }
-                );
-                console.log(`✅ QR code generated for flagship visitor: ${visitorUser._id}`);
-              } catch (visitorQrError) {
-                console.error(`❌ QR code generation failed for flagship visitor ${visitorUser.name}:`, visitorQrError);
-              }
-
-              createdFlagshipVisitors.push({
-                userId: visitorUser._id,
-                name: visitorUser.name,
-                email: visitorUser.email,
-                role: 'flagship_visitor',
+          console.log(`🎫 Converting ${benefits.flagshipVisitorPassDetails.length} flagship visitors to team members`);
+          benefits.flagshipVisitorPassDetails.forEach((visitor, index) => {
+            if (visitor.name && visitor.collegeMailId) {
+              const teamMember = {
+                name: visitor.name,
+                email: visitor.collegeMailId,
+                contactNo: visitor.contactNo || '',
+                gender: visitor.gender || '',
+                age: visitor.age || '',
+                universityName: visitor.universityName || '',
+                address: visitor.address || '',
                 eventName: eventName,
-                hasEntered: false,
-                entryTime: null
-              });
+                userType: 'flagship_visitor'
+              };
+              createdTeamMembers.push(teamMember);
+              console.log(`  ✅ Added flagship visitor as team member: ${visitor.name} (${visitor.collegeMailId})`);
+            } else {
+              console.log(`  ⚠️ Skipped flagship visitor ${index + 1} - missing name or email`);
             }
-          }
+          });
         }
-
-        // Process flagship solo visitor passes
+        
+        // Convert flagship solo visitors to team members
         if (benefits.flagshipSoloVisitorPassDetails && Array.isArray(benefits.flagshipSoloVisitorPassDetails)) {
-          console.log(`📊 Found ${benefits.flagshipSoloVisitorPassDetails.length} flagship solo visitors for ${eventName}`);
-          for (const [index, flagshipSoloVisitor] of benefits.flagshipSoloVisitorPassDetails.entries()) {
-            const soloVisitorEmail = flagshipSoloVisitor.collegeMailId || '';
-            const soloVisitorName = flagshipSoloVisitor.name || 'Flagship Solo Visitor';
-
-            console.log(`  🎫 Processing flagship solo visitor ${index + 1}: ${soloVisitorName} (${soloVisitorEmail || 'NO EMAIL'})`);
-            console.log(`    Full data:`, JSON.stringify(flagshipSoloVisitor, null, 2));
-
-            if (!soloVisitorEmail) {
-              console.error(`❌ Flagship solo visitor ${index + 1} (${soloVisitorName}) has no email address - this will be skipped`);
-              console.error(`    This is the issue! Frontend should not allow empty emails.`);
-              
-              // Generate a fallback email to prevent skipping
-              const fallbackEmail = `solo_visitor_${eventId}_${index}_${Date.now()}@temp.sabrang.com`;
-              console.log(`🔧 Generating fallback email: ${fallbackEmail}`);
-              flagshipSoloVisitor.collegeMailId = fallbackEmail;
-              soloVisitorEmail = fallbackEmail;
-            }
-
-            // Process flagship solo visitor (now guaranteed to have email)
-            {
-              let soloVisitorUser = await User.findOne({ email: soloVisitorEmail });
-
-              const soloVisitorPayload = {
-                name: soloVisitorName,
-                email: soloVisitorEmail,
-                contactNo: flagshipSoloVisitor.contactNo || "",
-                gender: flagshipSoloVisitor.gender || "",
-                age: flagshipSoloVisitor.age ? Number(flagshipSoloVisitor.age) : null,
-                universityName: flagshipSoloVisitor.universityName || "",
-                address: flagshipSoloVisitor.address || "",
-                userType: 'flagship_solo_visitor',
-                events: [eventName],
-                isvalidated: true
-              };
-
-              if (!soloVisitorUser) {
-                const soloVisitorPassword = Math.random().toString(36).slice(-10) + 'A1!';
-                const soloVisitorHashedPassword = await bcrypt.hash(soloVisitorPassword, 12);
-                
-                soloVisitorUser = new User({
-                  ...soloVisitorPayload,
-                  password: soloVisitorHashedPassword
-                });
-                await soloVisitorUser.save();
-                console.log(`✅ Created flagship solo visitor user: ${soloVisitorName} (${soloVisitorEmail}) for ${eventName}`);
-              } else {
-                // Add new event to existing solo visitor
-                if (Array.isArray(soloVisitorUser.events)) {
-                  soloVisitorPayload.events = Array.from(new Set([...soloVisitorUser.events, eventName]));
-                }
-                soloVisitorUser = await User.findByIdAndUpdate(soloVisitorUser._id, soloVisitorPayload, { new: true });
-                console.log(`✅ Updated flagship solo visitor user: ${soloVisitorName} (${soloVisitorEmail}) for ${eventName}`);
-              }
-
-              // Generate QR code for flagship solo visitor
-              try {
-                const soloVisitorQrCodeBase64 = await generateUserQRCode(soloVisitorUser._id, {
-                  name: soloVisitorUser.name,
-                  email: soloVisitorUser.email
-                });
-                await User.findOneAndUpdate(
-                  { _id: soloVisitorUser._id }, 
-                  { 
-                    qrPath: `${soloVisitorUser._id}`,
-                    qrCodeBase64: soloVisitorQrCodeBase64 
-                  }, 
-                  { new: true }
-                );
-                console.log(`✅ QR code generated for flagship solo visitor: ${soloVisitorUser._id}`);
-              } catch (soloVisitorQrError) {
-                console.error(`❌ QR code generation failed for flagship solo visitor ${soloVisitorUser.name}:`, soloVisitorQrError);
-              }
-
-              createdFlagshipVisitors.push({
-                userId: soloVisitorUser._id,
-                name: soloVisitorUser.name,
-                email: soloVisitorUser.email,
-                role: 'flagship_solo_visitor',
+          console.log(`🎫 Converting ${benefits.flagshipSoloVisitorPassDetails.length} flagship solo visitors to team members`);
+          benefits.flagshipSoloVisitorPassDetails.forEach((soloVisitor, index) => {
+            if (soloVisitor.name && soloVisitor.collegeMailId) {
+              const teamMember = {
+                name: soloVisitor.name,
+                email: soloVisitor.collegeMailId,
+                contactNo: soloVisitor.contactNo || '',
+                gender: soloVisitor.gender || '',
+                age: soloVisitor.age || '',
+                universityName: soloVisitor.universityName || '',
+                address: soloVisitor.address || '',
                 eventName: eventName,
-                hasEntered: false,
-                entryTime: null
-              });
+                userType: 'flagship_solo_visitor'
+              };
+              createdTeamMembers.push(teamMember);
+              console.log(`  ✅ Added flagship solo visitor as team member: ${soloVisitor.name} (${soloVisitor.collegeMailId})`);
+            } else {
+              console.log(`  ⚠️ Skipped flagship solo visitor ${index + 1} - missing name or email`);
             }
-          }
+          });
         }
       }
+    } else {
+      console.log(`📊 No flagship benefits found`);
     }
-
-    // Create TeamComposition records for team events (if there are team members, support staff, or flagship visitors)
-    const teamCompositions = [];
-    const allTeamRelatedMembers = [...createdTeamMembers, ...createdSupportStaff, ...createdFlagshipVisitors];
     
-    if ((createdTeamMembers.length > 0 || createdSupportStaff.length > 0 || createdFlagshipVisitors.length > 0) && Array.isArray(mainPerson.events)) {
+    console.log(`🎯 Final team members count: ${createdTeamMembers.length} (including flagship benefits)`);
+
+    // Create TeamComposition records for team events (flagship benefits are now converted to team members)
+    const teamCompositions = [];
+    
+    if (createdTeamMembers.length > 0 && Array.isArray(mainPerson.events)) {
       console.log(`🏆 Creating team compositions for ${mainPerson.events.length} events`);
-      console.log(`👥 Total members: ${createdTeamMembers.length} team members, ${createdSupportStaff.length} support staff, ${createdFlagshipVisitors.length} flagship visitors`);
+      console.log(`👥 Total team members (including support staff and visitors): ${createdTeamMembers.length}`);
       
       for (const eventName of mainPerson.events) {
-        // Filter members for this specific event
-        const eventSupportStaff = createdSupportStaff.filter(staff => staff.eventName === eventName);
-        const eventFlagshipVisitors = createdFlagshipVisitors.filter(visitor => visitor.eventName === eventName);
-        const allEventMembers = [...createdTeamMembers, ...eventSupportStaff, ...eventFlagshipVisitors];
+        // All team members (including converted flagship benefits) are in createdTeamMembers
+        const allEventMembers = createdTeamMembers;
         
-        // Debug: Check all members have valid userId
-        console.log(`🔍 Debug - Event ${eventName} members:`, allEventMembers.map(m => ({ 
-          name: m.name, 
-          email: m.email, 
-          userId: m.userId, 
-          userIdType: typeof m.userId,
-          role: m.role 
-        })));
+        console.log(`🔍 Event ${eventName} - Total members: ${allEventMembers.length}`);
         
         if (allEventMembers.length > 0) {
           // Validate all members have userId
-          const membersWithoutUserId = allEventMembers.filter(member => !member.userId);
+          const membersWithoutUserId = allEventMembers.filter(member => !member._id);
           if (membersWithoutUserId.length > 0) {
             console.error(`❌ Found ${membersWithoutUserId.length} members without userId:`, membersWithoutUserId);
-            console.error(`Full member details:`, JSON.stringify(membersWithoutUserId, null, 2));
             throw new Error(`Invalid team members: ${membersWithoutUserId.length} members missing userId`);
-          }
-          
-          // Additional validation: ensure all userIds are valid ObjectIds
-          const membersWithInvalidUserId = allEventMembers.filter(member => {
-            try {
-              return !mongoose.Types.ObjectId.isValid(member.userId);
-            } catch (e) {
-              return true;
-            }
-          });
-          
-          if (membersWithInvalidUserId.length > 0) {
-            console.error(`❌ Found ${membersWithInvalidUserId.length} members with invalid userId:`, membersWithInvalidUserId);
-            throw new Error(`Invalid team members: ${membersWithInvalidUserId.length} members have invalid userId format`);
           }
           
           // Generate unique team ID
@@ -805,20 +685,16 @@ app.post("/register", upload.any(), async (req, res) => {
               email: mainPerson.email,
               hasEntered: false
             },
-            teamMembers: allEventMembers.map(member => {
-              console.log(`🔍 Mapping member:`, { name: member.name, userId: member.userId, type: typeof member.userId });
-              return {
-                userId: member.userId,
-                name: member.name,
-                email: member.email,
-                hasEntered: false,
-                role: member.role || 'member'
-              };
-            }),
+            teamMembers: allEventMembers.map(member => ({
+              userId: member._id,
+              name: member.name,
+              email: member.email,
+              hasEntered: false,
+              role: member.memberType || member.role || 'member'
+            })),
             totalMembers: allEventMembers.length + 1, // +1 for team leader
             registrationComplete: true,
             paymentStatus: 'pending', // Will be updated after payment
-            createdAt: new Date(),
             createdAt: new Date(),
             updatedAt: new Date()
           });
@@ -858,10 +734,10 @@ app.post("/register", upload.any(), async (req, res) => {
           address: member.address,
           profileImage: member.profileImage,
           qrPath: member.qrPath,
-          events: member.events
+          events: member.events,
+          memberType: member.memberType || 'regular', // Identify if support staff or visitor
+          role: member.role
         })),
-        supportStaff: createdSupportStaff,
-        flagshipVisitors: createdFlagshipVisitors,
         visitors: createdVisitors.map(visitor => ({
           id: visitor._id,
           name: visitor.name,
