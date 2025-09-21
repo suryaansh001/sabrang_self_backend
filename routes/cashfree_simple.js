@@ -762,23 +762,93 @@ router.get('/success/:orderId', async (req, res) => {
             await purchase.save();
             console.log('💾 Purchase saved with team member data');
 
-            // Send registration email
+            // Send registration email to team leader and all team members
             try {
                 const emailData = {
                     name: user.name,
                     email: user.email,
-                    events: ['Demo Event'], // You can customize this based on purchase items
+                    events: user.events || ['Demo Event'],
                     qrCodeBase64: user.qrCodeBase64
                 };
 
+                // Send email to team leader (main person)
                 const emailResult = await sendRegistrationEmail(user.email, emailData);
                 if (emailResult.success) {
-                    console.log('✅ Registration email sent successfully to:', user.email);
+                    console.log('✅ Registration email sent successfully to team leader:', user.email);
                     user.emailSent = true;
                     user.emailSentAt = new Date();
                     await user.save();
                 } else {
-                    console.error('❌ Failed to send registration email:', emailResult.error);
+                    console.error('❌ Failed to send registration email to team leader:', emailResult.error);
+                }
+
+                // Send emails to all team members
+                if (teamMembers && teamMembers.length > 0) {
+                    console.log(`📧 Sending emails to ${teamMembers.length} team members...`);
+                    
+                    for (const teamMember of teamMembers) {
+                        try {
+                            // Find the team member's user record to get their QR code
+                            const memberUser = await User.findOne({ email: teamMember.email });
+                            if (memberUser) {
+                                const memberEmailData = {
+                                    name: memberUser.name,
+                                    email: memberUser.email,
+                                    events: memberUser.events || ['Demo Event'],
+                                    qrCodeBase64: memberUser.qrCodeBase64
+                                };
+
+                                const memberEmailResult = await sendRegistrationEmail(memberUser.email, memberEmailData);
+                                if (memberEmailResult.success) {
+                                    console.log('✅ Registration email sent successfully to team member:', memberUser.email);
+                                    memberUser.emailSent = true;
+                                    memberUser.emailSentAt = new Date();
+                                    await memberUser.save();
+                                } else {
+                                    console.error('❌ Failed to send registration email to team member:', memberUser.email, memberEmailResult.error);
+                                }
+                            } else {
+                                console.warn('⚠️ Team member user not found for email:', teamMember.email);
+                            }
+                        } catch (memberEmailError) {
+                            console.error('❌ Error sending email to team member:', teamMember.email, memberEmailError);
+                        }
+                    }
+                }
+
+                // Also send emails to support staff if any
+                try {
+                    const supportStaff = await User.find({
+                        userType: 'support_staff',
+                        events: { $in: user.events || [] },
+                        emailSent: false
+                    });
+
+                    if (supportStaff.length > 0) {
+                        console.log(`📧 Sending emails to ${supportStaff.length} support staff members...`);
+                        
+                        for (const supportUser of supportStaff) {
+                            const supportEmailData = {
+                                name: supportUser.name,
+                                email: supportUser.email,
+                                events: supportUser.events,
+                                qrCodeBase64: supportUser.qrCodeBase64,
+                                supportRole: supportUser.supportRole
+                            };
+
+                            const supportEmailResult = await sendRegistrationEmail(supportUser.email, supportEmailData);
+                            if (supportEmailResult.success) {
+                                console.log('✅ Registration email sent successfully to support staff:', supportUser.email);
+                                supportUser.emailSent = true;
+                                supportUser.emailSentAt = new Date();
+                                await supportUser.save();
+                            } else {
+                                console.error('❌ Failed to send registration email to support staff:', supportUser.email, supportEmailResult.error);
+                            }
+                        }
+                    }
+                } catch (supportEmailError) {
+                    console.error('❌ Error sending emails to support staff:', supportEmailError);
                 }
             } catch (emailError) {
                 console.error('❌ Email sending error:', emailError);

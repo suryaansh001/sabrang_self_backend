@@ -195,9 +195,13 @@ app.post("/register", upload.any(), async (req, res) => {
     // Parse complex payloads
     let formsBySignature = null;
     let teamMembersBySignature = null;
+    let flagshipBenefitsByEvent = null;
+    let visitorPassDetails = null;
     let items = null;
     try { if (raw.formsBySignature) formsBySignature = JSON.parse(raw.formsBySignature); } catch (e) {}
     try { if (raw.teamMembersBySignature) teamMembersBySignature = JSON.parse(raw.teamMembersBySignature); } catch (e) {}
+    try { if (raw.flagshipBenefitsByEvent) flagshipBenefitsByEvent = JSON.parse(raw.flagshipBenefitsByEvent); } catch (e) {}
+    try { if (raw.visitorPassDetails) visitorPassDetails = JSON.parse(raw.visitorPassDetails); } catch (e) {}
     try { if (raw.items) items = JSON.parse(raw.items); } catch (e) {}
 
     // Merge all group fields to a single flat map to simplify lookups
@@ -397,6 +401,148 @@ app.post("/register", upload.any(), async (req, res) => {
       }
 
       createdTeamMembers.push(teamMemberUser);
+    }
+
+    // Process visitor pass registration (standalone)
+    const createdVisitors = [];
+    const visitorPassDays = parseInt(raw.visitorPassDays || '0', 10);
+    if (visitorPassDays > 0 && visitorPassDetails) {
+      const visitorEmail = visitorPassDetails.collegeMailId || '';
+      const visitorName = visitorPassDetails.name || 'Visitor';
+
+      if (visitorEmail) {
+        let visitorUser = await User.findOne({ email: visitorEmail });
+
+        const visitorPayload = {
+          name: visitorName,
+          email: visitorEmail,
+          contactNo: visitorPassDetails.contactNo || "",
+          gender: visitorPassDetails.gender || "",
+          age: visitorPassDetails.age ? Number(visitorPassDetails.age) : null,
+          universityName: visitorPassDetails.universityName || "",
+          address: visitorPassDetails.address || "",
+          userType: 'participant',
+          events: ['VISITOR_PASS'],
+          visitorPassDays: visitorPassDays,
+          isvalidated: true
+        };
+
+        if (!visitorUser) {
+          const visitorPassword = Math.random().toString(36).slice(-10) + 'A1!';
+          const visitorHashedPassword = await bcrypt.hash(visitorPassword, 12);
+          
+          visitorUser = new User({
+            ...visitorPayload,
+            password: visitorHashedPassword
+          });
+          await visitorUser.save();
+          console.log(`✅ Created visitor user: ${visitorName} (${visitorEmail}) - ${visitorPassDays} days`);
+        } else {
+          visitorUser = await User.findByIdAndUpdate(visitorUser._id, visitorPayload, { new: true });
+          console.log(`✅ Updated visitor user: ${visitorName} (${visitorEmail}) - ${visitorPassDays} days`);
+        }
+
+        // Generate QR code for visitor
+        try {
+          const visitorQrCodeBase64 = await generateUserQRCode(visitorUser._id, {
+            name: visitorUser.name,
+            email: visitorUser.email
+          });
+          await User.findOneAndUpdate(
+            { _id: visitorUser._id }, 
+            { 
+              qrPath: `${visitorUser._id}`,
+              qrCodeBase64: visitorQrCodeBase64 
+            }, 
+            { new: true }
+          );
+          console.log(`✅ QR code generated for visitor: ${visitorUser._id}`);
+        } catch (visitorQrError) {
+          console.error(`❌ QR code generation failed for visitor ${visitorUser.name}:`, visitorQrError);
+        }
+
+        createdVisitors.push(visitorUser);
+      }
+    }
+
+    // Process support staff from flagship benefits
+    const createdSupportStaff = [];
+    if (flagshipBenefitsByEvent && typeof flagshipBenefitsByEvent === 'object') {
+      for (const [eventId, benefits] of Object.entries(flagshipBenefitsByEvent)) {
+        const eventName = items?.find(item => item.id === parseInt(eventId))?.title || `Event_${eventId}`;
+        
+        if (benefits.supportArtistDetails && Array.isArray(benefits.supportArtistDetails)) {
+          for (const supportArtist of benefits.supportArtistDetails) {
+            const supportEmail = supportArtist.email || '';
+            const supportName = supportArtist.name || 'Support Staff';
+            const supportRole = supportArtist.role || 'support';
+
+            if (supportEmail) {
+              let supportUser = await User.findOne({ email: supportEmail });
+
+              const supportPayload = {
+                name: supportName,
+                email: supportEmail,
+                contactNo: supportArtist.contactNo || "",
+                userType: 'support_staff',
+                supportRole: supportRole,
+                governmentId: supportArtist.idNumber || "",
+                idType: supportArtist.idType || "",
+                events: [eventName],
+                isvalidated: true
+              };
+
+              if (!supportUser) {
+                const supportPassword = Math.random().toString(36).slice(-10) + 'A1!';
+                const supportHashedPassword = await bcrypt.hash(supportPassword, 12);
+                
+                supportUser = new User({
+                  ...supportPayload,
+                  password: supportHashedPassword
+                });
+                await supportUser.save();
+                console.log(`✅ Created support staff user: ${supportName} (${supportEmail}) - ${supportRole} for ${eventName}`);
+              } else {
+                // Add new event to existing support staff
+                if (Array.isArray(supportUser.events)) {
+                  supportPayload.events = Array.from(new Set([...supportUser.events, eventName]));
+                }
+                supportUser = await User.findByIdAndUpdate(supportUser._id, supportPayload, { new: true });
+                console.log(`✅ Updated support staff user: ${supportName} (${supportEmail}) - ${supportRole} for ${eventName}`);
+              }
+
+              // Generate QR code for support staff
+              try {
+                const supportQrCodeBase64 = await generateUserQRCode(supportUser._id, {
+                  name: supportUser.name,
+                  email: supportUser.email
+                });
+                await User.findOneAndUpdate(
+                  { _id: supportUser._id }, 
+                  { 
+                    qrPath: `${supportUser._id}`,
+                    qrCodeBase64: supportQrCodeBase64 
+                  }, 
+                  { new: true }
+                );
+                console.log(`✅ QR code generated for support staff: ${supportUser._id}`);
+              } catch (supportQrError) {
+                console.error(`❌ QR code generation failed for support staff ${supportUser.name}:`, supportQrError);
+              }
+
+              createdSupportStaff.push({
+                userId: supportUser._id,
+                name: supportUser.name,
+                email: supportUser.email,
+                role: supportRole,
+                eventName: eventName,
+                hasEntered: false,
+                entryTime: null
+              });
+            }
+          }
+        }
+      }
     }
 
     // Create TeamComposition records for team events (if there are team members)

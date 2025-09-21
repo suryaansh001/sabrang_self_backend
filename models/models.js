@@ -58,6 +58,29 @@ const userSchema = new mongoose.Schema({
     default: ""
   },
   
+  // Support staff fields
+  userType: {
+    type: String,
+    enum: ['participant', 'support_staff'],
+    default: 'participant'
+  },
+  supportRole: {
+    type: String, // 'makeup', 'stylist', 'manager', etc.
+    default: ""
+  },
+  governmentId: {
+    type: String, // For support staff - government ID instead of university ID
+    default: ""
+  },
+  idType: {
+    type: String, // 'aadhar', 'passport', 'driving', 'other'
+    default: ""
+  },
+  visitorPassDays: {
+    type: Number,
+    default: 0
+  },
+  
   // Team relationship tracking - stores all team participations
   teamRegistrations: [{
     eventName: String, // Which event this team registration is for
