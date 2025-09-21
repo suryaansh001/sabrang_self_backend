@@ -210,7 +210,7 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
     const teamComposition = await TeamComposition.findOne({ 
       $or: [
         { teamLeader: user._id },
-        { 'teamMembers.user': user._id }
+        { 'teamMembers.userId': user._id }
       ]
     });
     
@@ -387,7 +387,7 @@ router.get("/team-members", verifyAdmin, async (req, res) => {
     // Get all team compositions with member details
     const teamCompositions = await TeamComposition.find({})
       .populate('teamLeader', 'name email')
-      .populate('teamMembers.user', 'name email');
+      .populate('teamMembers.userId', 'name email');
     
     // Flatten team members for admin view
     const allTeamMembers = [];
@@ -405,9 +405,9 @@ router.get("/team-members", verifyAdmin, async (req, res) => {
       // Add team members
       composition.teamMembers.forEach(member => {
         allTeamMembers.push({
-          _id: member.user._id,
-          name: member.user.name,
-          email: member.user.email,
+          _id: member.userId._id,
+          name: member.userId.name,
+          email: member.userId.email,
           teamId: composition.teamId,
           isTeamLeader: false,
           registeredBy: composition.teamLeader.name
@@ -430,7 +430,7 @@ router.get("/team/:teamId", verifyAdmin, async (req, res) => {
     // Find team composition by team ID
     const teamComposition = await TeamComposition.findOne({ teamId: teamId })
       .populate('teamLeader', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events')
-      .populate('teamMembers.user', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events');
+      .populate('teamMembers.userId', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events');
       
     if (!teamComposition) {
       return res.status(404).json({
@@ -459,19 +459,19 @@ router.get("/team/:teamId", verifyAdmin, async (req, res) => {
           events: teamComposition.teamLeader.events
         },
         teamMembers: teamComposition.teamMembers.map(member => ({
-          id: member.user._id,
-          name: member.user.name,
-          email: member.user.email,
-          contactNo: member.user.contactNo,
-          gender: member.user.gender,
-          age: member.user.age,
-          universityName: member.user.universityName,
-          address: member.user.address,
-          profileImage: member.user.profileImage,
-          qrPath: member.user.qrPath,
-          hasEntered: member.user.hasEntered,
-          entryTime: member.user.entryTime,
-          events: member.user.events
+          id: member.userId._id,
+          name: member.userId.name,
+          email: member.userId.email,
+          contactNo: member.userId.contactNo,
+          gender: member.userId.gender,
+          age: member.userId.age,
+          universityName: member.userId.universityName,
+          address: member.userId.address,
+          profileImage: member.userId.profileImage,
+          qrPath: member.userId.qrPath,
+          hasEntered: member.userId.hasEntered,
+          entryTime: member.userId.entryTime,
+          events: member.userId.events
         })),
         teamSize: mainPerson.teamSize
       }

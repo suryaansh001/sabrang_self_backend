@@ -326,7 +326,7 @@ app.post("/register", upload.any(), async (req, res) => {
       console.error('❌ QR code generation failed for main person:', qrError);
     }
 
-    // Process team members
+    // Process team members using unified User schema
     const createdTeamMembers = [];
     for (let i = 0; i < teamMembersBySigArray.length; i++) {
       const { member, signature, index } = teamMembersBySigArray[i];
@@ -334,37 +334,69 @@ app.post("/register", upload.any(), async (req, res) => {
 
       // Derive email similar to main person logic
       const memberEmail = member.email || member.collegeMailId || '';
+      const memberName = member.name || 'Team Member';
 
-      const teamMember = new TeamMember({
-        mainPersonId: mainPerson._id,
-        name: member.name || 'Team Member',
-        email: memberEmail || `${(member.name || 'member')?.toLowerCase().replace(/\s+/g, '')}@team.local`,
+      if (!memberEmail) {
+        console.warn(`⚠️ Skipping team member without email: ${memberName}`);
+        continue;
+      }
+
+      // Check if team member already exists as a User
+      let teamMemberUser = await User.findOne({ email: memberEmail });
+
+      const memberPayload = {
+        name: memberName,
+        email: memberEmail,
         contactNo: member.contactNo || "",
         gender: member.gender || "",
         age: member.age ? Number(member.age) : null,
         universityName: member.universityName || mainPersonUniversity,
         address: member.address || mainPersonAddress,
         profileImage: memberImage || "",
-        events: mainPerson.events || []
-      });
+        events: mainPerson.events || [],
+        isvalidated: true
+      };
 
-      await teamMember.save();
+      if (!teamMemberUser) {
+        // Create new team member as User
+        const memberPassword = Math.random().toString(36).slice(-10) + 'A1!';
+        const memberHashedPassword = await bcrypt.hash(memberPassword, 12);
+        
+        teamMemberUser = new User({
+          ...memberPayload,
+          password: memberHashedPassword
+        });
+        await teamMemberUser.save();
+        console.log(`✅ Created new team member user: ${memberName} (${memberEmail})`);
+      } else {
+        // Update existing team member user - add events
+        if (Array.isArray(memberPayload.events) && Array.isArray(teamMemberUser.events)) {
+          memberPayload.events = Array.from(new Set([...(teamMemberUser.events || []), ...memberPayload.events]));
+        }
+        teamMemberUser = await User.findByIdAndUpdate(teamMemberUser._id, memberPayload, { new: true });
+        console.log(`✅ Updated existing team member user: ${memberName} (${memberEmail})`);
+      }
 
       // Generate QR code as base64 for team member
       try {
-        const memberQrCodeBase64 = await generateUserQRCode(teamMember._id, {
-          name: teamMember.name,
-          email: teamMember.email
+        const memberQrCodeBase64 = await generateUserQRCode(teamMemberUser._id, {
+          name: teamMemberUser.name,
+          email: teamMemberUser.email
         });
-        teamMember.qrPath = `${teamMember._id}`; // Keep for backward compatibility
-        teamMember.qrCodeBase64 = memberQrCodeBase64;
-        await teamMember.save();
-        console.log(`✅ QR code generated as base64 for team member: ${teamMember._id}`);
+        await User.findOneAndUpdate(
+          { _id: teamMemberUser._id }, 
+          { 
+            qrPath: `${teamMemberUser._id}`, // Keep for backward compatibility
+            qrCodeBase64: memberQrCodeBase64 
+          }, 
+          { new: true }
+        );
+        console.log(`✅ QR code generated as base64 for team member: ${teamMemberUser._id}`);
       } catch (memberQrError) {
-        console.error(`❌ QR code generation failed for team member ${teamMember.name}:`, memberQrError);
+        console.error(`❌ QR code generation failed for team member ${teamMemberUser.name}:`, memberQrError);
       }
 
-      createdTeamMembers.push(teamMember);
+      createdTeamMembers.push(teamMemberUser);
     }
 
     res.status(201).json({
