@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const { Purchase, User, Event, TeamMember, PromoCode } = require('../models/models');
-const { sendRegistrationEmail, sendEmailToAllTeamMembers } = require('../utils/emailService');
+const { sendRegistrationEmail, sendTeamRegistrationEmails } = require('../utils/emailService');
 const { generateUserQRCode } = require('../utils/qrCodeService');
 const shortid = require('shortid');
 const qr = require('qr-image');
@@ -571,6 +571,16 @@ async function processSuccessfulPayment(purchase) {
     
     const userData = purchase.userDetails;
     const eventNames = purchase.items.map(item => item.itemName);
+    
+    // Add detailed logging for events data flow
+    console.log('📊 Events data flow tracking:');
+    console.log(`📋 Purchase items: ${JSON.stringify(purchase.items, null, 2)}`);
+    console.log(`📋 Extracted event names: ${JSON.stringify(eventNames)}`);
+    console.log(`📋 User data: ${JSON.stringify({
+      name: userData.name,
+      email: userData.email,
+      teamMembersCount: userData.teamMembers?.length || 0
+    }, null, 2)}`);
 
     // Step 1: Register user in the system
     let user;
@@ -731,31 +741,48 @@ async function processSuccessfulPayment(purchase) {
       // If this is a team registration, send emails to all team members
       if (user.isMainPerson && userData.teamMembers && userData.teamMembers.length > 0) {
         try {
+          console.log('🔄 Processing team email notifications...');
+          console.log(`📊 Team info: Leader: ${user.name} (${user.email}), Members count: ${userData.teamMembers.length}`);
+          console.log(`📋 User events: ${JSON.stringify(user.events)}`);
+          console.log(`📋 Event names from purchase: ${JSON.stringify(eventNames)}`);
+          
           // Get all team members from database
           const teamMembers = await TeamMember.find({ mainPersonId: user._id });
+          console.log(`📊 Found ${teamMembers.length} team members in database`);
+          
+          // Log team member details
+          teamMembers.forEach((member, index) => {
+            console.log(`👤 Team member ${index + 1}: ${member.name} (${member.email})`);
+          });
           
           // Prepare team data for email service
           const teamData = {
             mainPerson: {
               name: user.name,
               email: user.email,
-              events: user.events || []
+              events: user.events || [],
+              eventNames: eventNames || []
             },
             teamMembers: teamMembers.map(member => ({
               name: member.name,
-              email: member.email
+              email: member.email,
+              events: member.events || [],
+              mainPersonId: member.mainPersonId
             }))
           };
 
-          // Send registration emails to all team members
-          const teamEmailContent = {
-            subject: '🎉 Sabrang\'25 Team Registration Confirmed'
-          };
+          console.log('📧 Team data prepared for email service:', {
+            leader: teamData.mainPerson.name,
+            memberCount: teamData.teamMembers.length,
+            memberEmails: teamData.teamMembers.map(m => m.email)
+          });
 
-          const teamEmailResult = await sendEmailToAllTeamMembers(teamData, teamEmailContent);
+          // Send registration emails to all team members using the new function
+          const teamEmailResult = await sendTeamRegistrationEmails(teamData);
           
           if (teamEmailResult.success) {
             console.log(`✅ Team registration emails sent: ${teamEmailResult.summary.successful}/${teamEmailResult.summary.total}`);
+            console.log(`📊 Email results breakdown:`, teamEmailResult.results);
             
             // Update team member email status in database
             for (const result of teamEmailResult.results) {
@@ -768,17 +795,26 @@ async function processSuccessfulPayment(purchase) {
                       emailSentAt: new Date()
                     }
                   );
+                  console.log(`✅ Updated email status for team member: ${result.email}`);
                 } catch (updateError) {
-                  console.error(`Failed to update email status for ${result.email}:`, updateError);
+                  console.error(`❌ Failed to update email status for ${result.email}:`, updateError);
                 }
               }
             }
           } else {
-            console.error('Failed to send team registration emails:', teamEmailResult.error);
+            console.error('❌ Failed to send team registration emails:', teamEmailResult.error);
+            console.error('📊 Failed email results:', teamEmailResult.results);
           }
         } catch (teamEmailError) {
-          console.error('Team email sending error:', teamEmailError);
+          console.error('❌ Team email processing error:', teamEmailError);
+          console.error('📊 Error details:', {
+            message: teamEmailError.message,
+            stack: teamEmailError.stack
+          });
         }
+      } else {
+        console.log('ℹ️ Skipping team emails - not a team registration or no team members');
+        console.log(`📊 Check: isMainPerson=${user.isMainPerson}, teamMembers=${userData.teamMembers?.length || 0}`);
       }
 
     } catch (emailError) {

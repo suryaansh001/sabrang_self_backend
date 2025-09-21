@@ -4,7 +4,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { User, Event, TeamMember } = require("../models/models");
 const { verifyToken,verifyAdmin } = require("../middleware/auth");
-const { sendPaymentInitiatedEmail, sendEmailToAllTeamMembers } = require("../utils/emailService");
+const { sendPaymentInitiatedEmail, sendTeamRegistrationEmails } = require("../utils/emailService");
 const path = require('path');
 const fs = require('fs');
 const qr = require('qr-image');
@@ -769,7 +769,7 @@ router.post('/send-team-emails', verifyToken, async (req, res) => {
     }
 
     // Send emails to all team members
-    const emailResult = await sendEmailToAllTeamMembers(teamData, emailContent);
+    const emailResult = await sendTeamRegistrationEmails(teamData);
 
     if (emailResult.success) {
       res.json({

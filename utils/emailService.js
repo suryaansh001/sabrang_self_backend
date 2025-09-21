@@ -95,11 +95,7 @@ class MicrosoftOAuthMailer {
  * Generate registration email content
  */
 function generateRegistrationEmailContent(userData) {
-    const { name, events } = userData;
-    
-    const eventsText = events && events.length > 0 
-        ? events.join(', ') 
-        : 'Dance Competition, Coding Contest, Business Plan';
+    const { name } = userData;
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -114,7 +110,6 @@ function generateRegistrationEmailContent(userData) {
             .ticket-section { text-align: center; margin: 20px 0; }
             .ticket-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 10px 0; }
             .footer { text-align: center; margin-top: 30px; color: #666; }
-            .events-list { background: #e8f4fd; padding: 15px; border-left: 4px solid #2196f3; margin: 10px 0; }
         </style>
     </head>
     <body>
@@ -132,10 +127,7 @@ function generateRegistrationEmailContent(userData) {
                 <div class="details">
                     <h3>Your Registration Details:</h3>
                     <p><strong>Name:</strong> ${name}</p>
-                    <div class="events-list">
-                        <strong>Events Registered:</strong><br />
-                        ${eventsText}
-                    </div>
+                    <p><strong>Status:</strong> Registered Participant</p>
                 </div>
                 
                 <div class="ticket-section">
@@ -168,9 +160,7 @@ We're thrilled to have you join us for Sabrang'25 — a three-day celebration of
 
 Your Registration Details:
 Name: ${name}
-
-Events Registered:
-${eventsText}
+Status: Registered Participant
 
 Your QR Code:
 Please download the ticket for a smooth check-in.
@@ -466,11 +456,104 @@ async function sendPaymentInitiatedEmail(paymentData) {
 }
 
 /**
- * Send email to all team members
+ * Generate team registration email content (without events section)
  */
-async function sendEmailToAllTeamMembers(teamData, emailContent) {
+function generateTeamRegistrationEmailContent(userData) {
+    const { name, isTeamMember = false, teamLeaderName = '' } = userData;
+    
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .details { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+            .ticket-section { text-align: center; margin: 20px 0; }
+            .ticket-button { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 10px 0; }
+            .footer { text-align: center; margin-top: 30px; color: #666; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🎉 Welcome to Sabrang'25!</h1>
+                <p>Thanks for registering — you're officially part of the fest where the unseen comes to life.</p>
+            </div>
+            
+            <div class="content">
+                <h2>${isTeamMember ? 'Team Registration Confirmed!' : 'Registration Confirmed!'}</h2>
+                <p>Hi ${name},</p>
+                <p>We're thrilled to have you join us for <strong>Sabrang'25</strong> — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.</p>
+                
+                <div class="details">
+                    <h3>Your Registration Details:</h3>
+                    <p><strong>Name:</strong> ${name}</p>
+                    ${isTeamMember ? `<p><strong>Team Leader:</strong> ${teamLeaderName}</p>` : ''}
+                    <p><strong>Status:</strong> ${isTeamMember ? 'Team Member' : 'Registered Participant'}</p>
+                </div>
+                
+                <div class="ticket-section">
+                    <h3>Your QR Code:</h3>
+                    <p>Please download the ticket for a smooth check-in.</p>
+                    <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">Download Your Ticket Here</a>
+                </div>
+                
+                <div class="footer">
+                    <p><strong>🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.</strong></p>
+                    
+                    <p><strong>—<br>Team Sabrang'25<br>✨ Witness the Unseen</strong></p>
+                    
+                    <p>Need help or have a question? Reach out to us anytime.</p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+
+    const textContent = `
+🎉 Welcome to Sabrang'25!
+Thanks for registering — you're officially part of the fest where the unseen comes to life.
+
+${isTeamMember ? 'Team Registration Confirmed!' : 'Registration Confirmed!'}
+Hi ${name},
+
+We're thrilled to have you join us for Sabrang'25 — a three-day celebration of talent, creativity, and unforgettable vibes at JKLU, Jaipur.
+
+Your Registration Details:
+Name: ${name}
+${isTeamMember ? `Team Leader: ${teamLeaderName}` : ''}
+Status: ${isTeamMember ? 'Team Member' : 'Registered Participant'}
+
+Your QR Code:
+Please download the ticket for a smooth check-in.
+Download Your Ticket Here: https://sabrang.jklu.edu.in/ticket
+
+🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.
+
+—
+Team Sabrang'25
+✨ Witness the Unseen
+
+Need help or have a question? Reach out to us anytime.
+    `;
+
+    return { htmlContent, textContent };
+}
+
+/**
+ * Send team registration emails to all members
+ */
+async function sendTeamRegistrationEmails(teamData) {
     const { mainPerson, teamMembers } = teamData;
     const results = [];
+    
+    console.log('📧 Starting team registration email process...');
+    console.log(`📊 Team data: Leader: ${mainPerson?.name}, Members: ${teamMembers?.length || 0}`);
+    console.log(`📋 Main person events: ${JSON.stringify(mainPerson?.events || [])}`);
     
     try {
         // Configuration from environment variables
@@ -494,15 +577,16 @@ async function sendEmailToAllTeamMembers(teamData, emailContent) {
         // Send to main person (team leader)
         if (mainPerson && mainPerson.email) {
             try {
-                const mainPersonEmailContent = generatePaymentInitiationEmailContent({
+                console.log(`📧 Sending email to team leader: ${mainPerson.email}`);
+                
+                const mainPersonEmailContent = generateTeamRegistrationEmailContent({
                     name: mainPerson.name,
-                    events: mainPerson.events || [],
-                    ...emailContent
+                    isTeamMember: false
                 });
 
                 const mailOptions = {
                     to: mainPerson.email,
-                    subject: emailContent.subject || '🎉 Sabrang\'25 Team Registration Confirmed',
+                    subject: '🎉 Sabrang\'25 Team Registration Confirmed',
                     text: mainPersonEmailContent.textContent,
                     html: mainPersonEmailContent.htmlContent
                 };
@@ -514,7 +598,7 @@ async function sendEmailToAllTeamMembers(teamData, emailContent) {
                     success: true, 
                     role: 'team-leader' 
                 });
-                console.log(`✅ Email sent to team leader: ${mainPerson.email}`);
+                console.log(`✅ Email sent successfully to team leader: ${mainPerson.email}`);
             } catch (error) {
                 results.push({ 
                     email: mainPerson.email, 
@@ -525,25 +609,33 @@ async function sendEmailToAllTeamMembers(teamData, emailContent) {
                 });
                 console.error(`❌ Failed to send email to team leader ${mainPerson.email}:`, error.message);
             }
+        } else {
+            console.warn('⚠️ No main person data provided or missing email');
         }
 
         // Send to all team members
         if (teamMembers && teamMembers.length > 0) {
-            for (const member of teamMembers) {
+            console.log(`📧 Sending emails to ${teamMembers.length} team members...`);
+            
+            for (let i = 0; i < teamMembers.length; i++) {
+                const member = teamMembers[i];
+                console.log(`📧 Processing team member ${i + 1}/${teamMembers.length}: ${member.name} (${member.email})`);
+                
                 try {
-                    const memberEmailContent = generatePaymentInitiationEmailContent({
+                    const memberEmailContent = generateTeamRegistrationEmailContent({
                         name: member.name,
-                        events: mainPerson.events || [], // Team members inherit main person's events
-                        ...emailContent
+                        isTeamMember: true,
+                        teamLeaderName: mainPerson?.name || 'Team Leader'
                     });
 
                     const mailOptions = {
                         to: member.email,
-                        subject: emailContent.subject || '🎉 Sabrang\'25 Team Registration Confirmed',
+                        subject: '🎉 Sabrang\'25 Team Registration Confirmed',
                         text: memberEmailContent.textContent,
                         html: memberEmailContent.htmlContent
                     };
 
+                    console.log(`📤 Attempting to send email to: ${member.email}`);
                     const result = await mailer.sendEmailGraph(mailOptions);
                     results.push({ 
                         email: member.email, 
@@ -551,7 +643,7 @@ async function sendEmailToAllTeamMembers(teamData, emailContent) {
                         success: true, 
                         role: 'team-member' 
                     });
-                    console.log(`✅ Email sent to team member: ${member.email}`);
+                    console.log(`✅ Email sent successfully to team member: ${member.email}`);
                 } catch (error) {
                     results.push({ 
                         email: member.email, 
@@ -563,12 +655,15 @@ async function sendEmailToAllTeamMembers(teamData, emailContent) {
                     console.error(`❌ Failed to send email to team member ${member.email}:`, error.message);
                 }
             }
+        } else {
+            console.log('ℹ️ No team members to send emails to');
         }
 
         const successCount = results.filter(r => r.success).length;
         const totalCount = results.length;
 
         console.log(`📧 Team email summary: ${successCount}/${totalCount} emails sent successfully`);
+        console.log(`📊 Detailed results:`, results.map(r => ({ email: r.email, success: r.success, role: r.role })));
         
         return { 
             success: successCount > 0, 
@@ -581,9 +676,17 @@ async function sendEmailToAllTeamMembers(teamData, emailContent) {
         };
 
     } catch (error) {
-        console.error('❌ Failed to send team emails:', error.message);
+        console.error('❌ Failed to send team registration emails:', error.message);
         return { success: false, error: error.message, results };
     }
+}
+
+/**
+ * Send email to all team members (legacy function - keeping for backward compatibility)
+ */
+async function sendEmailToAllTeamMembers(teamData, emailContent) {
+    console.log('⚠️ Using legacy sendEmailToAllTeamMembers function. Consider using sendTeamRegistrationEmails instead.');
+    return await sendTeamRegistrationEmails(teamData);
 }
 
 module.exports = {
@@ -592,5 +695,7 @@ module.exports = {
     sendRegistrationEmail,
     generatePaymentInitiationEmailContent,
     sendPaymentInitiatedEmail,
+    generateTeamRegistrationEmailContent,
+    sendTeamRegistrationEmails,
     sendEmailToAllTeamMembers
 };
