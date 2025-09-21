@@ -569,135 +569,176 @@ router.post('/team-by-email', async (req, res) => {
 
     const emailKey = email.toLowerCase().trim();
 
-    // First check if it's an individual participant
-    let individualUser = await User.findOne({ 
-      email: emailKey,
-      $or: [
-        { isMainPerson: { $ne: true } }, // Not a team leader
-        { isMainPerson: { $exists: false } }, // Field doesn't exist (individual)
-        { teamSize: { $lte: 1 } } // Team size is 1 or less (individual)
-      ]
-    });
+    // Find ALL registrations for this email (individual and team leader)
+    const allUserRegistrations = await User.find({ 
+      email: emailKey 
+    }).sort({ registrationDate: -1 }); // Sort by newest first
 
-    if (individualUser && (!individualUser.isMainPerson || individualUser.teamSize <= 1)) {
-      // This is an individual participant
-      const events = individualUser.events;
+    console.log(`📊 Found ${allUserRegistrations.length} user registrations for email: ${emailKey}`);
+
+    // Find all team member registrations for this email
+    const teamMemberRegistrations = await TeamMember.find({ 
+      email: emailKey 
+    }).populate('mainPersonId');
+
+    console.log(`📊 Found ${teamMemberRegistrations.length} team member registrations for email: ${emailKey}`);
+
+    // Prepare individual registrations
+    const individualRegistrations = [];
+    const teamLeaderRegistrations = [];
+
+    for (const user of allUserRegistrations) {
+      // Get events data
       const eventData = [];
-      for (let i = 0; i < events.length; i++) {
-        const info = await Event.findOne({ name: events[i] });
+      for (let i = 0; i < user.events.length; i++) {
+        const info = await Event.findOne({ name: user.events[i] });
         if (info) {
           eventData.push(info);
         }
       }
 
-      return res.json({
-        success: true,
-        isIndividual: true,
-        participant: {
-          id: individualUser._id,
-          name: individualUser.name,
-          email: individualUser.email,
-          contactNo: individualUser.contactNo,
-          gender: individualUser.gender,
-          age: individualUser.age,
-          universityName: individualUser.universityName,
-          address: individualUser.address,
-          profileImage: individualUser.profileImage,
-          qrPath: individualUser.qrPath,
-          qrCodeBase64: individualUser.qrCodeBase64,
-          hasEntered: individualUser.hasEntered,
-          entryTime: individualUser.entryTime,
-          events: individualUser.events,
-          registeredEvents: eventData,
-          accessedBy: emailKey
-        }
-      });
-    }
+      const registrationData = {
+        id: user._id,
+        registrationId: user.registrationId,
+        registrationDate: user.registrationDate,
+        registrationCount: user.registrationCount,
+        name: user.name,
+        email: user.email,
+        contactNo: user.contactNo,
+        gender: user.gender,
+        age: user.age,
+        universityName: user.universityName,
+        address: user.address,
+        profileImage: user.profileImage,
+        qrPath: user.qrPath,
+        qrCodeBase64: user.qrCodeBase64,
+        hasEntered: user.hasEntered,
+        entryTime: user.entryTime,
+        events: user.events,
+        registeredEvents: eventData,
+        isMainPerson: user.isMainPerson,
+        teamSize: user.teamSize,
+        finalPrice: user.finalPrice
+      };
 
-    // Find the user by email (could be team leader or team member)
-    let mainPerson = await User.findOne({ 
-      email: emailKey,
-      isMainPerson: true 
-    });
-    
-    // If not found as main person, check if it's a team member
-    if (!mainPerson) {
-      const teamMember = await TeamMember.findOne({ 
-        email: emailKey
-      });
-      
-      if (teamMember) {
-        // Get the main person for this team member
-        mainPerson = await User.findById(teamMember.mainPersonId);
+      if (user.isMainPerson && user.teamSize > 1) {
+        // This is a team leader registration
+        // Get team members for this registration
+        const teamMembers = await TeamMember.find({ mainPersonId: user._id });
+        
+        teamLeaderRegistrations.push({
+          ...registrationData,
+          type: 'team-leader',
+          teamMembers: teamMembers.map(member => ({
+            id: member._id,
+            name: member.name,
+            email: member.email,
+            contactNo: member.contactNo,
+            gender: member.gender,
+            age: member.age,
+            universityName: member.universityName,
+            address: member.address,
+            profileImage: member.profileImage,
+            qrPath: member.qrPath,
+            qrCodeBase64: member.qrCodeBase64,
+            hasEntered: member.hasEntered,
+            entryTime: member.entryTime,
+            events: member.events
+          }))
+        });
+      } else {
+        // This is an individual registration
+        individualRegistrations.push({
+          ...registrationData,
+          type: 'individual'
+        });
       }
     }
-    
-    if (!mainPerson) {
+
+    // Prepare team member registrations (where this person is a team member)
+    const teamMembershipRegistrations = [];
+    for (const teamMember of teamMemberRegistrations) {
+      if (teamMember.mainPersonId) {
+        // Get all team members for this team
+        const allTeamMembers = await TeamMember.find({ mainPersonId: teamMember.mainPersonId });
+        
+        // Get events data for team member
+        const eventData = [];
+        for (let i = 0; i < teamMember.events.length; i++) {
+          const info = await Event.findOne({ name: teamMember.events[i] });
+          if (info) {
+            eventData.push(info);
+          }
+        }
+
+        teamMembershipRegistrations.push({
+          id: teamMember._id,
+          type: 'team-member',
+          name: teamMember.name,
+          email: teamMember.email,
+          contactNo: teamMember.contactNo,
+          gender: teamMember.gender,
+          age: teamMember.age,
+          universityName: teamMember.universityName,
+          address: teamMember.address,
+          profileImage: teamMember.profileImage,
+          qrPath: teamMember.qrPath,
+          qrCodeBase64: teamMember.qrCodeBase64,
+          hasEntered: teamMember.hasEntered,
+          entryTime: teamMember.entryTime,
+          events: teamMember.events,
+          registeredEvents: eventData,
+          teamLeader: {
+            id: teamMember.mainPersonId._id,
+            name: teamMember.mainPersonId.name,
+            email: teamMember.mainPersonId.email,
+            registrationId: teamMember.mainPersonId.registrationId
+          },
+          allTeamMembers: allTeamMembers.map(member => ({
+            id: member._id,
+            name: member.name,
+            email: member.email,
+            contactNo: member.contactNo,
+            qrPath: member.qrPath,
+            qrCodeBase64: member.qrCodeBase64,
+            hasEntered: member.hasEntered,
+            entryTime: member.entryTime
+          }))
+        });
+      }
+    }
+
+    // Combine all registrations
+    const allRegistrations = [
+      ...individualRegistrations,
+      ...teamLeaderRegistrations,
+      ...teamMembershipRegistrations
+    ];
+
+    if (allRegistrations.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No registration found for this email address'
+        message: 'No registrations found for this email address'
       });
     }
 
-    // Get team members
-    const teamMembers = await TeamMember.find({ mainPersonId: mainPerson._id });
-
-    // Get events data
-    const events = mainPerson.events;
-    const eventData = [];
-    for (let i = 0; i < events.length; i++) {
-      const info = await Event.findOne({ name: events[i] });
-      if (info) {
-        eventData.push(info);
-      }
-    }
+    console.log(`📊 Total registrations found: ${allRegistrations.length}`);
+    console.log(`📊 Individual: ${individualRegistrations.length}, Team Leader: ${teamLeaderRegistrations.length}, Team Member: ${teamMembershipRegistrations.length}`);
 
     res.json({
       success: true,
-      isIndividual: false,
-      team: {
-        teamId: mainPerson.teamId || mainPerson._id,
-        mainPerson: {
-          id: mainPerson._id,
-          name: mainPerson.name,
-          email: mainPerson.email,
-          contactNo: mainPerson.contactNo,
-          gender: mainPerson.gender,
-          age: mainPerson.age,
-          universityName: mainPerson.universityName,
-          address: mainPerson.address,
-          profileImage: mainPerson.profileImage,
-          qrPath: mainPerson.qrPath,
-          qrCodeBase64: mainPerson.qrCodeBase64,
-          hasEntered: mainPerson.hasEntered,
-          entryTime: mainPerson.entryTime,
-          events: mainPerson.events
-        },
-        teamMembers: teamMembers.map(member => ({
-          id: member._id,
-          name: member.name,
-          email: member.email,
-          contactNo: member.contactNo,
-          gender: member.gender,
-          age: member.age,
-          universityName: member.universityName,
-          address: member.address,
-          profileImage: member.profileImage,
-          qrPath: member.qrPath,
-          qrCodeBase64: member.qrCodeBase64,
-          hasEntered: member.hasEntered,
-          entryTime: member.entryTime,
-          events: member.events
-        })),
-        teamSize: mainPerson.teamSize || (1 + teamMembers.length),
-        registeredEvents: eventData,
-        // Indicate which email was used to access
+      registrations: allRegistrations,
+      summary: {
+        totalRegistrations: allRegistrations.length,
+        individualRegistrations: individualRegistrations.length,
+        teamLeaderRegistrations: teamLeaderRegistrations.length,
+        teamMemberRegistrations: teamMembershipRegistrations.length,
         accessedBy: emailKey
       }
     });
 
   } catch (error) {
-    console.error('Error fetching data by email:', error);
+    console.error('Error fetching registrations by email:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'

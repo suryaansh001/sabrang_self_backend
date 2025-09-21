@@ -62,6 +62,19 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 1 // Total team size including main person
   },
+  // Registration tracking fields
+  registrationId: {
+    type: String,
+    default: ""
+  },
+  registrationDate: {
+    type: Date,
+    default: Date.now
+  },
+  registrationCount: {
+    type: Number,
+    default: 1
+  },
   // Email tracking fields
   emailSent: {
     type: Boolean,

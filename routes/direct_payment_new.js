@@ -582,45 +582,40 @@ async function processSuccessfulPayment(purchase) {
       teamMembersCount: userData.teamMembers?.length || 0
     }, null, 2)}`);
 
-    // Step 1: Register user in the system
+    // Step 1: Register user in the system - ALWAYS CREATE NEW REGISTRATION
     let user;
     const existingUser = await User.findOne({ email: userData.email });
     
-    if (existingUser) {
-      // Update existing user
-      user = existingUser;
-      user.name = userData.name;
-      user.contactNo = userData.contactNo;
-      user.gender = userData.gender;
-      user.age = userData.age;
-      user.universityName = userData.universityName;
-      user.address = userData.address;
-      user.events = [...new Set([...user.events, ...eventNames])];
-      user.finalPrice = (user.finalPrice || 0) + purchase.totalAmount;
-      user.isvalidated = true;
-      user.extraDetails = userData.formData;
-      user.rawRegistration = purchase.userDetails;
-    } else {
-      // Create new user
-      const hashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
-      
-      user = new User({
-        name: userData.name,
-        email: userData.email,
-        password: hashedPassword,
-        contactNo: userData.contactNo,
-        gender: userData.gender,
-        age: userData.age,
-        universityName: userData.universityName,
-        address: userData.address,
-        events: eventNames,
-        finalPrice: purchase.totalAmount,
-        isvalidated: true,
-        extraDetails: userData.formData,
-        rawRegistration: purchase.userDetails,
-        teamMembers: userData.teamMembers || []
-      });
-    }
+    console.log(`📊 Found existing user: ${existingUser ? 'Yes' : 'No'}`);
+    
+    // Always create a new user record for each registration
+    // This allows multiple registrations per email with different QR codes
+    const hashedPassword = await bcrypt.hash(Math.random().toString(36).slice(-10), 10);
+    
+    user = new User({
+      name: userData.name,
+      email: userData.email,
+      password: hashedPassword,
+      contactNo: userData.contactNo,
+      gender: userData.gender,
+      age: userData.age,
+      universityName: userData.universityName,
+      address: userData.address,
+      events: eventNames,
+      finalPrice: purchase.totalAmount,
+      isvalidated: true,
+      extraDetails: userData.formData,
+      rawRegistration: purchase.userDetails,
+      teamMembers: userData.teamMembers || [],
+      // Add registration metadata
+      registrationId: purchase.orderId,
+      registrationDate: new Date(),
+      registrationCount: existingUser ? (await User.countDocuments({ email: userData.email }) + 1) : 1
+    });
+
+    console.log(`📊 Creating new registration #${user.registrationCount} for email: ${userData.email}`);
+    console.log(`📋 Registration events: ${JSON.stringify(eventNames)}`);
+    console.log(`📋 Registration ID: ${user.registrationId}`);
 
     await user.save();
     
