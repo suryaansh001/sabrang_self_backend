@@ -1424,4 +1424,265 @@ router.post("/reset-email-status/:userId", verifyAdmin, async (req, res) => {
   }
 });
 
+// ========================= RECENT REGISTRATIONS ROUTES =========================
+
+// Get recent registrations (from September 22, 2025 onwards) with filters (admin only)
+router.get("/recent-registrations", verifyAdmin, async (req, res) => {
+  try {
+    const {
+      fromDate,
+      toDate,
+      userType,
+      hasEntered,
+      isValidated,
+      eventFilter,
+      emailSent,
+      search,
+      page = 1,
+      limit = 50,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query;
+
+    // Set default from date to September 22, 2025
+    const defaultFromDate = new Date('2025-09-22T00:00:00.000Z');
+    const queryFromDate = fromDate ? new Date(fromDate) : defaultFromDate;
+    
+    // Build query filters
+    const filters = {
+      createdAt: { $gte: queryFromDate }
+    };
+
+    // Add date range filter if toDate is provided
+    if (toDate) {
+      filters.createdAt.$lte = new Date(toDate);
+    }
+
+    // Apply additional filters
+    if (userType && userType !== 'all') {
+      filters.userType = userType;
+    }
+
+    if (hasEntered !== undefined && hasEntered !== 'all') {
+      filters.hasEntered = hasEntered === 'true';
+    }
+
+    if (isValidated !== undefined && isValidated !== 'all') {
+      filters.isvalidated = isValidated === 'true';
+    }
+
+    if (emailSent !== undefined && emailSent !== 'all') {
+      filters.emailSent = emailSent === 'true';
+    }
+
+    if (eventFilter && eventFilter !== 'all') {
+      filters.events = { $in: [eventFilter] };
+    }
+
+    // Add search functionality
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      filters.$or = [
+        { name: searchRegex },
+        { email: searchRegex },
+        { contactNo: searchRegex },
+        { universityName: searchRegex }
+      ];
+    }
+
+    // Calculate pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Build sort object
+    const sortObject = {};
+    sortObject[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Execute query with pagination
+    const users = await User.find(filters, '-password')
+      .sort(sortObject)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate('teamRegistrations.teamLeaderId', 'name email')
+      .lean();
+
+    // Get total count for pagination
+    const totalCount = await User.countDocuments(filters);
+
+    // Get team information for each user
+    const usersWithTeamInfo = await Promise.all(users.map(async (user) => {
+      const teamCompositions = await TeamComposition.find({
+        $or: [
+          { 'teamLeader.userId': user._id },
+          { 'teamMembers.userId': user._id }
+        ]
+      }).populate('teamLeader.userId', 'name email').lean();
+
+      return {
+        ...user,
+        teamInfo: teamCompositions.map(team => ({
+          teamId: team._id,
+          eventName: team.eventName,
+          teamName: team.teamName,
+          isLeader: team.teamLeader.userId._id.toString() === user._id.toString(),
+          totalMembers: team.totalMembers,
+          registrationComplete: team.registrationComplete
+        }))
+      };
+    }));
+
+    // Calculate statistics
+    const stats = {
+      totalRegistrations: totalCount,
+      enteredCount: await User.countDocuments({ ...filters, hasEntered: true }),
+      validatedCount: await User.countDocuments({ ...filters, isvalidated: true }),
+      emailSentCount: await User.countDocuments({ ...filters, emailSent: true }),
+      teamLeaderCount: await User.countDocuments({ 
+        ...filters, 
+        'teamRegistrations.isTeamLeader': true 
+      }),
+      supportStaffCount: await User.countDocuments({ 
+        ...filters, 
+        userType: 'support_staff' 
+      })
+    };
+
+    res.json({
+      success: true,
+      data: usersWithTeamInfo,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalCount / parseInt(limit)),
+        totalCount,
+        limit: parseInt(limit),
+        hasNext: (parseInt(page) * parseInt(limit)) < totalCount,
+        hasPrev: parseInt(page) > 1
+      },
+      stats,
+      filters: {
+        fromDate: queryFromDate,
+        toDate: toDate ? new Date(toDate) : null,
+        userType,
+        hasEntered,
+        isValidated,
+        eventFilter,
+        emailSent,
+        search,
+        sortBy,
+        sortOrder
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching recent registrations:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Get detailed registration info for a specific user (admin only)
+router.get("/registration-details/:userId", verifyAdmin, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    // Get user details
+    const user = await User.findById(userId, '-password')
+      .populate('registrationHistory.purchaseId')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Get team compositions where this user is involved
+    const teamCompositions = await TeamComposition.find({
+      $or: [
+        { 'teamLeader.userId': userId },
+        { 'teamMembers.userId': userId }
+      ]
+    })
+    .populate('teamLeader.userId', 'name email contactNo')
+    .populate('teamMembers.userId', 'name email contactNo')
+    .lean();
+
+    // Get purchase records
+    const purchases = await Purchase.find({
+      $or: [
+        { userId: userId },
+        { mainPersonId: userId },
+        { 'userDetails.email': user.email }
+      ]
+    }).sort({ purchaseDate: -1 }).lean();
+
+    // Get events this user is registered for
+    const events = await Event.find({
+      name: { $in: user.events || [] }
+    }).lean();
+
+    const detailedInfo = {
+      user,
+      teamParticipations: teamCompositions.map(team => ({
+        teamId: team._id,
+        eventName: team.eventName,
+        teamName: team.teamName,
+        role: team.teamLeader.userId._id.toString() === userId ? 'Team Leader' : 'Team Member',
+        totalMembers: team.totalMembers,
+        registrationComplete: team.registrationComplete,
+        createdAt: team.createdAt,
+        teamLeader: team.teamLeader,
+        teamMembers: team.teamMembers
+      })),
+      purchases: purchases.map(purchase => ({
+        orderId: purchase.orderId,
+        totalAmount: purchase.totalAmount,
+        paymentStatus: purchase.paymentStatus,
+        purchaseDate: purchase.purchaseDate,
+        items: purchase.items,
+        promoCode: purchase.promoCode,
+        emailSent: purchase.emailSent
+      })),
+      eventsRegistered: events,
+      registrationTimeline: [
+        {
+          type: 'Account Created',
+          date: user.createdAt,
+          description: 'User account was created'
+        },
+        ...user.registrationHistory.map(reg => ({
+          type: 'Event Registration',
+          date: reg.registeredAt,
+          description: `Registered for events: ${reg.eventsRegistered.join(', ')}`,
+          registrationType: reg.registrationType
+        })),
+        ...(user.emailSentAt ? [{
+          type: 'Registration Email Sent',
+          date: user.emailSentAt,
+          description: 'Registration confirmation email sent'
+        }] : []),
+        ...(user.entryTime ? [{
+          type: 'Event Entry',
+          date: user.entryTime,
+          description: 'User entered the event venue'
+        }] : [])
+      ].sort((a, b) => new Date(b.date) - new Date(a.date))
+    };
+
+    res.json({
+      success: true,
+      data: detailedInfo
+    });
+
+  } catch (error) {
+    console.error('Error fetching registration details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 module.exports = router;

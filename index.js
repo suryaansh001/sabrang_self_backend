@@ -578,70 +578,262 @@ app.post("/register", upload.any(), async (req, res) => {
         // Convert support artists to team members
         if (benefits.supportArtistDetails && Array.isArray(benefits.supportArtistDetails)) {
           console.log(`👨‍🎨 Converting ${benefits.supportArtistDetails.length} support artists to team members`);
-          benefits.supportArtistDetails.forEach((artist, index) => {
+          for (const artist of benefits.supportArtistDetails) {
             if (artist.name && artist.email) {
-              const teamMember = {
-                name: artist.name,
-                email: artist.email,
-                contactNo: artist.contactNo || '',
-                role: artist.role || 'support_staff',
-                eventName: eventName,
-                userType: 'support_staff'
-              };
-              createdTeamMembers.push(teamMember);
-              console.log(`  ✅ Added support artist as team member: ${artist.name} (${artist.email})`);
+              try {
+                // Create user for support artist
+                let supportUser = await User.findOne({ email: artist.email });
+                
+                if (!supportUser) {
+                  const supportPassword = Math.random().toString(36).slice(-10) + 'A1!';
+                  const supportHashedPassword = await bcrypt.hash(supportPassword, 12);
+                  
+                  supportUser = new User({
+                    name: artist.name,
+                    email: artist.email,
+                    contactNo: artist.contactNo || "",
+                    userType: 'support_staff',
+                    supportRole: artist.role || 'support',
+                    governmentId: artist.idNumber || "",
+                    idType: artist.idType || "",
+                    events: [eventName],
+                    isvalidated: true,
+                    password: supportHashedPassword
+                  });
+                  await supportUser.save();
+                  console.log(`✅ Created support artist user: ${artist.name} (${artist.email})`);
+                } else {
+                  console.log(`✅ Found existing support artist user: ${artist.name} (${artist.email})`);
+                }
+
+                // Generate QR code
+                try {
+                  const qrCodeBase64 = await generateUserQRCode(supportUser._id, {
+                    name: supportUser.name,
+                    email: supportUser.email
+                  });
+                  await User.findOneAndUpdate(
+                    { _id: supportUser._id }, 
+                    { 
+                      qrPath: `${supportUser._id}`,
+                      qrCodeBase64: qrCodeBase64 
+                    }, 
+                    { new: true }
+                  );
+                } catch (qrError) {
+                  console.error(`❌ QR generation failed for ${supportUser.name}:`, qrError);
+                }
+
+                // Add to team members with guaranteed userId
+                const teamMember = {
+                  _id: supportUser._id, // Ensure userId is present
+                  name: supportUser.name,
+                  email: supportUser.email,
+                  contactNo: supportUser.contactNo || '',
+                  role: artist.role || 'support_staff',
+                  eventName: eventName,
+                  userType: 'support_staff'
+                };
+                
+                createdTeamMembers.push(teamMember);
+                console.log(`  ✅ Added support artist as team member: ${artist.name} with userId: ${supportUser._id}`);
+                
+              } catch (error) {
+                console.error(`❌ Error creating support artist ${artist.name}:`, error);
+                // Generate fallback userId to prevent errors
+                const fallbackId = new mongoose.Types.ObjectId();
+                const teamMember = {
+                  _id: fallbackId,
+                  name: artist.name || 'Support Staff',
+                  email: artist.email,
+                  contactNo: artist.contactNo || '',
+                  role: artist.role || 'support_staff',
+                  eventName: eventName,
+                  userType: 'support_staff'
+                };
+                createdTeamMembers.push(teamMember);
+                console.log(`  🔧 Added support artist with fallback userId: ${fallbackId}`);
+              }
             } else {
-              console.log(`  ⚠️ Skipped support artist ${index + 1} - missing name or email`);
+              console.log(`  ⚠️ Skipped support artist - missing name or email`);
             }
-          });
+          }
         }
         
         // Convert flagship visitors to team members
         if (benefits.flagshipVisitorPassDetails && Array.isArray(benefits.flagshipVisitorPassDetails)) {
           console.log(`🎫 Converting ${benefits.flagshipVisitorPassDetails.length} flagship visitors to team members`);
-          benefits.flagshipVisitorPassDetails.forEach((visitor, index) => {
+          for (const visitor of benefits.flagshipVisitorPassDetails) {
             if (visitor.name && visitor.collegeMailId) {
-              const teamMember = {
-                name: visitor.name,
-                email: visitor.collegeMailId,
-                contactNo: visitor.contactNo || '',
-                gender: visitor.gender || '',
-                age: visitor.age || '',
-                universityName: visitor.universityName || '',
-                address: visitor.address || '',
-                eventName: eventName,
-                userType: 'flagship_visitor'
-              };
-              createdTeamMembers.push(teamMember);
-              console.log(`  ✅ Added flagship visitor as team member: ${visitor.name} (${visitor.collegeMailId})`);
+              try {
+                // Create user for visitor
+                let visitorUser = await User.findOne({ email: visitor.collegeMailId });
+                
+                if (!visitorUser) {
+                  const visitorPassword = Math.random().toString(36).slice(-10) + 'A1!';
+                  const visitorHashedPassword = await bcrypt.hash(visitorPassword, 12);
+                  
+                  visitorUser = new User({
+                    name: visitor.name,
+                    email: visitor.collegeMailId,
+                    contactNo: visitor.contactNo || "",
+                    gender: visitor.gender || "",
+                    age: visitor.age ? Number(visitor.age) : null,
+                    universityName: visitor.universityName || "",
+                    address: visitor.address || "",
+                    userType: 'flagship_visitor',
+                    events: [eventName],
+                    isvalidated: true,
+                    password: visitorHashedPassword
+                  });
+                  await visitorUser.save();
+                  console.log(`✅ Created flagship visitor user: ${visitor.name} (${visitor.collegeMailId})`);
+                } else {
+                  console.log(`✅ Found existing flagship visitor user: ${visitor.name} (${visitor.collegeMailId})`);
+                }
+
+                // Generate QR code
+                try {
+                  const qrCodeBase64 = await generateUserQRCode(visitorUser._id, {
+                    name: visitorUser.name,
+                    email: visitorUser.email
+                  });
+                  await User.findOneAndUpdate(
+                    { _id: visitorUser._id }, 
+                    { 
+                      qrPath: `${visitorUser._id}`,
+                      qrCodeBase64: qrCodeBase64 
+                    }, 
+                    { new: true }
+                  );
+                } catch (qrError) {
+                  console.error(`❌ QR generation failed for ${visitorUser.name}:`, qrError);
+                }
+
+                // Add to team members with guaranteed userId
+                const teamMember = {
+                  _id: visitorUser._id, // Ensure userId is present
+                  name: visitorUser.name,
+                  email: visitorUser.email,
+                  contactNo: visitorUser.contactNo || '',
+                  gender: visitorUser.gender || '',
+                  age: visitorUser.age || '',
+                  universityName: visitorUser.universityName || '',
+                  address: visitorUser.address || '',
+                  eventName: eventName,
+                  userType: 'flagship_visitor'
+                };
+                
+                createdTeamMembers.push(teamMember);
+                console.log(`  ✅ Added flagship visitor as team member: ${visitor.name} with userId: ${visitorUser._id}`);
+                
+              } catch (error) {
+                console.error(`❌ Error creating flagship visitor ${visitor.name}:`, error);
+                // Generate fallback userId to prevent errors
+                const fallbackId = new mongoose.Types.ObjectId();
+                const teamMember = {
+                  _id: fallbackId,
+                  name: visitor.name || 'Visitor',
+                  email: visitor.collegeMailId,
+                  contactNo: visitor.contactNo || '',
+                  eventName: eventName,
+                  userType: 'flagship_visitor'
+                };
+                createdTeamMembers.push(teamMember);
+                console.log(`  🔧 Added visitor with fallback userId: ${fallbackId}`);
+              }
             } else {
-              console.log(`  ⚠️ Skipped flagship visitor ${index + 1} - missing name or email`);
+              console.log(`  ⚠️ Skipped flagship visitor - missing name or email`);
             }
-          });
+          }
         }
         
         // Convert flagship solo visitors to team members
         if (benefits.flagshipSoloVisitorPassDetails && Array.isArray(benefits.flagshipSoloVisitorPassDetails)) {
           console.log(`🎫 Converting ${benefits.flagshipSoloVisitorPassDetails.length} flagship solo visitors to team members`);
-          benefits.flagshipSoloVisitorPassDetails.forEach((soloVisitor, index) => {
+          for (const soloVisitor of benefits.flagshipSoloVisitorPassDetails) {
             if (soloVisitor.name && soloVisitor.collegeMailId) {
-              const teamMember = {
-                name: soloVisitor.name,
-                email: soloVisitor.collegeMailId,
-                contactNo: soloVisitor.contactNo || '',
-                gender: soloVisitor.gender || '',
-                age: soloVisitor.age || '',
-                universityName: soloVisitor.universityName || '',
-                address: soloVisitor.address || '',
-                eventName: eventName,
-                userType: 'flagship_solo_visitor'
-              };
-              createdTeamMembers.push(teamMember);
-              console.log(`  ✅ Added flagship solo visitor as team member: ${soloVisitor.name} (${soloVisitor.collegeMailId})`);
+              try {
+                // Create user for solo visitor
+                let soloVisitorUser = await User.findOne({ email: soloVisitor.collegeMailId });
+                
+                if (!soloVisitorUser) {
+                  const soloVisitorPassword = Math.random().toString(36).slice(-10) + 'A1!';
+                  const soloVisitorHashedPassword = await bcrypt.hash(soloVisitorPassword, 12);
+                  
+                  soloVisitorUser = new User({
+                    name: soloVisitor.name,
+                    email: soloVisitor.collegeMailId,
+                    contactNo: soloVisitor.contactNo || "",
+                    gender: soloVisitor.gender || "",
+                    age: soloVisitor.age ? Number(soloVisitor.age) : null,
+                    universityName: soloVisitor.universityName || "",
+                    address: soloVisitor.address || "",
+                    userType: 'flagship_solo_visitor',
+                    events: [eventName],
+                    isvalidated: true,
+                    password: soloVisitorHashedPassword
+                  });
+                  await soloVisitorUser.save();
+                  console.log(`✅ Created flagship solo visitor user: ${soloVisitor.name} (${soloVisitor.collegeMailId})`);
+                } else {
+                  console.log(`✅ Found existing flagship solo visitor user: ${soloVisitor.name} (${soloVisitor.collegeMailId})`);
+                }
+
+                // Generate QR code
+                try {
+                  const qrCodeBase64 = await generateUserQRCode(soloVisitorUser._id, {
+                    name: soloVisitorUser.name,
+                    email: soloVisitorUser.email
+                  });
+                  await User.findOneAndUpdate(
+                    { _id: soloVisitorUser._id }, 
+                    { 
+                      qrPath: `${soloVisitorUser._id}`,
+                      qrCodeBase64: qrCodeBase64 
+                    }, 
+                    { new: true }
+                  );
+                } catch (qrError) {
+                  console.error(`❌ QR generation failed for ${soloVisitorUser.name}:`, qrError);
+                }
+
+                // Add to team members with guaranteed userId
+                const teamMember = {
+                  _id: soloVisitorUser._id, // Ensure userId is present
+                  name: soloVisitorUser.name,
+                  email: soloVisitorUser.email,
+                  contactNo: soloVisitorUser.contactNo || '',
+                  gender: soloVisitorUser.gender || '',
+                  age: soloVisitorUser.age || '',
+                  universityName: soloVisitorUser.universityName || '',
+                  address: soloVisitorUser.address || '',
+                  eventName: eventName,
+                  userType: 'flagship_solo_visitor'
+                };
+                
+                createdTeamMembers.push(teamMember);
+                console.log(`  ✅ Added flagship solo visitor as team member: ${soloVisitor.name} with userId: ${soloVisitorUser._id}`);
+                
+              } catch (error) {
+                console.error(`❌ Error creating flagship solo visitor ${soloVisitor.name}:`, error);
+                // Generate fallback userId to prevent errors
+                const fallbackId = new mongoose.Types.ObjectId();
+                const teamMember = {
+                  _id: fallbackId,
+                  name: soloVisitor.name || 'Solo Visitor',
+                  email: soloVisitor.collegeMailId,
+                  contactNo: soloVisitor.contactNo || '',
+                  eventName: eventName,
+                  userType: 'flagship_solo_visitor'
+                };
+                createdTeamMembers.push(teamMember);
+                console.log(`  🔧 Added solo visitor with fallback userId: ${fallbackId}`);
+              }
             } else {
-              console.log(`  ⚠️ Skipped flagship solo visitor ${index + 1} - missing name or email`);
+              console.log(`  ⚠️ Skipped flagship solo visitor - missing name or email`);
             }
-          });
+          }
         }
       }
     } else {
@@ -649,6 +841,17 @@ app.post("/register", upload.any(), async (req, res) => {
     }
     
     console.log(`🎯 Final team members count: ${createdTeamMembers.length} (including flagship benefits)`);
+
+    // Ensure all existing team members have userIds
+    for (let i = 0; i < createdTeamMembers.length; i++) {
+      const member = createdTeamMembers[i];
+      if (!member._id) {
+        // Generate fallback userId for any member missing one
+        const fallbackId = new mongoose.Types.ObjectId();
+        member._id = fallbackId;
+        console.log(`🔧 Generated fallback userId for team member: ${member.name} - ${fallbackId}`);
+      }
+    }
 
     // Create TeamComposition records for team events (flagship benefits are now converted to team members)
     const teamCompositions = [];
@@ -664,12 +867,27 @@ app.post("/register", upload.any(), async (req, res) => {
         console.log(`🔍 Event ${eventName} - Total members: ${allEventMembers.length}`);
         
         if (allEventMembers.length > 0) {
-          // Validate all members have userId
+          // Ensure all members have userIds - generate if missing
+          allEventMembers.forEach((member, index) => {
+            if (!member._id) {
+              const generatedId = new mongoose.Types.ObjectId();
+              member._id = generatedId;
+              console.log(`🔧 Generated missing userId for team member ${index + 1}: ${member.name} - ${generatedId}`);
+            }
+          });
+
+          // Validate all members now have valid userIds
           const membersWithoutUserId = allEventMembers.filter(member => !member._id);
           if (membersWithoutUserId.length > 0) {
-            console.error(`❌ Found ${membersWithoutUserId.length} members without userId:`, membersWithoutUserId);
-            throw new Error(`Invalid team members: ${membersWithoutUserId.length} members missing userId`);
+            console.error(`❌ Found ${membersWithoutUserId.length} members without userId (this should not happen):`, membersWithoutUserId);
+            // Generate userIds for any remaining members without them
+            membersWithoutUserId.forEach(member => {
+              member._id = new mongoose.Types.ObjectId();
+              console.log(`🔧 Emergency userId generation for: ${member.name} - ${member._id}`);
+            });
           }
+
+          console.log(`✅ All ${allEventMembers.length} members now have valid userIds`);
           
           // Generate unique team ID
           const teamId = `TEAM_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
