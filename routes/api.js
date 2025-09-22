@@ -52,22 +52,12 @@ router.post('/send-ticket-otp', async (req, res) => {
       attempts: 0
     });
 
-    // Get user's registered events
-    const userEvents = user.events || [];
-    const eventData = [];
-    for (let i = 0; i < userEvents.length; i++) {
-      const event = await Event.findOne({ name: userEvents[i] });
-      if (event) {
-        eventData.push(event.name);
-      }
-    }
-
-    // Send OTP via email
+    // Send OTP via email (without showing registered events for security)
     const emailResult = await sendPaymentInitiatedEmail({
       email: email.toLowerCase().trim(),
       name: user.name,
       otp: otp,
-      events: eventData.length > 0 ? eventData : ['Dance Competition', 'Coding Contest', 'Business Plan']
+      events: [] // Don't show registered events in OTP email
     });
 
     if (emailResult.success) {
