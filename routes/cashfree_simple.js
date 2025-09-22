@@ -114,6 +114,15 @@ router.get('/qr-by-order/:orderId', async (req, res) => {
             });
         }
 
+        // Security check: Only serve QR codes for completed payments
+        if (purchase.paymentStatus !== 'completed') {
+            console.log(`❌ Access denied: Payment not completed for order ${orderId}`);
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied: Payment not completed'
+            });
+        }
+
         if (!purchase.qrCodeBase64) {
             return res.status(404).json({
                 success: false,
@@ -174,6 +183,15 @@ router.get('/qr/:purchaseId', async (req, res) => {
             });
         }
 
+        // Security check: Only serve QR codes for completed payments
+        if (purchase.paymentStatus !== 'completed') {
+            console.log(`❌ Access denied: Payment not completed for purchase ${purchaseId}`);
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied: Payment not completed'
+            });
+        }
+
         if (!purchase.qrCodeBase64) {
             return res.status(404).json({
                 success: false,
@@ -202,7 +220,8 @@ router.get('/qr/:purchaseId', async (req, res) => {
                         name: purchase.userDetails?.name,
                         email: purchase.userDetails?.email
                     },
-                    qrGenerated: purchase.qrGenerated
+                    qrGenerated: purchase.qrGenerated,
+                    paymentStatus: purchase.paymentStatus
                 }
             });
         }
@@ -668,7 +687,10 @@ router.get('/success/:orderId', async (req, res) => {
             purchase.paymentStatus = 'completed';
             purchase.paymentCompletedAt = new Date();
             
-            // Create or find user
+            // Generate QR codes for ALL users associated with this purchase
+            console.log('🔄 Starting QR code generation for all users in this purchase...');
+            
+            // Step 1: Generate QR code for main person (team leader)
             let user = await User.findOne({ email: purchase.userDetails.email });
             if (!user) {
                 console.log('👤 Creating new user for email:', purchase.userDetails.email);
@@ -680,17 +702,22 @@ router.get('/success/:orderId', async (req, res) => {
                 });
             }
 
-            // Generate QR code for user
-            try {
-                const qrCodeBase64 = await generateUserQRCode(user._id, {
-                    name: user.name,
-                    email: user.email
-                });
-                user.qrPath = `${user._id}`;
-                user.qrCodeBase64 = qrCodeBase64;
-                console.log('✅ QR code generated for user:', user._id);
-            } catch (qrError) {
-                console.error('❌ QR code generation failed:', qrError);
+            // Generate QR code for main person only if not already generated
+            if (!user.qrCodeBase64) {
+                try {
+                    const qrCodeBase64 = await generateUserQRCode(user._id, {
+                        name: user.name,
+                        email: user.email,
+                        events: user.events || []
+                    });
+                    user.qrPath = `${user._id}`;
+                    user.qrCodeBase64 = qrCodeBase64;
+                    console.log('✅ QR code generated for main person:', user._id);
+                } catch (qrError) {
+                    console.error('❌ QR code generation failed for main person:', qrError);
+                }
+            } else {
+                console.log('ℹ️ QR code already exists for main person:', user._id);
             }
 
             await user.save();
@@ -703,6 +730,43 @@ router.get('/success/:orderId', async (req, res) => {
             // Save purchase with all updates
             await purchase.save();
             console.log('✅ Purchase status updated to completed for order:', orderId);
+
+            // Step 3: Final check - Generate QR codes for any remaining users without QR codes
+            console.log('🔍 Final check: Generating QR codes for any users without them...');
+            try {
+                // Find all users associated with this purchase who don't have QR codes
+                const usersWithoutQR = await User.find({
+                    $or: [
+                        { email: purchase.userDetails.email },
+                        { email: { $in: (purchase.userDetails.teamMembers || []).map(tm => tm.email) } }
+                    ],
+                    qrCodeBase64: { $exists: false }
+                });
+
+                for (const userWithoutQR of usersWithoutQR) {
+                    try {
+                        console.log(`🎫 Generating missing QR code for user: ${userWithoutQR.email}`);
+                        
+                        const qrCodeBase64 = await generateUserQRCode(userWithoutQR._id, {
+                            name: userWithoutQR.name,
+                            email: userWithoutQR.email,
+                            events: userWithoutQR.events || []
+                        });
+                        
+                        userWithoutQR.qrPath = `${userWithoutQR._id}`;
+                        userWithoutQR.qrCodeBase64 = qrCodeBase64;
+                        await userWithoutQR.save();
+                        
+                        console.log(`✅ Missing QR code generated for user: ${userWithoutQR._id} (${userWithoutQR.email})`);
+                    } catch (qrError) {
+                        console.error(`❌ Failed to generate missing QR code for ${userWithoutQR.email}:`, qrError);
+                    }
+                }
+                
+                console.log(`🎯 QR code generation complete. Processed ${usersWithoutQR.length} users without QR codes.`);
+            } catch (finalQrError) {
+                console.error('❌ Error in final QR code generation step:', finalQrError);
+            }
 
             // Update team compositions for this user (if any)
             let teamMembers = [];
@@ -728,19 +792,47 @@ router.get('/success/:orderId', async (req, res) => {
                         teamComp.paymentStatus = 'completed';
                         teamComp.purchaseId = purchase._id;
                         teamComp.updatedAt = new Date();
-                        await teamComp.save();
-                        console.log(`✅ Updated team composition: ${teamComp.teamName} (${teamComp.eventName})`);
                         
-                        // Collect team members (excluding the leader)
-                        teamComp.teamMembers.forEach(member => {
+                        // Step 2: Generate QR codes for ALL team members
+                        console.log(`🔄 Generating QR codes for team members in ${teamComp.teamName}...`);
+                        
+                        for (const member of teamComp.teamMembers) {
                             if (member.userId && member.userId.email !== user.email) {
+                                try {
+                                    // Find the team member user record
+                                    const memberUser = await User.findById(member.userId._id);
+                                    if (memberUser && !memberUser.qrCodeBase64) {
+                                        console.log(`🎫 Generating QR code for team member: ${memberUser.email}`);
+                                        
+                                        const memberQrCodeBase64 = await generateUserQRCode(memberUser._id, {
+                                            name: memberUser.name,
+                                            email: memberUser.email,
+                                            events: memberUser.events || []
+                                        });
+                                        
+                                        memberUser.qrPath = `${memberUser._id}`;
+                                        memberUser.qrCodeBase64 = memberQrCodeBase64;
+                                        await memberUser.save();
+                                        
+                                        console.log(`✅ QR code generated for team member: ${memberUser._id} (${memberUser.email})`);
+                                    } else if (memberUser && memberUser.qrCodeBase64) {
+                                        console.log(`ℹ️ QR code already exists for team member: ${memberUser.email}`);
+                                    }
+                                } catch (memberQrError) {
+                                    console.error(`❌ QR code generation failed for team member ${member.email}:`, memberQrError);
+                                }
+                                
+                                // Collect team members for purchase record
                                 allTeamMembers.add(JSON.stringify({
                                     name: member.userId.name,
                                     email: member.userId.email,
                                     contactNo: member.userId.contactNo || ''
                                 }));
                             }
-                        });
+                        }
+                        
+                        await teamComp.save();
+                        console.log(`✅ Updated team composition: ${teamComp.teamName} (${teamComp.eventName})`);
                     }
                     
                     // Convert Set back to array of objects

@@ -412,24 +412,8 @@ app.post("/register", upload.any(), async (req, res) => {
       mainPerson = await User.findByIdAndUpdate(mainPerson._id, mainPersonPayload, { new: true });
     }
 
-    // Generate QR code as base64 for main person
-    try {
-      const qrCodeBase64 = await generateUserQRCode(mainPerson._id, {
-        name: mainPerson.name,
-        email: mainPerson.email
-      });
-      await User.findOneAndUpdate(
-        { _id: mainPerson._id }, 
-        { 
-          qrPath: `${mainPerson._id}`, // Keep for backward compatibility
-          qrCodeBase64: qrCodeBase64 
-        }, 
-        { new: true }
-      );
-      console.log(`✅ QR code generated as base64 for main person: ${mainPerson._id}`);
-    } catch (qrError) {
-      console.error('❌ QR code generation failed for main person:', qrError);
-    }
+    // QR code will be generated after payment verification
+    console.log(`📝 Main person registered, QR code will be generated after payment verification: ${mainPerson._id}`);
 
     // Process team members using unified User schema
     const createdTeamMembers = [];
@@ -482,24 +466,8 @@ app.post("/register", upload.any(), async (req, res) => {
         console.log(`✅ Updated existing team member user: ${memberName} (${memberEmail})`);
       }
 
-      // Generate QR code as base64 for team member
-      try {
-        const memberQrCodeBase64 = await generateUserQRCode(teamMemberUser._id, {
-          name: teamMemberUser.name,
-          email: teamMemberUser.email
-        });
-        await User.findOneAndUpdate(
-          { _id: teamMemberUser._id }, 
-          { 
-            qrPath: `${teamMemberUser._id}`, // Keep for backward compatibility
-            qrCodeBase64: memberQrCodeBase64 
-          }, 
-          { new: true }
-        );
-        console.log(`✅ QR code generated as base64 for team member: ${teamMemberUser._id}`);
-      } catch (memberQrError) {
-        console.error(`❌ QR code generation failed for team member ${teamMemberUser.name}:`, memberQrError);
-      }
+      // QR code will be generated after payment verification for team members
+      console.log(`📝 Team member registered, QR code will be generated after payment verification: ${teamMemberUser._id}`);
 
       createdTeamMembers.push(teamMemberUser);
     }

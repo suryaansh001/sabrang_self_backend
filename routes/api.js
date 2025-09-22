@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const { User, Event, TeamComposition } = require("../models/models");
+const { User, Event, TeamComposition, Purchase } = require("../models/models");
 const { verifyToken,verifyAdmin } = require("../middleware/auth");
 const { sendPaymentInitiatedEmail } = require("../utils/emailService");
 const path = require('path');
@@ -178,6 +178,22 @@ router.get('/qrcode/:id', async (req, res) => {
     
     if (!user) {
       return res.status(404).send('User not found');
+    }
+    
+    // Security check: Only serve QR codes for users with completed payments
+    // Check if user has any completed purchases
+    const completedPurchase = await Purchase.findOne({
+      $or: [
+        { userId: user._id },
+        { mainPersonId: user._id },
+        { 'userDetails.email': user.email }
+      ],
+      paymentStatus: 'completed'
+    });
+    
+    if (!completedPurchase) {
+      console.log(`❌ Access denied: No completed payment found for user ${user.email}`);
+      return res.status(403).send('Access denied: Payment not completed');
     }
     
     // Check if QR code exists as base64
