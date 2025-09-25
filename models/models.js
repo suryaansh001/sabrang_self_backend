@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  universityIdCard: {
+    type: String,
+    default: ""
+  },
   
   // User details captured from checkout form
   contactNo: {

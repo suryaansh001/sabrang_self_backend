@@ -73,22 +73,34 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files from public directory
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
-// Serve QR codes from Railway volume in production, fallback to local in development
+// Serve uploaded files from Railway volume in production, fallback to local in development
 if (process.env.NODE_ENV === 'production') {
-  app.use('/qrcodes', express.static('/app/qrcodes'));
-  console.log('🗂️ Serving QR codes from Railway volume: /app/qrcodes');
+  app.use('/uploads', express.static('/app/uploads'));
+  console.log('📁 Serving uploaded files from Railway volume: /app/uploads');
 } else {
-  app.use('/qrcodes', express.static(path.join(__dirname, 'public/qrcodes')));
-  console.log('🗂️ Serving QR codes from local directory: public/qrcodes');
+  app.use('/uploads', express.static(path.join(__dirname, 'public/profile')));
+  console.log('📁 Serving uploaded files from local directory: public/profile');
 }
+
+// QR codes are served through secure API endpoint /api/qrcode/:id only
+// Direct file serving removed for security - payment verification required
+console.log('� QR codes secured - accessible only via /api/qrcode/:id after payment verification');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadPath = path.join(__dirname, 'public', 'profile');
+    // Use Railway volume for production, local directory for development
+    let uploadPath;
+    if (process.env.NODE_ENV === 'production') {
+      uploadPath = '/app/uploads'; // Railway persistent volume
+    } else {
+      uploadPath = path.join(__dirname, 'public', 'profile'); // Local development
+    }
+    
     // Create directory if it doesn't exist
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
+      console.log(`📁 Created upload directory: ${uploadPath}`);
     }
     cb(null, uploadPath);
   },
@@ -355,20 +367,37 @@ app.post("/register", upload.any(), async (req, res) => {
       }
     }
 
-    // Attach team member images if uploaded
+    // Attach team member files if uploaded (images and university cards)
     const memberImageMap = {};
+    const memberCardMap = {};
     const filesArray = Array.isArray(req.files) ? req.files : [];
     for (const f of filesArray) {
       if (!f || !f.fieldname) continue;
-      const m = f.fieldname.match(/^memberImage__([^_].*?)__(\d+)$/);
-      if (m) {
-        const encodedSig = m[1];
+      
+      // Handle member images
+      const imageMatch = f.fieldname.match(/^memberImage__([^_].*?)__(\d+)$/);
+      if (imageMatch) {
+        const encodedSig = imageMatch[1];
         let sig;
         try { sig = decodeURIComponent(encodedSig); } catch { sig = encodedSig; }
-        const idx = parseInt(m[2], 10);
-        const url = `/public/profile/${f.filename}`;
+        const idx = parseInt(imageMatch[2], 10);
+        // Use /uploads path for Railway volume storage
+        const url = `/uploads/${f.filename}`;
         memberImageMap[sig] = memberImageMap[sig] || {};
         memberImageMap[sig][idx] = url;
+      }
+      
+      // Handle member university cards
+      const cardMatch = f.fieldname.match(/^memberUniversityCard__([^_].*?)__(\d+)$/);
+      if (cardMatch) {
+        const encodedSig = cardMatch[1];
+        let sig;
+        try { sig = decodeURIComponent(encodedSig); } catch { sig = encodedSig; }
+        const idx = parseInt(cardMatch[2], 10);
+        // Use /uploads path for Railway volume storage
+        const url = `/uploads/${f.filename}`;
+        memberCardMap[sig] = memberCardMap[sig] || {};
+        memberCardMap[sig][idx] = url;
       }
     }
 
@@ -390,7 +419,21 @@ app.post("/register", upload.any(), async (req, res) => {
     // Add profile image for main person
     if (Array.isArray(req.files)) {
       const pf = req.files.find(f => f.fieldname === 'profileImage');
-      if (pf) mainPersonPayload.profileImage = `/public/profile/${pf.filename}`;
+      if (pf) {
+        // Use Railway volume path for uploaded files
+        const imagePath = `/uploads/${pf.filename}`;
+        mainPersonPayload.profileImage = imagePath;
+        console.log(`📸 Profile image stored: ${imagePath}`);
+      }
+      
+      // Add university ID card for main person
+      const uc = req.files.find(f => f.fieldname === 'universityIdCard');
+      if (uc) {
+        // Use Railway volume path for university card files
+        const cardPath = `/uploads/${uc.filename}`;
+        mainPersonPayload.universityIdCard = cardPath;
+        console.log(`🆔 University ID card stored: ${cardPath}`);
+      }
     }
 
     // Add events for main person
@@ -422,6 +465,7 @@ app.post("/register", upload.any(), async (req, res) => {
     for (let i = 0; i < teamMembersBySigArray.length; i++) {
       const { member, signature, index } = teamMembersBySigArray[i];
       const memberImage = (memberImageMap[signature] && memberImageMap[signature][index]) ? memberImageMap[signature][index] : null;
+      const memberCard = (memberCardMap[signature] && memberCardMap[signature][index]) ? memberCardMap[signature][index] : null;
 
       // Derive email similar to main person logic
       const memberEmail = member.email || member.collegeMailId || '';
@@ -444,6 +488,7 @@ app.post("/register", upload.any(), async (req, res) => {
         universityName: member.universityName || mainPersonUniversity,
         address: member.address || mainPersonAddress,
         profileImage: memberImage || "",
+        universityIdCard: memberCard || "",
         events: mainPerson.events || [],
         isvalidated: true
       };
@@ -1012,26 +1057,9 @@ passport.use(new GoogleStrategy({
       });
       await user.save();
       
-      // Generate QR code as base64 for the new user
-      try {
-        const qrCodeBase64 = await generateUserQRCode(user._id, {
-          name: user.name,
-          email: user.email
-        });
-        
-        // Update user with QR code data
-        await User.findOneAndUpdate(
-          { _id: user._id },
-          { 
-            qrPath: `${user._id}`, // Keep for backward compatibility
-            qrCodeBase64: qrCodeBase64 
-          },
-          { new: true }
-        );
-        console.log(`✅ QR code generated as base64 for new user: ${user._id}`);
-      } catch (qrError) {
-        console.error('❌ QR code generation failed for new user:', qrError);
-      }
+      // QR code will be generated after payment verification
+      console.log(`📝 Google OAuth user registered, QR code will be generated after payment verification: ${user._id}`);
+      // Note: QR code generation moved to payment success handlers in routes/cashfree_simple.js and routes/direct_payment_new.js
       
       console.log('New user created with QR code:', user);
     }

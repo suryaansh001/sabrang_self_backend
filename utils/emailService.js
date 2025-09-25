@@ -424,10 +424,7 @@ function generatePaymentInitiationEmailContent(paymentData) {
                     <h2>Hello <strong>${name}</strong>,</h2>
                     <p>You've requested access to view your Sabrang'25 tickets. Please use the following OTP to verify your identity:</p>
                     
-                    <div class="events-list">
-                        <strong>Your Registered Events:</strong><br />
-                        ${eventsText}
-                    </div>
+
                     
                     <div class="otp-section">
                         <h3>Your OTP Code:</h3>
@@ -461,8 +458,7 @@ Hello ${name},
 
 You've requested access to view your Sabrang'25 tickets. Please use the following OTP to verify your identity:
 
-Your Registered Events:
-${eventsText}
+
 
 Your OTP Code: ${otp}
 
