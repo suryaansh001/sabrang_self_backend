@@ -207,9 +207,11 @@ function generateRegistrationEmailContent(userData) {
                 </div>
                 
                 <div class="ticket-section">
-                    <h3>Your QR Code:</h3>
-                    <p>Please download the ticket for a smooth check-in.</p>
-                    <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">Download Your Ticket Here</a>
+                    <h3>Your Entry Ticket:</h3>
+                    <p><strong>Your QR code is attached to this email as an image!</strong></p>
+                    <p>Please save the attached QR code image and show it at the entry gate for quick access.</p>
+                    <p style="margin-top: 15px;">You can also access your ticket online:</p>
+                    <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">View Ticket Online</a>
                 </div>
                 
                 <div class="footer">
@@ -240,9 +242,11 @@ Name: ${name}
 Events Registered:
 ${eventsText}
 
-Your QR Code:
-Please download the ticket for a smooth check-in.
-Download Your Ticket Here: https://sabrang.jklu.edu.in/ticket
+Your Entry Ticket:
+Your QR code is attached to this email as an image!
+Please save the attached QR code image and show it at the entry gate for quick access.
+
+You can also access your ticket online: https://sabrang.jklu.edu.in/ticket
 
 🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.
 
@@ -257,7 +261,7 @@ Need help or have a question? Reach out to us anytime.
 }
 
 /**
- * Send registration email to user
+ * Send registration email to user with QR code attachment
  */
 async function sendRegistrationEmail(userEmail, userData) {
     try {
@@ -284,11 +288,26 @@ async function sendRegistrationEmail(userEmail, userData) {
             to: userEmail,
             subject: '🎉 Registration Confirmed - Sabrang\'25',
             text: textContent,
-            html: htmlContent
+            html: htmlContent,
+            attachments: []
         };
 
+        // Add QR code as attachment if available
+        if (userData.qrCodeBase64) {
+            console.log(`📎 Adding QR code attachment for ${userEmail}`);
+            mailOptions.attachments.push({
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                name: `sabrang25-ticket-${userData.name.replace(/[^a-zA-Z0-9]/g, '')}.png`,
+                contentType: "image/png",
+                contentBytes: userData.qrCodeBase64
+            });
+            console.log(`✅ QR code attachment added for ${userEmail}`);
+        } else {
+            console.log(`⚠️ No QR code available for attachment to ${userEmail}`);
+        }
+
         const result = await mailer.sendEmailGraph(mailOptions);
-        console.log(`✅ Registration email sent successfully to ${userEmail}`);
+        console.log(`✅ Registration email sent successfully to ${userEmail} with ${mailOptions.attachments.length} attachments`);
         return { success: true, result };
 
     } catch (error) {
@@ -573,9 +592,11 @@ Need help? Contact us anytime.`;
                     </div>
                     
                     <div class="ticket-section">
-                        <h3>Your QR Code:</h3>
-                        <p>Please download the ticket for a smooth check-in.</p>
-                        <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">Download Your Ticket Here</a>
+                        <h3>Your Entry Ticket:</h3>
+                        <p><strong>Your QR code is attached to this email as an image!</strong></p>
+                        <p>Please save the attached QR code image and show it at the entry gate for quick access.</p>
+                        <p style="margin-top: 15px;">You can also access your ticket online:</p>
+                        <a href="https://sabrang.jklu.edu.in/ticket" class="ticket-button">View Ticket Online</a>
                     </div>
                     
                     <div class="footer">
@@ -605,9 +626,11 @@ Name: ${name}
 Events Registered:
 ${eventsText}
 
-Your QR Code:
-Please download the ticket for a smooth check-in.
-Download Your Ticket Here: https://sabrang.jklu.edu.in/ticket
+Your Entry Ticket:
+Your QR code is attached to this email as an image!
+Please save the attached QR code image and show it at the entry gate for quick access.
+
+You can also access your ticket online: https://sabrang.jklu.edu.in/ticket
 
 🎊 We can't wait to see you bring your energy, your talent, and your vibe to Sabrang'25.
 
@@ -652,8 +675,21 @@ async function sendPaymentInitiatedEmail(paymentData) {
             to: userEmail,
             subject: otp ? '🔐 Your Sabrang\'25 Ticket Access OTP' : '🎉 Welcome to Sabrang\'25! Registration Confirmed',
             text: textContent,
-            html: htmlContent
+            html: htmlContent,
+            attachments: []
         };
+
+        // Add QR code as attachment if available (for non-OTP emails)
+        if (!otp && paymentData.qrCodeBase64) {
+            console.log(`📎 Adding QR code attachment for ${userEmail}`);
+            mailOptions.attachments.push({
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                name: `sabrang25-ticket-${paymentData.name.replace(/[^a-zA-Z0-9]/g, '')}.png`,
+                contentType: "image/png",
+                contentBytes: paymentData.qrCodeBase64
+            });
+            console.log(`✅ QR code attachment added for ${userEmail}`);
+        }
 
         // Use the same sending method as test-email.js
         const result = await mailer.sendEmailGraph(mailOptions);

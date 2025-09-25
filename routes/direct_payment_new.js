@@ -784,9 +784,49 @@ async function processSuccessfulPayment(purchase) {
               console.log(`   ℹ️ Registration history already exists for this member`);
             }
             
+            // Generate QR code for team member if not already generated
+            if (!memberUser.qrCodeBase64) {
+              try {
+                console.log(`🎫 Generating QR code for team member: ${memberUser.email}`);
+                const memberQrCodeBase64 = await generateQRCode(memberUser._id, {
+                  name: memberUser.name,
+                  email: memberUser.email,
+                  events: memberUser.events || []
+                });
+                memberUser.qrPath = `${memberUser._id}`;
+                memberUser.qrCodeBase64 = memberQrCodeBase64;
+                console.log(`✅ QR code generated for team member: ${memberUser._id} (${memberUser.email})`);
+              } catch (memberQrError) {
+                console.error(`❌ QR code generation failed for team member ${memberUser.email}:`, memberQrError);
+              }
+            } else {
+              console.log(`ℹ️ QR code already exists for team member: ${memberUser.email}`);
+            }
+            
             // Save the member user (existing or new)
             await memberUser.save();
             console.log(`   💾 Member user saved successfully: ${memberUser.name}`);
+            
+            // Send registration email to team member
+            try {
+              const memberEmailData = {
+                name: memberUser.name,
+                events: memberUser.events,
+                qrCodeBase64: memberUser.qrCodeBase64
+              };
+
+              const memberEmailResult = await sendRegistrationEmail(memberUser.email, memberEmailData);
+              if (memberEmailResult.success) {
+                console.log(`✅ Registration email sent successfully to team member: ${memberUser.email}`);
+                memberUser.emailSent = true;
+                memberUser.emailSentAt = new Date();
+                await memberUser.save();
+              } else {
+                console.error(`❌ Failed to send registration email to team member: ${memberUser.email}`, memberEmailResult.error);
+              }
+            } catch (memberEmailError) {
+              console.error(`❌ Error sending email to team member: ${memberUser.email}`, memberEmailError);
+            }
             
             // Add to team composition
             teamComposition.teamMembers.push({
@@ -865,35 +905,13 @@ async function processSuccessfulPayment(purchase) {
 
     // Step 5: Send registration email to main user
     try {
-      // Get QR code as base64 for email
-      let qrCodeBase64 = null;
-      if (user.qrPath) {
-        try {
-          // Handle both production and development paths
-          let qrFilePath;
-          if (process.env.NODE_ENV === 'production' && user.qrPath.startsWith('/qrcodes/')) {
-            // Production: direct path to volume
-            qrFilePath = `/app${user.qrPath}`;
-          } else if (user.qrPath.startsWith('/public/qrcodes/')) {
-            // Development: relative to project root
-            qrFilePath = path.join(__dirname, '..', user.qrPath);
-          } else {
-            // Fallback: try both paths
-            const prodPath = `/app/qrcodes/${path.basename(user.qrPath)}`;
-            const devPath = path.join(__dirname, '../public/qrcodes', path.basename(user.qrPath));
-            qrFilePath = fs.existsSync(prodPath) ? prodPath : devPath;
-          }
-          
-          if (fs.existsSync(qrFilePath)) {
-            const qrBuffer = fs.readFileSync(qrFilePath);
-            qrCodeBase64 = qrBuffer.toString('base64');
-            console.log(`✅ QR code read for email from: ${qrFilePath}`);
-          } else {
-            console.log(`⚠️ QR code file not found at: ${qrFilePath}`);
-          }
-        } catch (qrReadError) {
-          console.log('Could not read QR code for email:', qrReadError.message);
-        }
+      // Use QR code base64 that's already stored in user record (more reliable)
+      const qrCodeBase64 = user.qrCodeBase64;
+      
+      if (qrCodeBase64) {
+        console.log(`✅ Using stored QR code base64 for email (length: ${qrCodeBase64.length})`);
+      } else {
+        console.log(`⚠️ No QR code base64 found in user record for ${user.email}`);
       }
 
       const emailData = {
