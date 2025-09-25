@@ -329,6 +329,7 @@ app.post("/register", upload.any(), async (req, res) => {
     const mainPersonAge = raw.age ? Number(raw.age) : (deriveFromForms('age') ? Number(deriveFromForms('age')) : null);
     const mainPersonUniversity = raw.universityName || deriveFromForms('universityName') || "";
     const mainPersonAddress = raw.address || deriveFromForms('address') || "";
+    const mainPersonReferralCode = raw.referralCode || deriveFromForms('referralCode') || "";
 
     if (!mainPersonEmail) {
       return res.status(400).json({ success: false, message: 'Main person email is required' });
@@ -380,6 +381,7 @@ app.post("/register", upload.any(), async (req, res) => {
       age: mainPersonAge,
       universityName: mainPersonUniversity,
       address: mainPersonAddress,
+      referralCode: mainPersonReferralCode,
       isMainPerson: true,
       teamSize: teamMembersBySigArray.length + 1, // +1 for main person
       
