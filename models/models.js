@@ -57,6 +57,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+    // Referral code for user
+    referralCode: {
+      type: String,
+      default: ""
+    },
   
   // Support staff fields
   userType: {
