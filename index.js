@@ -91,6 +91,10 @@ if (process.env.ALLOWED_ORIGINS) {
   allowedOrigins.push(...envOrigins);
 }
 
+// Always allow Vercel deployments (both development and production patterns)
+allowedOrigins.push(/^https:\/\/.*\.vercel\.app$/);
+allowedOrigins.push(/^https:\/\/sabrang.*\.vercel\.app$/);
+
 // Add development patterns
 if (process.env.NODE_ENV !== 'production') {
   // Allow any localhost port for development
@@ -98,16 +102,16 @@ if (process.env.NODE_ENV !== 'production') {
   allowedOrigins.push(/^https:\/\/localhost:\d+$/);
   allowedOrigins.push(/^http:\/\/127\.0\.0\.1:\d+$/);
   allowedOrigins.push(/^https:\/\/127\.0\.0\.1:\d+$/);
-  // Allow Vercel preview URLs
-  allowedOrigins.push(/^https:\/\/.*\.vercel\.app$/);
   // Allow Railway preview URLs  
   allowedOrigins.push(/^https:\/\/.*\.up\.railway\.app$/);
 }
 
 console.log('🔒 CORS Configuration:');
 console.log('- Production mode:', process.env.NODE_ENV === 'production');
+console.log('- Environment ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS);
 console.log('- Static allowed origins:', allowedOrigins.filter(o => typeof o === 'string'));
 console.log('- Dynamic patterns enabled:', allowedOrigins.filter(o => o instanceof RegExp).length > 0);
+console.log('- Regex patterns:', allowedOrigins.filter(o => o instanceof RegExp).map(r => r.toString()));
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -268,7 +272,25 @@ app.get("/cors-debug", (req, res) => {
       'access-control-request-method': req.get('Access-Control-Request-Method'),
       'access-control-request-headers': req.get('Access-Control-Request-Headers')
     },
+    corsConfiguration: {
+      allowedStaticOrigins: allowedOrigins.filter(o => typeof o === 'string'),
+      regexPatterns: allowedOrigins.filter(o => o instanceof RegExp).map(r => r.toString()),
+      environmentOrigins: process.env.ALLOWED_ORIGINS
+    },
     timestamp: new Date().toISOString()
+  });
+});
+
+// Simple connectivity test endpoint (no CORS restrictions)
+app.get("/connectivity-test", (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.json({
+    status: "Backend is reachable",
+    timestamp: new Date().toISOString(),
+    serverTime: new Date().toLocaleString(),
+    region: process.env.RAILWAY_REGION || 'unknown',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
