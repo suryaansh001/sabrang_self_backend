@@ -45,6 +45,27 @@ connectDB();
 // Middleware
 app.use(cookieparser());
 
+// Add request timeout middleware to prevent hanging requests
+app.use((req, res, next) => {
+  // Set timeout for all requests (30 seconds)
+  req.setTimeout(30000, () => {
+    console.log(`⏰ Request timeout: ${req.method} ${req.path}`);
+    if (!res.headersSent) {
+      res.status(408).json({
+        success: false,
+        message: 'Request timeout. Please try again.',
+        error: 'REQUEST_TIMEOUT'
+      });
+    }
+  });
+  
+  res.setTimeout(30000, () => {
+    console.log(`⏰ Response timeout: ${req.method} ${req.path}`);
+  });
+  
+  next();
+});
+
 // Add request logging for debugging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.get('Origin') || 'none'}`);
@@ -52,18 +73,69 @@ app.use((req, res, next) => {
 });
 
 // CORS configuration
+const allowedOrigins = [
+  'https://sabrang.jklu.edu.in',
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://localhost:3000',
+  'https://localhost:3001',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
+  'https://127.0.0.1:3000',
+  'https://127.0.0.1:3001'
+];
+
+// Add origins from environment variable if provided
+if (process.env.ALLOWED_ORIGINS) {
+  const envOrigins = process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim());
+  allowedOrigins.push(...envOrigins);
+}
+
+// Add development patterns
+if (process.env.NODE_ENV !== 'production') {
+  // Allow any localhost port for development
+  allowedOrigins.push(/^http:\/\/localhost:\d+$/);
+  allowedOrigins.push(/^https:\/\/localhost:\d+$/);
+  allowedOrigins.push(/^http:\/\/127\.0\.0\.1:\d+$/);
+  allowedOrigins.push(/^https:\/\/127\.0\.0\.1:\d+$/);
+  // Allow Vercel preview URLs
+  allowedOrigins.push(/^https:\/\/.*\.vercel\.app$/);
+  // Allow Railway preview URLs  
+  allowedOrigins.push(/^https:\/\/.*\.up\.railway\.app$/);
+}
+
+console.log('🔒 CORS Configuration:');
+console.log('- Production mode:', process.env.NODE_ENV === 'production');
+console.log('- Static allowed origins:', allowedOrigins.filter(o => typeof o === 'string'));
+console.log('- Dynamic patterns enabled:', allowedOrigins.filter(o => o instanceof RegExp).length > 0);
+
 app.use(cors({
-  origin: [
-    'https://sabrang.jklu.edu.in', 
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://127.0.0.1:3000',
-    'http://127.0.0.1:3001',
-    'https://sabrang.jklu.edu.in'
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in allowed list or matches patterns
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (typeof allowedOrigin === 'string') {
+        return allowedOrigin === origin;
+      }
+      if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed) {
+      console.log(`✅ CORS: Allowed origin: ${origin}`);
+      callback(null, true);
+    } else {
+      console.log(`❌ CORS: Blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS policy'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With'],
   optionsSuccessStatus: 200
 }));
 
@@ -177,6 +249,27 @@ app.get("/health", (req, res) => {
 app.get("/ping", (req, res) => {
   console.log(`📥 Ping accessed - ${req.method} ${req.path}`);
   res.send("pong");
+});
+
+// CORS debug endpoint
+app.get("/cors-debug", (req, res) => {
+  const origin = req.get('Origin');
+  console.log(`📥 CORS Debug - Origin: ${origin}`);
+  
+  res.json({
+    message: "CORS Debug Info",
+    requestOrigin: origin,
+    userAgent: req.get('User-Agent'),
+    method: req.method,
+    headers: {
+      origin: req.get('Origin'),
+      referer: req.get('Referer'),
+      host: req.get('Host'),
+      'access-control-request-method': req.get('Access-Control-Request-Method'),
+      'access-control-request-headers': req.get('Access-Control-Request-Headers')
+    },
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Public routes (no authentication required)

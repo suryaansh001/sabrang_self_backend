@@ -296,11 +296,28 @@ router.post('/create-order', async (req, res) => {
         let attemptedFallback = false;
 
         try {
+            // Add timeout for Cashfree API call to prevent hanging
+            const createOrderWithTimeout = async (orderReq) => {
+                return Promise.race([
+                    cashfree.PGCreateOrder(orderReq),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Cashfree API timeout')), 10000)
+                    )
+                ]);
+            };
+            
             // First attempt with current credentials
-            response = await cashfree.PGCreateOrder(orderRequest);
+            response = await createOrderWithTimeout(orderRequest);
             console.log('✅ Cashfree response (first attempt):', response.data);
         } catch (firstError) {
             console.log('❌ First attempt failed:', firstError.response?.data || firstError.message);
+            
+            // Handle timeout and network errors specifically
+            if (firstError.message?.includes('timeout') || 
+                firstError.message?.includes('ECONNRESET') ||
+                firstError.message?.includes('ETIMEDOUT')) {
+                console.log('⏰ Detected timeout/network error, attempting retry...');
+            }
             
             // If not already using prod and we have prod credentials, try fallback
             if (!isUsingProd && process.env.CASHFREE_PROD_CLIENT_ID && process.env.CASHFREE_PROD_CLIENT_SECRET) {
@@ -309,7 +326,16 @@ router.post('/create-order', async (req, res) => {
                 attemptedFallback = true;
                 
                 try {
-                    response = await cashfree.PGCreateOrder(orderRequest);
+                    const createOrderWithTimeoutFallback = async (orderReq) => {
+                        return Promise.race([
+                            cashfree.PGCreateOrder(orderReq),
+                            new Promise((_, reject) => 
+                                setTimeout(() => reject(new Error('Cashfree API timeout (fallback)')), 10000)
+                            )
+                        ]);
+                    };
+                    
+                    response = await createOrderWithTimeoutFallback(orderRequest);
                     console.log('✅ Cashfree response (fallback successful):', response.data);
                 } catch (fallbackError) {
                     console.log('❌ Fallback also failed:', fallbackError.response?.data || fallbackError.message);
@@ -415,21 +441,41 @@ router.post('/create-order', async (req, res) => {
     } catch (error) {
         console.error('Create order error:', error);
         
+        // Determine user-friendly error message
+        let userMessage = 'Payment order creation failed';
+        let statusCode = 500;
+        
+        if (error.message?.includes('timeout')) {
+            userMessage = 'Payment gateway is taking too long to respond. Please try again in a moment.';
+            statusCode = 408; // Request Timeout
+        } else if (error.message?.includes('ECONNRESET') || error.message?.includes('ETIMEDOUT')) {
+            userMessage = 'Connection to payment gateway failed. Please check your internet and try again.';
+            statusCode = 503; // Service Unavailable
+        } else if (error.response && error.response.data) {
+            console.error('Cashfree error details:', error.response.data);
+            userMessage = error.response.data.message || 'Payment gateway error occurred';
+            statusCode = 400;
+        }
+        
         if (error.response && error.response.data) {
             console.error('Cashfree error details:', error.response.data);
-            return res.status(400).json({
+            return res.status(statusCode).json({
                 success: false,
-                message: error.response.data.message || 'Payment order creation failed',
+                message: userMessage,
                 error: error.response.data,
-                environment: isUsingProd ? 'production' : 'sandbox'
+                environment: isUsingProd ? 'production' : 'sandbox',
+                retry: statusCode >= 500 || error.message?.includes('timeout'), // Suggest retry for server errors and timeouts
+                timestamp: new Date().toISOString()
             });
         }
 
-        res.status(500).json({
+        res.status(statusCode).json({
             success: false,
-            message: 'Internal server error while creating payment order',
+            message: userMessage,
             error: error.message,
-            environment: isUsingProd ? 'production' : 'sandbox'
+            environment: isUsingProd ? 'production' : 'sandbox',
+            retry: statusCode >= 500 || error.message?.includes('timeout'), // Suggest retry for server errors and timeouts
+            timestamp: new Date().toISOString()
         });
     }
 });
