@@ -673,24 +673,9 @@ app.post("/register", upload.any(), async (req, res) => {
           console.log(`✅ Updated visitor user: ${visitorName} (${visitorEmail}) - ${visitorPassDays} days`);
         }
 
-        // Generate QR code for visitor
-        try {
-          const visitorQrCodeBase64 = await generateUserQRCode(visitorUser._id, {
-            name: visitorUser.name,
-            email: visitorUser.email
-          });
-          await User.findOneAndUpdate(
-            { _id: visitorUser._id }, 
-            { 
-              qrPath: `${visitorUser._id}`,
-              qrCodeBase64: visitorQrCodeBase64 
-            }, 
-            { new: true }
-          );
-          console.log(`✅ QR code generated for visitor: ${visitorUser._id}`);
-        } catch (visitorQrError) {
-          console.error(`❌ QR code generation failed for visitor ${visitorUser.name}:`, visitorQrError);
-        }
+        // QR code generation deferred until payment completion
+        // This visitor user will get QR code generated only after successful payment
+        console.log(`ℹ️ QR code generation deferred for visitor: ${visitorUser.email}`);
 
         createdVisitors.push(visitorUser);
       }
@@ -737,22 +722,8 @@ app.post("/register", upload.any(), async (req, res) => {
                 }
 
                 // Generate QR code
-                try {
-                  const qrCodeBase64 = await generateUserQRCode(supportUser._id, {
-                    name: supportUser.name,
-                    email: supportUser.email
-                  });
-                  await User.findOneAndUpdate(
-                    { _id: supportUser._id }, 
-                    { 
-                      qrPath: `${supportUser._id}`,
-                      qrCodeBase64: qrCodeBase64 
-                    }, 
-                    { new: true }
-                  );
-                } catch (qrError) {
-                  console.error(`❌ QR generation failed for ${supportUser.name}:`, qrError);
-                }
+                // QR code generation deferred until payment completion
+                console.log(`ℹ️ QR code generation deferred for support artist: ${supportUser.email}`);
 
                 // Add to team members with guaranteed userId
                 const teamMember = {
@@ -822,23 +793,8 @@ app.post("/register", upload.any(), async (req, res) => {
                   console.log(`✅ Found existing flagship visitor user: ${visitor.name} (${visitor.collegeMailId})`);
                 }
 
-                // Generate QR code
-                try {
-                  const qrCodeBase64 = await generateUserQRCode(visitorUser._id, {
-                    name: visitorUser.name,
-                    email: visitorUser.email
-                  });
-                  await User.findOneAndUpdate(
-                    { _id: visitorUser._id }, 
-                    { 
-                      qrPath: `${visitorUser._id}`,
-                      qrCodeBase64: qrCodeBase64 
-                    }, 
-                    { new: true }
-                  );
-                } catch (qrError) {
-                  console.error(`❌ QR generation failed for ${visitorUser.name}:`, qrError);
-                }
+                // QR code generation deferred until payment completion
+                console.log(`ℹ️ QR code generation deferred for flagship visitor: ${visitorUser.email}`);
 
                 // Add to team members with guaranteed userId
                 const teamMember = {
@@ -910,23 +866,8 @@ app.post("/register", upload.any(), async (req, res) => {
                   console.log(`✅ Found existing flagship solo visitor user: ${soloVisitor.name} (${soloVisitor.collegeMailId})`);
                 }
 
-                // Generate QR code
-                try {
-                  const qrCodeBase64 = await generateUserQRCode(soloVisitorUser._id, {
-                    name: soloVisitorUser.name,
-                    email: soloVisitorUser.email
-                  });
-                  await User.findOneAndUpdate(
-                    { _id: soloVisitorUser._id }, 
-                    { 
-                      qrPath: `${soloVisitorUser._id}`,
-                      qrCodeBase64: qrCodeBase64 
-                    }, 
-                    { new: true }
-                  );
-                } catch (qrError) {
-                  console.error(`❌ QR generation failed for ${soloVisitorUser.name}:`, qrError);
-                }
+                // QR code generation deferred until payment completion
+                console.log(`ℹ️ QR code generation deferred for solo visitor: ${soloVisitorUser.email}`);
 
                 // Add to team members with guaranteed userId
                 const teamMember = {

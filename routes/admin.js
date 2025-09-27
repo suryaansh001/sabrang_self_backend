@@ -1685,4 +1685,345 @@ router.get("/registration-details/:userId", verifyAdmin, async (req, res) => {
   }
 });
 
+// Resend confirmation email to a user
+router.post('/resend-confirmation-email', verifyAdmin, async (req, res) => {
+  try {
+    const { email, userId, orderId, force = false } = req.body;
+
+    if (!email && !userId && !orderId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide either email, userId, or orderId'
+      });
+    }
+
+    console.log(`📧 Admin request to resend email: ${JSON.stringify(req.body)}`);
+
+    // Find the user
+    let user = null;
+    
+    if (userId) {
+      user = await User.findById(userId);
+    } else if (email) {
+      user = await User.findOne({ email: email });
+    } else if (orderId) {
+      // Find user through purchase
+      const purchase = await Purchase.findOne({ orderId: orderId });
+      if (purchase && purchase.userId) {
+        user = await User.findById(purchase.userId);
+      } else if (purchase && purchase.userDetails && purchase.userDetails.email) {
+        user = await User.findOne({ email: purchase.userDetails.email });
+      }
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    console.log(`👤 Found user: ${user.name} (${user.email})`);
+
+    // Check if user has a QR code
+    if (!user.qrCodeBase64) {
+      return res.status(400).json({
+        success: false,
+        message: 'User does not have a QR code. Cannot send confirmation email without QR code.'
+      });
+    }
+
+    // Check if email was already sent (unless forced)
+    if (user.emailSent && !force) {
+      return res.status(400).json({
+        success: false,
+        message: 'Confirmation email was already sent to this user. Use force option to resend.',
+        emailSentAt: user.emailSentAt
+      });
+    }
+
+    // Get user's events
+    let events = user.events || [];
+    
+    // If no events in user record, try to get from purchases
+    if (events.length === 0) {
+      const purchases = await Purchase.find({
+        $or: [
+          { userId: user._id },
+          { 'userDetails.email': user.email }
+        ],
+        paymentStatus: 'completed'
+      });
+      
+      // Extract events from purchases
+      for (const purchase of purchases) {
+        if (purchase.items && purchase.items.length > 0) {
+          const purchaseEvents = purchase.items.map(item => item.itemName || item.eventName).filter(Boolean);
+          events = [...events, ...purchaseEvents];
+        }
+      }
+    }
+    
+    // If still no events, try to get from team compositions
+    if (events.length === 0) {
+      const teamComps = await TeamComposition.find({
+        $or: [
+          { 'teamLeader.email': user.email },
+          { 'teamMembers.email': user.email }
+        ],
+        paymentStatus: 'completed'
+      });
+      
+      events = teamComps.map(tc => tc.eventName).filter(Boolean);
+    }
+    
+    // Default events if none found
+    if (events.length === 0) {
+      events = ['Sabrang\'25 Event'];
+    }
+    
+    // Remove duplicates
+    events = [...new Set(events)];
+
+    // Prepare email data
+    const emailData = {
+      name: user.name,
+      email: user.email,
+      events: events,
+      qrCodeBase64: user.qrCodeBase64
+    };
+
+    console.log(`📧 Sending confirmation email to ${user.email} with events: ${events.join(', ')}`);
+
+    // Send the email
+    const result = await sendRegistrationEmail(user.email, emailData);
+
+    if (result.success) {
+      // Update user record
+      user.emailSent = true;
+      user.emailSentAt = new Date();
+      await user.save();
+
+      console.log(`✅ Confirmation email resent successfully to: ${user.email}`);
+
+      res.json({
+        success: true,
+        message: 'Confirmation email sent successfully',
+        data: {
+          userEmail: user.email,
+          userName: user.name,
+          events: events,
+          emailSentAt: user.emailSentAt,
+          wasForced: force && user.emailSent
+        }
+      });
+    } else {
+      console.error(`❌ Failed to resend confirmation email to ${user.email}:`, result.error);
+      
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send confirmation email',
+        error: result.error
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ Error in resend confirmation email:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+// Batch resend confirmation emails
+router.post('/batch-resend-confirmation-emails', verifyAdmin, async (req, res) => {
+  try {
+    const { 
+      limit = 10, 
+      noEmailSent = false, 
+      paymentStatus = 'completed',
+      dryRun = false 
+    } = req.body;
+
+    console.log(`📦 Admin batch resend request:`, { limit, noEmailSent, paymentStatus, dryRun });
+
+    // Build query for finding users
+    let query = {};
+    
+    // Filter by payment status if specified
+    if (paymentStatus === 'completed') {
+      // Find users who have completed purchases
+      const completedPurchases = await Purchase.find({ paymentStatus: 'completed' }).select('userId userDetails.email');
+      const userIds = completedPurchases.map(p => p.userId).filter(Boolean);
+      const emails = completedPurchases.map(p => p.userDetails?.email).filter(Boolean);
+      
+      query = {
+        $or: [
+          { _id: { $in: userIds } },
+          { email: { $in: emails } }
+        ]
+      };
+    }
+    
+    // Filter by email sent status
+    if (noEmailSent) {
+      query.emailSent = { $ne: true };
+    }
+
+    // Add QR code requirement
+    query.qrCodeBase64 = { $exists: true, $ne: null };
+
+    const users = await User.find(query).limit(limit);
+    console.log(`📊 Found ${users.length} users for batch processing`);
+
+    if (users.length === 0) {
+      return res.json({
+        success: true,
+        message: 'No users found matching the criteria',
+        results: {
+          total: 0,
+          success: 0,
+          failed: 0,
+          skipped: 0
+        }
+      });
+    }
+
+    let results = {
+      total: users.length,
+      success: 0,
+      failed: 0,
+      skipped: 0,
+      details: []
+    };
+
+    // Process each user
+    for (const user of users) {
+      try {
+        console.log(`📧 Processing: ${user.name} (${user.email})`);
+
+        // Get user's events (same logic as single resend)
+        let events = user.events || [];
+        
+        if (events.length === 0) {
+          const purchases = await Purchase.find({
+            $or: [
+              { userId: user._id },
+              { 'userDetails.email': user.email }
+            ],
+            paymentStatus: 'completed'
+          });
+          
+          for (const purchase of purchases) {
+            if (purchase.items && purchase.items.length > 0) {
+              const purchaseEvents = purchase.items.map(item => item.itemName || item.eventName).filter(Boolean);
+              events = [...events, ...purchaseEvents];
+            }
+          }
+        }
+        
+        if (events.length === 0) {
+          const teamComps = await TeamComposition.find({
+            $or: [
+              { 'teamLeader.email': user.email },
+              { 'teamMembers.email': user.email }
+            ],
+            paymentStatus: 'completed'
+          });
+          
+          events = teamComps.map(tc => tc.eventName).filter(Boolean);
+        }
+        
+        if (events.length === 0) {
+          events = ['Sabrang\'25 Event'];
+        }
+        
+        events = [...new Set(events)];
+
+        if (dryRun) {
+          console.log(`🧪 DRY RUN: Would send email to ${user.email} with events: ${events.join(', ')}`);
+          results.success++;
+          results.details.push({
+            email: user.email,
+            name: user.name,
+            status: 'dry-run-success',
+            events: events
+          });
+        } else {
+          // Prepare and send email
+          const emailData = {
+            name: user.name,
+            email: user.email,
+            events: events,
+            qrCodeBase64: user.qrCodeBase64
+          };
+
+          const result = await sendRegistrationEmail(user.email, emailData);
+
+          if (result.success) {
+            // Update user record
+            user.emailSent = true;
+            user.emailSentAt = new Date();
+            await user.save();
+
+            results.success++;
+            results.details.push({
+              email: user.email,
+              name: user.name,
+              status: 'success',
+              events: events,
+              emailSentAt: user.emailSentAt
+            });
+
+            console.log(`✅ Email sent to: ${user.email}`);
+          } else {
+            results.failed++;
+            results.details.push({
+              email: user.email,
+              name: user.name,
+              status: 'failed',
+              error: result.error
+            });
+
+            console.error(`❌ Failed to send email to ${user.email}:`, result.error);
+          }
+        }
+
+        // Add delay between emails to avoid rate limiting
+        if (!dryRun) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+      } catch (userError) {
+        results.failed++;
+        results.details.push({
+          email: user.email,
+          name: user.name,
+          status: 'error',
+          error: userError.message
+        });
+        console.error(`❌ Error processing ${user.email}:`, userError.message);
+      }
+    }
+
+    console.log(`📊 Batch processing complete: ${results.success} success, ${results.failed} failed, ${results.skipped} skipped`);
+
+    res.json({
+      success: true,
+      message: `Batch processing complete. ${results.success} emails ${dryRun ? 'would be sent' : 'sent'} successfully.`,
+      results: results
+    });
+
+  } catch (error) {
+    console.error('❌ Error in batch resend confirmation emails:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

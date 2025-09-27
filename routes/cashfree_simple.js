@@ -392,29 +392,9 @@ router.post('/create-order', async (req, res) => {
                 throw error;
             }
 
-            // Generate QR code for the purchase using MongoDB ObjectID
-            let qrCodeBase64 = null;
-            try {
-                const qrResult = await generateQRCode(newPurchase._id, {
-                    name: customerName,
-                    email: customerEmail,
-                    orderId: response.data.order_id
-                });
-                
-                // Use base64 from QR generation function
-                qrCodeBase64 = qrResult.qrBase64;
-                console.log('✅ QR code generated and converted to base64');
-                
-                // Update purchase record with QR path and base64
-                newPurchase.qrPath = qrResult.qrPath;
-                newPurchase.qrCodeBase64 = qrCodeBase64;
-                newPurchase.qrGenerated = true;
-                await newPurchase.save();
-                
-            } catch (qrError) {
-                console.error('❌ Failed to generate QR code:', qrError.message);
-                // Continue without QR code
-            }
+            // QR code generation will happen ONLY after successful payment confirmation
+            // in the /success/:orderId endpoint
+            console.log('ℹ️ QR code generation deferred until payment completion');
 
             // Send confirmation email with QR code
             // Note: Email will be sent after payment completion via /success/:orderId endpoint
