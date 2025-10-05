@@ -570,7 +570,28 @@ async function processSuccessfulPayment(purchase) {
     console.log(`🔄 Processing successful payment for order: ${purchase.orderId}`);
     
     const userData = purchase.userDetails;
-    const eventNames = purchase.items.map(item => item.itemName);
+    let eventNames = purchase.items.map(item => item.itemName).filter(name => name && name.trim().length > 0);
+    
+    // Fallback: if no valid event names found, try other sources
+    if (eventNames.length === 0 || eventNames.every(name => name === 'Demo Payment')) {
+      console.log('⚠️ No valid event names found in purchase items, trying fallback sources...');
+      
+      // Try to extract from purchase items using other fields
+      const fallbackEventNames = purchase.items.map(item => 
+        item.title || item.eventName || item.name
+      ).filter(name => name && name.trim().length > 0);
+      
+      if (fallbackEventNames.length > 0) {
+        eventNames = fallbackEventNames;
+        console.log('✅ Found events from fallback sources:', eventNames);
+      } else {
+        // Last resort: use a generic registration
+        eventNames = ['General Registration - Sabrang\'25'];
+        console.log('🔧 Using generic registration as final fallback');
+      }
+    }
+    
+    console.log('📝 Final event names for registration:', eventNames);
 
     // Step 1: Register or update user in the unified system
     let user;
@@ -1121,3 +1142,4 @@ router.post('/process-manual/:orderId', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.processSuccessfulPayment = processSuccessfulPayment;

@@ -100,12 +100,20 @@ function generateRegistrationEmailContent(userData) {
     // Better handling of events data - check for valid array with content
     let eventsText;
     if (Array.isArray(events) && events.length > 0) {
-        // Filter out any empty or invalid event names
-        const validEvents = events.filter(event => event && typeof event === 'string' && event.trim().length > 0);
+        // Filter out any empty, invalid, or generic event names
+        const validEvents = events.filter(event => 
+            event && 
+            typeof event === 'string' && 
+            event.trim().length > 0 &&
+            event !== 'Demo Payment' &&
+            event !== 'Demo Event'
+        );
         eventsText = validEvents.length > 0 ? validEvents.join(', ') : 'General Registration - Sabrang\'25';
     } else {
         eventsText = 'General Registration - Sabrang\'25';
     }
+    
+    console.log(`📧 Email content generation: input events=${JSON.stringify(events)}, final eventsText="${eventsText}"`);
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -485,11 +493,19 @@ Need help? Contact us anytime.`;
         // Original registration email content - better events handling
         let eventsText;
         if (Array.isArray(events) && events.length > 0) {
-            const validEvents = events.filter(event => event && typeof event === 'string' && event.trim().length > 0);
+            const validEvents = events.filter(event => 
+                event && 
+                typeof event === 'string' && 
+                event.trim().length > 0 &&
+                event !== 'Demo Payment' &&
+                event !== 'Demo Event'
+            );
             eventsText = validEvents.length > 0 ? validEvents.join(', ') : 'General Registration - Sabrang\'25';
         } else {
             eventsText = 'General Registration - Sabrang\'25';
         }
+        
+        console.log(`📧 Payment initiation email: input events=${JSON.stringify(events)}, final eventsText="${eventsText}"`);
 
         const htmlContent = `
         <!DOCTYPE html>

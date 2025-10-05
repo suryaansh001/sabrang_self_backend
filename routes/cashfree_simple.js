@@ -259,7 +259,8 @@ router.post('/create-order', async (req, res) => {
             customerName, 
             customerEmail, 
             customerPhone,
-            referralCode
+            referralCode,
+            items
         } = req.body;
 
         // Validate required fields
@@ -349,6 +350,32 @@ router.post('/create-order', async (req, res) => {
         // Save order to database
         try {
             console.log('🔍 Creating purchase record for orderId:', response.data.order_id);
+            
+            // Process items from frontend request
+            let processedItems = [];
+            if (items && Array.isArray(items) && items.length > 0) {
+                console.log('📝 Processing items from frontend:', items);
+                processedItems = items.map(item => ({
+                    type: 'event',
+                    itemId: item.id || item.eventId,
+                    itemName: item.title || item.itemName || item.name || 'Event Registration',
+                    price: typeof item.price === 'string' ? 
+                        parseFloat(item.price.replace(/[₹,]/g, '')) || 0 : 
+                        item.price || 0,
+                    quantity: item.quantity || 1
+                }));
+                console.log('✅ Processed items for database:', processedItems);
+            } else {
+                // Fallback for older integrations or when items are not provided
+                console.log('⚠️ No items provided, using fallback Demo Payment item');
+                processedItems = [{
+                    type: 'event',
+                    itemName: 'Demo Payment',
+                    quantity: 1,
+                    price: parseFloat(amount)
+                }];
+            }
+            
             const newPurchase = new Purchase({
                 orderId: response.data.order_id,
                 paymentSessionId: response.data.payment_session_id,
@@ -359,12 +386,7 @@ router.post('/create-order', async (req, res) => {
                     referralCode: referralCode || '', // Store referral code
                     formData: req.body // Store complete request data
                 },
-                items: [{
-                    type: 'event',
-                    itemName: 'Demo Payment', // You can customize this based on the request
-                    quantity: 1,
-                    price: parseFloat(amount)
-                }],
+                items: processedItems,
                 subtotal: parseFloat(amount), // Add required subtotal field
                 totalAmount: parseFloat(amount),
                 currency: "INR",
@@ -718,14 +740,34 @@ router.get('/success/:orderId', async (req, res) => {
             
             // Step 1: Generate QR code for main person (team leader)
             let user = await User.findOne({ email: purchase.userDetails.email });
+            
+            // Extract event names from purchase items
+            const eventNames = purchase.items.map(item => item.itemName).filter(name => name && name !== 'Demo Payment');
+            console.log('📝 Extracted event names from purchase:', eventNames);
+            
             if (!user) {
                 console.log('👤 Creating new user for email:', purchase.userDetails.email);
                 user = new User({
                     name: purchase.userDetails.name,
                     email: purchase.userDetails.email,
                     contactNo: purchase.userDetails.contactNo || '',
+                    events: eventNames.length > 0 ? eventNames : ['General Registration'],
                     isvalidated: true
                 });
+            } else {
+                // Update existing user with new events
+                if (eventNames.length > 0) {
+                    // Add new events to existing events array (avoid duplicates)
+                    const currentEvents = user.events || [];
+                    const newEvents = eventNames.filter(event => !currentEvents.includes(event));
+                    if (newEvents.length > 0) {
+                        user.events = [...currentEvents, ...newEvents];
+                        console.log('✅ Added new events to existing user:', newEvents);
+                    }
+                } else if (!user.events || user.events.length === 0) {
+                    user.events = ['General Registration'];
+                    console.log('⚠️ No valid events found, setting to General Registration');
+                }
             }
 
             // Generate QR code for main person only if not already generated
@@ -885,7 +927,7 @@ router.get('/success/:orderId', async (req, res) => {
                 const emailData = {
                     name: user.name,
                     email: user.email,
-                    events: user.events || ['Demo Event'],
+                    events: user.events || ['General Registration'],
                     qrCodeBase64: user.qrCodeBase64
                 };
 
@@ -912,7 +954,7 @@ router.get('/success/:orderId', async (req, res) => {
                                 const memberEmailData = {
                                     name: memberUser.name,
                                     email: memberUser.email,
-                                    events: memberUser.events || ['Demo Event'],
+                                    events: memberUser.events || eventNames || ['General Registration'],
                                     qrCodeBase64: memberUser.qrCodeBase64
                                 };
 

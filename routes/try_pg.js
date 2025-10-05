@@ -1,6 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const crypto = require('crypto');
+const crypto = re        // Calculate final amount (apply any discounts)
+        const finalAmount = Math.max(1, amount - appliedDiscount); // Minimum 1 INR
+
+        // Generate unique order ID - use customer email if userId not available
+        const orderId = actualUserId ? `order_${Date.now()}_${actualUserId}` : `order_${Date.now()}_${customerEmail.replace(/[^a-zA-Z0-9]/g, '')}`;('crypto');
 const { Cashfree } = require('cashfree-pg');
 const { User, Purchase } = require('../models/models');
 const router = express.Router();
@@ -30,7 +34,10 @@ router.get('/', (req, res) => {
 // Create payment order
 router.post('/create-order', async (req, res) => {
     try {
-        console.log('Create order request:', req.body);
+        console.log('Create order request received with keys:', Object.keys(req.body));
+        console.log('Items received:', req.body.items ? `${req.body.items.length} items` : 'no items');
+        console.log('Visitor pass days:', req.body.visitorPassDays);
+        console.log('Form data signatures:', req.body.formDataBySignature ? Object.keys(req.body.formDataBySignature).length : 0);
         
         const { 
             userId, 
@@ -40,22 +47,90 @@ router.post('/create-order', async (req, res) => {
             customerPhone,
             items,
             promoCode,
-            appliedDiscount = 0
+            appliedDiscount = 0,
+            visitorPassDays,
+            visitorPassDetails,
+            formDataBySignature,
+            teamMembersBySignature,
+            flagshipBenefitsByEvent,
+            metadata
         } = req.body;
+        
+        // Enhanced validation and user lookup
+        let actualUserId = userId;
+        let actualItems = items || [];
+        
+        // If userId is missing, try to find user by email
+        if (!actualUserId && customerEmail) {
+            try {
+                const User = require('../models/models').User;
+                const existingUser = await User.findOne({ email: customerEmail });
+                if (existingUser) {
+                    actualUserId = existingUser._id;
+                    console.log(`🔍 Found existing user for email ${customerEmail}: ${actualUserId}`);
+                    
+                    // If items are missing but user has events, construct items from user events
+                    if (actualItems.length === 0 && existingUser.events && existingUser.events.length > 0) {
+                        actualItems = existingUser.events.map(eventName => ({
+                            type: 'event',
+                            itemName: eventName,
+                            title: eventName,
+                            quantity: 1,
+                            price: parseFloat(amount) / existingUser.events.length // Distribute price evenly
+                        }));
+                        console.log(`🎯 Constructed items from user events: ${actualItems.map(i => i.itemName).join(', ')}`);
+                    }
+                }
+            } catch (userLookupError) {
+                console.log('⚠️ User lookup failed:', userLookupError.message);
+            }
+        }
+        
+        // If still no items but we have visitor pass data, add visitor pass item
+        if (actualItems.length === 0 && visitorPassDays && parseInt(visitorPassDays) > 0) {
+            actualItems = [{
+                type: 'visitor_pass',
+                itemName: 'VISITOR_PASS',
+                title: 'Visitor Pass',
+                quantity: parseInt(visitorPassDays),
+                price: parseFloat(amount),
+                days: parseInt(visitorPassDays)
+            }];
+            console.log(`🎫 Added visitor pass item: ${visitorPassDays} days`);
+        }
+        
+        // If still no items, create a generic item to prevent empty array
+        if (actualItems.length === 0) {
+            actualItems = [{
+                type: 'general',
+                itemName: 'General Registration',
+                title: 'General Registration',
+                quantity: 1,
+                price: parseFloat(amount)
+            }];
+            console.log(`⚠️ Created generic item as fallback`);
+        }
+        
+        // Log final items for debugging
+        console.log(`📦 Final items for processing:`, actualItems.map(item => ({
+            itemName: item.itemName,
+            type: item.type,
+            price: item.price
+        })));
 
-        // Validate required fields
-        if (!userId || !amount || !customerEmail) {
+        // Validate required fields with enhanced logic
+        if (!amount || !customerEmail) {
             return res.status(400).json({
                 success: false,
-                message: 'Missing required fields: userId, amount, customerEmail'
+                message: 'Missing required fields: amount, customerEmail'
             });
         }
 
         // Calculate final amount (apply any discounts)
         const finalAmount = Math.max(1, amount - appliedDiscount); // Minimum 1 INR
 
-        // Generate unique order ID
-        const orderId = `order_${Date.now()}_${userId}`;
+        // Generate unique order ID - use customer email if userId not available
+        const orderId = actualUserId ? `order_${Date.now()}_${actualUserId}` : `order_${Date.now()}_${customerEmail.replace(/[^a-zA-Z0-9]/g, '')}`;
 
         // Create Cashfree order request with v5 API format
         const createOrderRequest = {
@@ -64,7 +139,7 @@ router.post('/create-order', async (req, res) => {
             order_currency: "INR",
             order_note: `Payment for order ${orderId}`,
             customer_details: {
-                customer_id: userId.toString(),
+                customer_id: actualUserId ? actualUserId.toString() : customerEmail.replace(/[^a-zA-Z0-9]/g, ''),
                 customer_name: customerName || "Customer",
                 customer_email: customerEmail,
                 customer_phone: customerPhone || "9999999999"
@@ -84,28 +159,47 @@ router.post('/create-order', async (req, res) => {
             const response = await Cashfree.PGCreateOrder("2023-08-01", createOrderRequest);
             console.log('Cashfree v5 response:', response.data);
 
-            // Save order details to database
+            // Save order details to database with proper items structure
             const purchase = new Purchase({
-                userId: userId,
+                userId: actualUserId,
                 orderId: response.data.order_id,
                 amount: finalAmount,
                 originalAmount: amount,
                 appliedDiscount: appliedDiscount,
                 promoCode: promoCode || null,
-                items: items || [],
+                items: actualItems, // Use properly constructed items
+                userDetails: { // Add userDetails for compatibility with processSuccessfulPayment
+                    name: customerName,
+                    email: customerEmail,
+                    contactNo: customerPhone,
+                    formData: req.body, // Store complete request data
+                    formsBySignature: req.body.formDataBySignature,
+                    teamMembers: req.body.teamMembersBySignature,
+                    flagshipBenefits: req.body.flagshipBenefitsByEvent,
+                    visitorPassDays: req.body.visitorPassDays,
+                    visitorPassDetails: req.body.visitorPassDetails
+                },
                 customerDetails: {
                     name: customerName,
                     email: customerEmail,
                     phone: customerPhone
                 },
                 paymentSessionId: response.data.payment_session_id,
+                paymentStatus: 'pending', // Use consistent field name
                 status: 'ACTIVE', // v5 uses ACTIVE instead of PENDING
                 cashfreeOrderId: response.data.order_id,
                 orderToken: response.data.order_token, // New field in v5
+                metadata: req.body.metadata || {},
+                purchaseDate: new Date(),
                 createdAt: new Date()
             });
 
+            console.log(`💾 Saving purchase with ${purchase.items.length} items:`, 
+                purchase.items.map(item => item.itemName || item.title).join(', '));
+            
             await purchase.save();
+            
+            console.log(`✅ Purchase saved successfully with order ID: ${purchase.orderId}`);
 
             res.json({
                 success: true,
@@ -362,11 +456,29 @@ router.post('/webhook', async (req, res) => {
                     purchase.completedAt = new Date();
                     purchase.paymentMethod = payment_method;
                     purchase.cfPaymentId = cf_payment_id;
+                    purchase.paymentStatus = 'completed'; // Set consistent status
                     
-                    // Update user payment status
-                    await User.findByIdAndUpdate(purchase.userId, {
-                        $set: { paymentStatus: 'completed' }
-                    });
+                    // Import and call the processSuccessfulPayment function
+                    const directPaymentModule = require('./direct_payment_new');
+                    const processSuccessfulPayment = directPaymentModule.processSuccessfulPayment;
+                    
+                    console.log(`🎉 Payment successful for order ${orderId}, processing user registration and QR generation...`);
+                    
+                    try {
+                        const result = await processSuccessfulPayment(purchase);
+                        if (result.success) {
+                            console.log(`✅ Successfully processed payment for user: ${result.user.email}`);
+                            purchase.userRegistered = true;
+                            purchase.qrGenerated = true;
+                            purchase.emailSent = true;
+                        } else {
+                            console.error(`❌ Failed to process payment: ${result.error}`);
+                            purchase.registrationError = result.error;
+                        }
+                    } catch (processingError) {
+                        console.error(`❌ Error processing successful payment:`, processingError);
+                        purchase.registrationError = processingError.message;
+                    }
                 }
                 
                 await purchase.save();
