@@ -370,14 +370,156 @@ router.post("/add-event", verifyAdmin, async (req, res) => {
   }
 });
 
-// Get all users (admin only) - UPDATED FOR TEAM SYSTEM
+// Get all users (admin only) - UPDATED FOR TEAM SYSTEM WITH EVENT FILTERING
 router.get("/users", verifyAdmin, async (req, res) => {
   try {
-    const users = await User.find({}, '-password'); // Exclude password field
-    res.json(users);
+    const { eventFilter, page = 1, limit = 50, search, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
+    
+    // Build query filters
+    const filters = {};
+    
+    // Event filter
+    if (eventFilter && eventFilter !== 'all') {
+      filters.events = { $in: [eventFilter] };
+    }
+    
+    // Search functionality
+    if (search) {
+      const searchRegex = new RegExp(search, 'i');
+      filters.$or = [
+        { name: searchRegex },
+        { email: searchRegex },
+        { contactNo: searchRegex },
+        { universityName: searchRegex }
+      ];
+    }
+
+    // Calculate pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Build sort object
+    const sortObject = {};
+    sortObject[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Execute query with pagination
+    const users = await User.find(filters, '-password')
+      .sort(sortObject)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .lean();
+
+    // Get total count for pagination
+    const totalCount = await User.countDocuments(filters);
+
+    // Get statistics
+    const stats = {
+      totalUsers: totalCount,
+      registeredUsers: await User.countDocuments({ ...filters, events: { $exists: true, $not: { $size: 0 } } }),
+      emailSentUsers: await User.countDocuments({ ...filters, emailSent: true }),
+      enteredUsers: await User.countDocuments({ ...filters, hasEntered: true })
+    };
+
+    res.json({
+      success: true,
+      users,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalCount / parseInt(limit)),
+        totalCount,
+        limit: parseInt(limit),
+        hasNext: (parseInt(page) * parseInt(limit)) < totalCount,
+        hasPrev: parseInt(page) > 1
+      },
+      stats,
+      filters: {
+        eventFilter,
+        search,
+        sortBy,
+        sortOrder
+      }
+    });
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get users by specific event (admin only)
+router.get("/users/by-event/:eventName", verifyAdmin, async (req, res) => {
+  try {
+    const { eventName } = req.params;
+    const { includeTeamMembers = false, page = 1, limit = 50 } = req.query;
+    
+    // Find users registered for the specific event
+    const filters = {
+      events: { $in: [eventName] }
+    };
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    const users = await User.find(filters, '-password')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .lean();
+
+    let teamMembers = [];
+    
+    // Include team members if requested
+    if (includeTeamMembers === 'true') {
+      const teamCompositions = await TeamComposition.find({ 
+        eventName: eventName 
+      })
+      .populate('teamLeader', 'name email contactNo universityName hasEntered entryTime emailSent')
+      .populate('members', 'name email contactNo universityName hasEntered entryTime emailSent')
+      .lean();
+
+      teamMembers = teamCompositions.flatMap(team => 
+        team.members.map(member => ({
+          ...member,
+          teamInfo: {
+            teamId: team._id,
+            teamName: team.teamName,
+            teamLeader: team.teamLeader.name,
+            isTeamMember: true
+          }
+        }))
+      );
+    }
+
+    const totalCount = await User.countDocuments(filters);
+    const allParticipants = [...users, ...teamMembers];
+
+    res.json({
+      success: true,
+      eventName,
+      users: users,
+      teamMembers: teamMembers,
+      allParticipants: allParticipants,
+      totalCount: allParticipants.length,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalCount / parseInt(limit)),
+        totalCount,
+        limit: parseInt(limit)
+      },
+      stats: {
+        directRegistrations: users.length,
+        teamMemberRegistrations: teamMembers.length,
+        totalParticipants: allParticipants.length,
+        enteredCount: allParticipants.filter(p => p.hasEntered).length,
+        emailSentCount: allParticipants.filter(p => p.emailSent).length
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching users by event:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Internal server error' 
+    });
   }
 });
 
@@ -1837,6 +1979,312 @@ router.post('/resend-confirmation-email', verifyAdmin, async (req, res) => {
   }
 });
 
+// Export users to CSV (admin only)
+router.get("/export/users", verifyAdmin, async (req, res) => {
+  try {
+    const { eventFilter, includeTeamMembers = false, format = 'csv' } = req.query;
+    
+    // Build query filters
+    const filters = {};
+    
+    // Event filter
+    if (eventFilter && eventFilter !== 'all') {
+      filters.events = { $in: [eventFilter] };
+    }
+
+    // Get users
+    const users = await User.find(filters, '-password')
+      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    let allParticipants = [...users];
+
+    // Include team members if requested
+    if (includeTeamMembers === 'true') {
+      const teamQuery = eventFilter && eventFilter !== 'all' 
+        ? { eventName: eventFilter }
+        : {};
+        
+      const teamCompositions = await TeamComposition.find(teamQuery)
+        .populate('teamLeader', 'name email contactNo universityName hasEntered entryTime emailSent createdAt')
+        .populate('members', 'name email contactNo universityName hasEntered entryTime emailSent createdAt')
+        .lean();
+
+      const teamMembers = teamCompositions.flatMap(team => 
+        team.members.map(member => ({
+          ...member,
+          userType: 'team_member',
+          teamInfo: {
+            teamId: team._id,
+            teamName: team.teamName,
+            teamLeader: team.teamLeader.name,
+            eventName: team.eventName
+          }
+        }))
+      );
+
+      allParticipants = [...users.map(u => ({ ...u, userType: 'direct_registration' })), ...teamMembers];
+    }
+
+    if (format === 'json') {
+      return res.json({
+        success: true,
+        data: allParticipants,
+        totalCount: allParticipants.length,
+        exportedAt: new Date().toISOString(),
+        filters: { eventFilter, includeTeamMembers }
+      });
+    }
+
+    // Generate CSV
+    const csvHeaders = [
+      'Name',
+      'Email', 
+      'Contact Number',
+      'University',
+      'Events Registered',
+      'Has Entered',
+      'Entry Time',
+      'Email Sent',
+      'Registration Type',
+      'Team Name',
+      'Team Event',
+      'Team Leader',
+      'Created At'
+    ];
+
+    const csvRows = allParticipants.map(participant => [
+      participant.name || '',
+      participant.email || '',
+      participant.contactNo || '',
+      participant.universityName || '',
+      (participant.events || []).join('; ') || '',
+      participant.hasEntered ? 'Yes' : 'No',
+      participant.entryTime ? new Date(participant.entryTime).toLocaleString() : '',
+      participant.emailSent ? 'Yes' : 'No',
+      participant.userType || 'direct_registration',
+      participant.teamInfo?.teamName || '',
+      participant.teamInfo?.eventName || '',
+      participant.teamInfo?.teamLeader || '',
+      participant.createdAt ? new Date(participant.createdAt).toLocaleString() : ''
+    ]);
+
+    // Create CSV content
+    const csvContent = [
+      csvHeaders.join(','),
+      ...csvRows.map(row => 
+        row.map(field => 
+          typeof field === 'string' && field.includes(',') 
+            ? `"${field.replace(/"/g, '""')}"` 
+            : field
+        ).join(',')
+      )
+    ].join('\n');
+
+    // Set response headers for CSV download
+    const filename = `sabrang_users_${eventFilter || 'all'}_${new Date().toISOString().split('T')[0]}.csv`;
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csvContent);
+
+  } catch (error) {
+    console.error('Error exporting users:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Export teams to CSV (admin only)
+router.get("/export/teams", verifyAdmin, async (req, res) => {
+  try {
+    const { eventFilter, format = 'csv' } = req.query;
+    
+    // Build query filters
+    const filters = {};
+    
+    // Event filter
+    if (eventFilter && eventFilter !== 'all') {
+      filters.eventName = eventFilter;
+    }
+
+    // Get team compositions
+    const teams = await TeamComposition.find(filters)
+      .populate('teamLeader', 'name email contactNo universityName hasEntered entryTime emailSent')
+      .populate('members', 'name email contactNo universityName hasEntered entryTime emailSent')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    if (format === 'json') {
+      return res.json({
+        success: true,
+        data: teams,
+        totalCount: teams.length,
+        exportedAt: new Date().toISOString(),
+        filters: { eventFilter }
+      });
+    }
+
+    // Generate CSV - one row per team with member details
+    const csvHeaders = [
+      'Team Name',
+      'Event Name',
+      'Team Leader Name',
+      'Team Leader Email',
+      'Team Leader Contact',
+      'Team Leader University',
+      'Team Leader Entered',
+      'Team Leader Entry Time',
+      'Total Members',
+      'Member Names',
+      'Member Emails',
+      'Members Entered Count',
+      'Registration Date',
+      'Payment Status'
+    ];
+
+    const csvRows = teams.map(team => {
+      const memberNames = team.members.map(m => m.name).join('; ');
+      const memberEmails = team.members.map(m => m.email).join('; ');
+      const enteredMembersCount = team.members.filter(m => m.hasEntered).length;
+      
+      return [
+        team.teamName || '',
+        team.eventName || '',
+        team.teamLeader?.name || '',
+        team.teamLeader?.email || '',
+        team.teamLeader?.contactNo || '',
+        team.teamLeader?.universityName || '',
+        team.teamLeader?.hasEntered ? 'Yes' : 'No',
+        team.teamLeader?.entryTime ? new Date(team.teamLeader.entryTime).toLocaleString() : '',
+        team.members?.length || 0,
+        memberNames,
+        memberEmails,
+        enteredMembersCount,
+        team.registrationDate ? new Date(team.registrationDate).toLocaleString() : '',
+        team.paymentStatus || 'pending'
+      ];
+    });
+
+    // Create CSV content
+    const csvContent = [
+      csvHeaders.join(','),
+      ...csvRows.map(row => 
+        row.map(field => 
+          typeof field === 'string' && field.includes(',') 
+            ? `"${field.replace(/"/g, '""')}"` 
+            : field
+        ).join(',')
+      )
+    ].join('\n');
+
+    // Set response headers for CSV download
+    const filename = `sabrang_teams_${eventFilter || 'all'}_${new Date().toISOString().split('T')[0]}.csv`;
+    
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csvContent);
+
+  } catch (error) {
+    console.error('Error exporting teams:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Get comprehensive analytics for admin dashboard (admin only)
+router.get("/analytics/comprehensive", verifyAdmin, async (req, res) => {
+  try {
+    const { eventFilter } = req.query;
+    
+    // Build base filters
+    const userFilters = {};
+    const teamFilters = {};
+    
+    if (eventFilter && eventFilter !== 'all') {
+      userFilters.events = { $in: [eventFilter] };
+      teamFilters.eventName = eventFilter;
+    }
+
+    // Get comprehensive stats
+    const [
+      totalUsers,
+      registeredUsers,
+      enteredUsers,
+      emailSentUsers,
+      totalTeams,
+      activeTeams,
+      totalEvents,
+      eventStats
+    ] = await Promise.all([
+      User.countDocuments(userFilters),
+      User.countDocuments({ ...userFilters, events: { $exists: true, $not: { $size: 0 } } }),
+      User.countDocuments({ ...userFilters, hasEntered: true }),
+      User.countDocuments({ ...userFilters, emailSent: true }),
+      TeamComposition.countDocuments(teamFilters),
+      TeamComposition.countDocuments({ ...teamFilters, isActive: true }),
+      Event.countDocuments({}),
+      User.aggregate([
+        { $match: userFilters },
+        { $unwind: '$events' },
+        { $group: { _id: '$events', count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
+      ])
+    ]);
+
+    // Get university distribution
+    const universityStats = await User.aggregate([
+      { $match: userFilters },
+      { $group: { _id: '$universityName', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+
+    // Get recent registrations (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
+    const recentRegistrations = await User.countDocuments({
+      ...userFilters,
+      createdAt: { $gte: sevenDaysAgo }
+    });
+
+    res.json({
+      success: true,
+      filters: { eventFilter },
+      overview: {
+        totalUsers,
+        registeredUsers,
+        enteredUsers,
+        emailSentUsers,
+        totalTeams,
+        activeTeams,
+        totalEvents,
+        recentRegistrations
+      },
+      eventDistribution: eventStats,
+      universityDistribution: universityStats,
+      entryStats: {
+        entryRate: totalUsers > 0 ? ((enteredUsers / totalUsers) * 100).toFixed(2) : 0,
+        emailRate: totalUsers > 0 ? ((emailSentUsers / totalUsers) * 100).toFixed(2) : 0
+      },
+      generatedAt: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error fetching comprehensive analytics:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 // Batch resend confirmation emails
 router.post('/batch-resend-confirmation-emails', verifyAdmin, async (req, res) => {
   try {
@@ -2018,6 +2466,262 @@ router.post('/batch-resend-confirmation-emails', verifyAdmin, async (req, res) =
 
   } catch (error) {
     console.error('❌ Error in batch resend confirmation emails:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+// ========================= ALL REGISTRATIONS ENDPOINT FOR ADMIN =========================
+
+// Get ALL registrations including individual users, team leaders, and team members (admin only)
+router.get("/all-registrations", verifyAdmin, async (req, res) => {
+  try {
+    console.log("📊 Fetching all registrations for admin view...");
+    
+    // Get all users (individual registrations and team leaders)
+    const allUsers = await User.find({}, '-password')
+      .populate('teamRegistrations.teamLeaderId', 'name email')
+      .populate('registrationHistory.purchaseId')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Get all team compositions to extract team member information
+    const allTeamCompositions = await TeamComposition.find({})
+      .populate('teamLeader.userId', 'name email contactNo gender age universityName address hasEntered entryTime emailSent emailSentAt createdAt')
+      .populate('teamMembers.userId', 'name email contactNo gender age universityName address hasEntered entryTime emailSent emailSentAt createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Get all purchases for linking registration data
+    const allPurchases = await Purchase.find({})
+      .sort({ purchaseDate: -1 })
+      .lean();
+
+    // Process registrations
+    const registrations = [];
+    const processedEmails = new Set(); // Track to avoid duplicates
+
+    // Process individual users and team leaders
+    for (const user of allUsers) {
+      if (processedEmails.has(user.email)) continue;
+      processedEmails.add(user.email);
+
+      // Find related purchases
+      const userPurchases = allPurchases.filter(purchase => 
+        purchase.userId?.toString() === user._id.toString() ||
+        purchase.mainPersonId?.toString() === user._id.toString() ||
+        purchase.userDetails?.email === user.email
+      );
+
+      // Find team information
+      const userTeamInfo = allTeamCompositions.filter(team => 
+        team.teamLeader.userId._id.toString() === user._id.toString()
+      );
+
+      const registration = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        contactNo: user.contactNo || '',
+        gender: user.gender || '',
+        age: user.age || null,
+        universityName: user.universityName || '',
+        address: user.address || '',
+        
+        // Registration details
+        events: user.events || [],
+        userType: user.userType || 'participant',
+        supportRole: user.supportRole || '',
+        visitorPassDays: user.visitorPassDays || 0,
+        
+        // Status fields
+        isvalidated: user.isvalidated || false,
+        hasEntered: user.hasEntered || false,
+        entryTime: user.entryTime || null,
+        emailSent: user.emailSent || false,
+        emailSentAt: user.emailSentAt || null,
+        
+        // QR Code info
+        qrPath: user.qrPath || '',
+        qrCodeBase64: user.qrCodeBase64 ? 'Available' : 'Not Available',
+        
+        // Timestamps
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        
+        // Registration type identification
+        registrationType: userTeamInfo.length > 0 ? 'team-leader' : 'individual',
+        
+        // Team information (if team leader)
+        teamInfo: userTeamInfo.map(team => ({
+          teamId: team._id,
+          teamName: team.teamName,
+          eventName: team.eventName,
+          totalMembers: team.totalMembers,
+          registrationComplete: team.registrationComplete,
+          paymentStatus: team.paymentStatus
+        })),
+        
+        // Purchase information
+        purchases: userPurchases.map(purchase => ({
+          orderId: purchase.orderId,
+          totalAmount: purchase.totalAmount,
+          paymentStatus: purchase.paymentStatus,
+          purchaseDate: purchase.purchaseDate,
+          items: purchase.items,
+          promoCode: purchase.promoCode
+        })),
+        
+        // Additional metadata
+        totalAmountPaid: userPurchases
+          .filter(p => p.paymentStatus === 'completed')
+          .reduce((sum, p) => sum + (p.totalAmount || 0), 0),
+        
+        // Referral information
+        referralCode: user.referralCode || '',
+      };
+
+      registrations.push(registration);
+    }
+
+    // Process team members (who are not already team leaders)
+    for (const teamComposition of allTeamCompositions) {
+      for (const teamMember of teamComposition.teamMembers) {
+        if (processedEmails.has(teamMember.userId.email)) continue;
+        processedEmails.add(teamMember.userId.email);
+
+        const member = teamMember.userId;
+        
+        // Find related purchases (team member might not have direct purchases)
+        const memberPurchases = allPurchases.filter(purchase => 
+          purchase.userId?.toString() === member._id.toString() ||
+          purchase.userDetails?.email === member.email
+        );
+
+        const registration = {
+          id: member._id,
+          name: member.name,
+          email: member.email,
+          contactNo: member.contactNo || '',
+          gender: member.gender || '',
+          age: member.age || null,
+          universityName: member.universityName || '',
+          address: member.address || '',
+          
+          // Registration details
+          events: member.events || [teamComposition.eventName],
+          userType: member.userType || 'participant',
+          supportRole: member.supportRole || '',
+          visitorPassDays: member.visitorPassDays || 0,
+          
+          // Status fields
+          isvalidated: member.isvalidated || false,
+          hasEntered: member.hasEntered || false,
+          entryTime: member.entryTime || null,
+          emailSent: member.emailSent || false,
+          emailSentAt: member.emailSentAt || null,
+          
+          // QR Code info
+          qrPath: member.qrPath || '',
+          qrCodeBase64: member.qrCodeBase64 ? 'Available' : 'Not Available',
+          
+          // Timestamps
+          createdAt: member.createdAt,
+          updatedAt: member.updatedAt,
+          
+          // Registration type identification
+          registrationType: 'team-member',
+          
+          // Team information
+          teamInfo: [{
+            teamId: teamComposition._id,
+            teamName: teamComposition.teamName,
+            eventName: teamComposition.eventName,
+            teamLeaderName: teamComposition.teamLeader.userId.name,
+            teamLeaderEmail: teamComposition.teamLeader.userId.email,
+            totalMembers: teamComposition.totalMembers,
+            registrationComplete: teamComposition.registrationComplete,
+            paymentStatus: teamComposition.paymentStatus,
+            role: teamMember.role || 'member'
+          }],
+          
+          // Purchase information
+          purchases: memberPurchases.map(purchase => ({
+            orderId: purchase.orderId,
+            totalAmount: purchase.totalAmount,
+            paymentStatus: purchase.paymentStatus,
+            purchaseDate: purchase.purchaseDate,
+            items: purchase.items,
+            promoCode: purchase.promoCode
+          })),
+          
+          // Additional metadata
+          totalAmountPaid: memberPurchases
+            .filter(p => p.paymentStatus === 'completed')
+            .reduce((sum, p) => sum + (p.totalAmount || 0), 0),
+          
+          // Referral information
+          referralCode: member.referralCode || '',
+        };
+
+        registrations.push(registration);
+      }
+    }
+
+    // Calculate summary statistics
+    const stats = {
+      totalRegistrations: registrations.length,
+      individualRegistrations: registrations.filter(r => r.registrationType === 'individual').length,
+      teamLeaders: registrations.filter(r => r.registrationType === 'team-leader').length,
+      teamMembers: registrations.filter(r => r.registrationType === 'team-member').length,
+      validatedUsers: registrations.filter(r => r.isvalidated).length,
+      enteredUsers: registrations.filter(r => r.hasEntered).length,
+      emailsSent: registrations.filter(r => r.emailSent).length,
+      qrCodesGenerated: registrations.filter(r => r.qrCodeBase64 === 'Available').length,
+      totalRevenue: registrations.reduce((sum, r) => sum + r.totalAmountPaid, 0),
+      
+      // Event-wise breakdown
+      eventBreakdown: registrations
+        .reduce((acc, r) => {
+          r.events.forEach(event => {
+            acc[event] = (acc[event] || 0) + 1;
+          });
+          return acc;
+        }, {}),
+      
+      // University breakdown
+      universityBreakdown: registrations
+        .reduce((acc, r) => {
+          if (r.universityName) {
+            acc[r.universityName] = (acc[r.universityName] || 0) + 1;
+          }
+          return acc;
+        }, {}),
+      
+      // User type breakdown
+      userTypeBreakdown: registrations
+        .reduce((acc, r) => {
+          acc[r.userType] = (acc[r.userType] || 0) + 1;
+          return acc;
+        }, {}),
+    };
+
+    console.log(`✅ Successfully fetched ${registrations.length} registrations`);
+    
+    res.json({
+      success: true,
+      message: `Successfully fetched all ${registrations.length} registrations`,
+      data: registrations,
+      stats: stats,
+      generatedAt: new Date().toISOString(),
+      note: "All registrations fetched in single request for client-side filtering"
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching all registrations:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
