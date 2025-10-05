@@ -97,9 +97,15 @@ class MicrosoftOAuthMailer {
 function generateRegistrationEmailContent(userData) {
     const { name, events } = userData;
     
-    const eventsText = events && events.length > 0 
-        ? events.join(', ') 
-        : 'Dance Competition, Coding Contest, Business Plan';
+    // Better handling of events data - check for valid array with content
+    let eventsText;
+    if (Array.isArray(events) && events.length > 0) {
+        // Filter out any empty or invalid event names
+        const validEvents = events.filter(event => event && typeof event === 'string' && event.trim().length > 0);
+        eventsText = validEvents.length > 0 ? validEvents.join(', ') : 'General Registration - Sabrang\'25';
+    } else {
+        eventsText = 'General Registration - Sabrang\'25';
+    }
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -324,9 +330,7 @@ function generatePaymentInitiationEmailContent(paymentData) {
     
     // If OTP is provided, send OTP email, otherwise send registration email
     if (otp) {
-        const eventsText = events && events.length > 0 
-            ? events.join(', ') 
-            : 'Dance Competition, Coding Contest, Business Plan';
+        // OTP emails are focused on authentication only - no event information needed
 
         const htmlContent = `
         <!DOCTYPE html>
@@ -478,10 +482,14 @@ Need help? Contact us anytime.`;
 
         return { htmlContent, textContent };
     } else {
-        // Original registration email content
-        const eventsText = events && events.length > 0 
-            ? events.join(', ') 
-            : 'Dance Competition, Coding Contest, Business Plan';
+        // Original registration email content - better events handling
+        let eventsText;
+        if (Array.isArray(events) && events.length > 0) {
+            const validEvents = events.filter(event => event && typeof event === 'string' && event.trim().length > 0);
+            eventsText = validEvents.length > 0 ? validEvents.join(', ') : 'General Registration - Sabrang\'25';
+        } else {
+            eventsText = 'General Registration - Sabrang\'25';
+        }
 
         const htmlContent = `
         <!DOCTYPE html>
