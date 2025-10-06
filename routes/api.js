@@ -477,10 +477,13 @@ router.post('/team-by-email', async (req, res) => {
       });
     }
 
-    // Get team compositions where this user is team leader
-    const teamCompositions = await TeamComposition.find({ 
-      'teamLeader.userId': user._id 
-    }).populate('teamMembers.userId');
+    // Get team compositions where this user is either team leader OR team member
+    const teamCompositions = await TeamComposition.find({
+      $or: [
+        { 'teamLeader.userId': user._id },
+        { 'teamMembers.userId': user._id }
+      ]
+    }).populate('teamLeader.userId teamMembers.userId');
 
     // Get events data for user's registered events
     const events = user.events;
@@ -525,8 +528,12 @@ router.post('/team-by-email', async (req, res) => {
       });
     }
 
-    // Add team leader registrations
+    // Add team registrations (either as leader or member)
     for (const teamComposition of teamCompositions) {
+      // Check if the current user is the team leader
+      const isTeamLeader = teamComposition.teamLeader.userId._id.toString() === user._id.toString();
+      
+      // Get team members data
       const teamMembers = await Promise.all(teamComposition.teamMembers.map(async (member) => {
         // Fetch the complete user data from the users collection to get QR codes
         const memberUser = await User.findById(member.userId);
@@ -550,9 +557,29 @@ router.post('/team-by-email', async (req, res) => {
         };
       }));
 
+      // Add team leader information
+      const teamLeaderUser = await User.findById(teamComposition.teamLeader.userId);
+      const teamLeaderInfo = {
+        id: teamComposition.teamLeader.userId,
+        name: teamComposition.teamLeader.name,
+        email: teamComposition.teamLeader.email,
+        contactNo: teamLeaderUser?.contactNo || '',
+        gender: teamLeaderUser?.gender || '',
+        age: teamLeaderUser?.age || 0,
+        universityName: teamLeaderUser?.universityName || '',
+        address: teamLeaderUser?.address || '',
+        profileImage: teamLeaderUser?.profileImage || '',
+        qrPath: teamLeaderUser?.qrPath || '',
+        qrCodeBase64: teamLeaderUser?.qrCodeBase64 || '',
+        hasEntered: teamComposition.teamLeader.hasEntered,
+        entryTime: teamComposition.teamLeader.entryTime,
+        events: [teamComposition.eventName],
+        role: 'Team Leader'
+      };
+
       registrations.push({
         id: user._id,
-        type: 'team-leader',
+        type: isTeamLeader ? 'team-leader' : 'team-member',
         registrationId: teamComposition._id,
         registrationDate: teamComposition.createdAt,
         registrationCount: registrationCount++,
@@ -570,15 +597,18 @@ router.post('/team-by-email', async (req, res) => {
         entryTime: user.entryTime,
         events: [teamComposition.eventName],
         registeredEvents: eventData.filter(event => event.name === teamComposition.eventName),
+        teamName: teamComposition.teamName,
+        teamLeader: teamLeaderInfo,
         teamMembers: teamMembers,
-        teamSize: teamComposition.totalMembers
+        teamSize: teamComposition.totalMembers,
+        userRole: isTeamLeader ? 'leader' : 'member'
       });
     }
 
     // Calculate summary
     const individualCount = registrations.filter(r => r.type === 'individual').length;
     const teamLeaderCount = registrations.filter(r => r.type === 'team-leader').length;
-    const teamMemberCount = 0; // This user is accessing by their email, so they won't be a team member
+    const teamMemberCount = registrations.filter(r => r.type === 'team-member').length;
 
     res.json({
       success: true,
