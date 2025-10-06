@@ -103,6 +103,7 @@ async function addEventToUser(user) {
             'VERSEVAAD',
             'ART RELAY',
             'CLAY MODELLING',
+            'DUMB SHOW',
             'VISITOR_PASS'
         ];
         

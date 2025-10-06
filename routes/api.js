@@ -418,6 +418,7 @@ router.get('/team/:teamId', verifyToken, async (req, res) => {
           hasEntered: member.hasEntered,
           entryTime: member.entryTime,
           role: member.role,
+          // QR codes are properly fetched from populated User document
           qrPath: member.userId.qrPath,
           qrCodeBase64: member.userId.qrCodeBase64,
           profileImage: member.userId.profileImage
@@ -527,6 +528,7 @@ router.post('/team-by-email', async (req, res) => {
     // Add team leader registrations
     for (const teamComposition of teamCompositions) {
       const teamMembers = await Promise.all(teamComposition.teamMembers.map(async (member) => {
+        // Fetch the complete user data from the users collection to get QR codes
         const memberUser = await User.findById(member.userId);
         return {
           id: member.userId,
@@ -538,6 +540,7 @@ router.post('/team-by-email', async (req, res) => {
           universityName: memberUser?.universityName || '',
           address: memberUser?.address || '',
           profileImage: memberUser?.profileImage || '',
+          // Fetch QR codes from the actual User document in users collection
           qrPath: memberUser?.qrPath || '',
           qrCodeBase64: memberUser?.qrCodeBase64 || '',
           hasEntered: member.hasEntered,
