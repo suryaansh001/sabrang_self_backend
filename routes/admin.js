@@ -2983,6 +2983,69 @@ router.get("/manage-users", verifyAdmin, async (req, res) => {
   }
 });
 
+// Create new user via manage-users
+router.post("/manage-users", verifyAdmin, async (req, res) => {
+  try {
+    const { name, email, phone, password, college, year, branch } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      college,
+      year,
+      branch,
+      isVerified: true, // Admin created users are auto-verified
+      createdAt: new Date()
+    });
+
+    await newUser.save();
+
+    // Generate QR code for the user
+    try {
+      await generateUserQRCode(newUser._id);
+    } catch (qrError) {
+      console.error('QR generation failed:', qrError);
+      // Don't fail the user creation if QR fails
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        phone: newUser.phone,
+        college: newUser.college,
+        year: newUser.year,
+        branch: newUser.branch
+      }
+    });
+
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 // Get single user by ID
 router.get("/manage-users/:id", verifyAdmin, async (req, res) => {
   try {
@@ -3176,6 +3239,82 @@ router.delete("/manage-users/:id", verifyAdmin, async (req, res) => {
 
   } catch (error) {
     console.error('Error deleting user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Bulk delete users
+router.post("/manage-users/bulk-delete", verifyAdmin, async (req, res) => {
+  try {
+    const { userIds, reason } = req.body;
+
+    if (!userIds || !Array.isArray(userIds) || userIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'User IDs array is required'
+      });
+    }
+
+    const deletedUsers = [];
+    const errors = [];
+
+    for (const userId of userIds) {
+      try {
+        const user = await User.findById(userId);
+        if (!user) {
+          errors.push({ userId, error: 'User not found' });
+          continue;
+        }
+
+        // Check for completed purchases
+        const completedPurchases = await Purchase.find({
+          $or: [
+            { userId: userId },
+            { 'userDetails.email': user.email }
+          ],
+          paymentStatus: 'completed'
+        });
+
+        if (completedPurchases.length > 0) {
+          errors.push({ 
+            userId, 
+            email: user.email,
+            error: 'User has completed purchases and cannot be deleted' 
+          });
+          continue;
+        }
+
+        // Delete the user
+        await User.findByIdAndDelete(userId);
+        
+        deletedUsers.push({
+          id: user._id,
+          name: user.name,
+          email: user.email
+        });
+
+      } catch (error) {
+        errors.push({ userId, error: error.message });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Bulk delete completed. ${deletedUsers.length} users deleted, ${errors.length} errors.`,
+      deletedUsers,
+      errors: errors.length > 0 ? errors : undefined,
+      summary: {
+        requested: userIds.length,
+        deleted: deletedUsers.length,
+        failed: errors.length
+      }
+    });
+
+  } catch (error) {
+    console.error('Error in bulk delete:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error'
@@ -3782,6 +3921,137 @@ router.post("/manage-users/add-user", verifyAdmin, async (req, res) => {
 
   } catch (error) {
     console.error('Error creating user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+// Add team route (alias for manage-teams/add-team)
+router.post("/manage-users/add-team", verifyAdmin, async (req, res) => {
+  try {
+    const { teamName, eventName, teamLeader, teamMembers, defaultPassword = 'Sabrang2025!' } = req.body;
+
+    if (!teamName || !eventName || !teamLeader) {
+      return res.status(400).json({
+        success: false,
+        message: 'Team name, event name, and team leader are required'
+      });
+    }
+
+    // Check if event exists
+    const event = await Event.findOne({ eventName });
+    if (!event) {
+      return res.status(404).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Create or get team leader
+    let leaderUser;
+    if (typeof teamLeader === 'string') {
+      // If teamLeader is just an email, create user
+      const existingLeader = await User.findOne({ email: teamLeader });
+      if (existingLeader) {
+        leaderUser = existingLeader;
+      } else {
+        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+        leaderUser = new User({
+          name: teamLeader.split('@')[0], // Use email prefix as name
+          email: teamLeader,
+          password: hashedPassword,
+          isVerified: true
+        });
+        await leaderUser.save();
+      }
+    } else {
+      // teamLeader is an object with user details
+      const existingLeader = await User.findOne({ email: teamLeader.email });
+      if (existingLeader) {
+        leaderUser = existingLeader;
+      } else {
+        const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+        leaderUser = new User({
+          name: teamLeader.name,
+          email: teamLeader.email,
+          phone: teamLeader.phone,
+          college: teamLeader.college,
+          year: teamLeader.year,
+          branch: teamLeader.branch,
+          password: hashedPassword,
+          isVerified: true
+        });
+        await leaderUser.save();
+      }
+    }
+
+    // Process team members
+    const processedMembers = [];
+    if (teamMembers && teamMembers.length > 0) {
+      for (const member of teamMembers) {
+        let memberUser;
+        const existingMember = await User.findOne({ email: member.email });
+        
+        if (existingMember) {
+          memberUser = existingMember;
+        } else {
+          const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+          memberUser = new User({
+            name: member.name,
+            email: member.email,
+            phone: member.phone,
+            college: member.college,
+            year: member.year,
+            branch: member.branch,
+            password: hashedPassword,
+            isVerified: true
+          });
+          await memberUser.save();
+        }
+        
+        processedMembers.push({
+          userId: memberUser._id,
+          name: memberUser.name,
+          email: memberUser.email,
+          phone: memberUser.phone
+        });
+      }
+    }
+
+    // Create team
+    const team = new TeamComposition({
+      teamName,
+      eventName,
+      teamLeader: leaderUser._id,
+      teamMembers: processedMembers,
+      isRegistered: true,
+      registrationDate: new Date()
+    });
+
+    await team.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Team created successfully',
+      team: {
+        id: team._id,
+        teamName: team.teamName,
+        eventName: team.eventName,
+        teamLeader: {
+          id: leaderUser._id,
+          name: leaderUser.name,
+          email: leaderUser.email
+        },
+        teamMembers: processedMembers,
+        memberCount: processedMembers.length + 1
+      }
+    });
+
+  } catch (error) {
+    console.error('Error creating team:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
