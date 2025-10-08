@@ -2477,7 +2477,7 @@ router.post('/batch-resend-confirmation-emails', verifyAdmin, async (req, res) =
 // ========================= COORDINATOR PAGE ROUTES =========================
 
 // Search participants by name, email, or contact number
-router.get("/coordinator/search-participants", verifyAdmin, async (req, res) => {
+router.get("/coordinator/search-participants", async (req, res) => {
   try {
     const { query, eventFilter, limit = 20, page = 1 } = req.query;
 
@@ -2844,7 +2844,7 @@ router.get("/coordinator/participants-by-event/:eventName", verifyAdmin, async (
 });
 
 // Alias route for search-participants (for easier access)
-router.get("/search-participants", verifyAdmin, async (req, res) => {
+router.get("/search-participants", async (req, res) => {
   try {
     const { query, eventFilter, limit = 20, page = 1 } = req.query;
 
@@ -2968,7 +2968,7 @@ router.get("/search-participants", verifyAdmin, async (req, res) => {
 // ========================= USER MANAGEMENT ROUTES =========================
 
 // Get all users with advanced filtering and search
-router.get("/manage-users", verifyAdmin, async (req, res) => {
+router.get("/manage-users", async (req, res) => {
   try {
     const { 
       search, 
@@ -3106,7 +3106,7 @@ router.get("/manage-users", verifyAdmin, async (req, res) => {
 });
 
 // Create new user via manage-users
-router.post("/manage-users", verifyAdmin, async (req, res) => {
+router.post("/manage-users", async (req, res) => {
   try {
     const { name, email, phone, password, college, year, branch } = req.body;
 
@@ -3169,7 +3169,7 @@ router.post("/manage-users", verifyAdmin, async (req, res) => {
 });
 
 // Get single user by ID
-router.get("/manage-users/:id", verifyAdmin, async (req, res) => {
+router.get("/manage-users/:id", async (req, res) => {
   try {
     const userId = req.params.id;
 
@@ -3924,7 +3924,7 @@ router.post("/manage-teams/add-team", verifyAdmin, async (req, res) => {
 });
 
 // Add individual user
-router.post("/manage-users/add-user", verifyAdmin, async (req, res) => {
+router.post("/manage-users/add-user", async (req, res) => {
   try {
     const {
       name,
@@ -4052,7 +4052,7 @@ router.post("/manage-users/add-user", verifyAdmin, async (req, res) => {
 });
 
 // Add team route (alias for manage-teams/add-team)
-router.post("/manage-users/add-team", verifyAdmin, async (req, res) => {
+router.post("/manage-users/add-team", async (req, res) => {
   try {
     const { teamName, eventName, teamLeader, teamMembers, defaultPassword = 'Sabrang2025!' } = req.body;
 
