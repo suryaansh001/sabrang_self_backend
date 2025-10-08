@@ -2983,6 +2983,60 @@ router.get("/manage-users", verifyAdmin, async (req, res) => {
   }
 });
 
+// Get single user by ID
+router.get("/manage-users/:id", verifyAdmin, async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId, '-password')
+      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Get additional info for the user
+    const teamInfo = await TeamComposition.find({
+      $or: [
+        { teamLeader: user._id },
+        { 'teamMembers.userId': user._id }
+      ]
+    }).select('teamName eventName').lean();
+
+    const purchases = await Purchase.find({
+      $or: [
+        { userId: user._id },
+        { 'userDetails.email': user.email }
+      ]
+    }).select('orderId totalAmount paymentStatus purchaseDate').lean();
+
+    const userWithDetails = {
+      ...user,
+      teamParticipations: teamInfo,
+      purchaseHistory: purchases,
+      totalAmountPaid: purchases
+        .filter(p => p.paymentStatus === 'completed')
+        .reduce((sum, p) => sum + (p.totalAmount || 0), 0)
+    };
+
+    res.json({
+      success: true,
+      user: userWithDetails
+    });
+
+  } catch (error) {
+    console.error('Error fetching user by ID:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 // Update user details
 router.put("/manage-users/:id", verifyAdmin, async (req, res) => {
   try {
