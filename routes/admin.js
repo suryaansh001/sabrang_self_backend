@@ -2474,6 +2474,661 @@ router.post('/batch-resend-confirmation-emails', verifyAdmin, async (req, res) =
   }
 });
 
+// ========================= COORDINATOR PAGE ROUTES =========================
+
+// Search participants by name, email, or contact number
+router.get("/coordinator/search-participants", verifyAdmin, async (req, res) => {
+  try {
+    const { query, eventFilter, limit = 20, page = 1 } = req.query;
+
+    if (!query || query.trim().length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search query must be at least 2 characters long'
+      });
+    }
+
+    // Build search filters
+    const searchRegex = new RegExp(query.trim(), 'i');
+    const filters = {
+      $or: [
+        { name: searchRegex },
+        { email: searchRegex },
+        { contactNo: searchRegex }
+      ]
+    };
+
+    // Add event filter if specified
+    if (eventFilter && eventFilter !== 'all') {
+      filters.events = { $in: [eventFilter] };
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    // Search in Users collection
+    const users = await User.find(filters, '-password')
+      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .sort({ name: 1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .lean();
+
+    // Search in team members through TeamComposition
+    const teamCompositions = await TeamComposition.find({
+      $or: [
+        { 'teamLeader.name': searchRegex },
+        { 'teamLeader.email': searchRegex },
+        { 'teamLeader.contactNo': searchRegex },
+        { 'teamMembers.name': searchRegex },
+        { 'teamMembers.email': searchRegex },
+        { 'teamMembers.contactNo': searchRegex }
+      ]
+    }).populate('teamLeader', 'name email contactNo hasEntered entryTime events')
+      .populate('teamMembers.userId', 'name email contactNo hasEntered entryTime events')
+      .lean();
+
+    // Process team members matching the search
+    const teamMemberResults = [];
+    for (const team of teamCompositions) {
+      // Check team leader
+      if (team.teamLeader && 
+          (searchRegex.test(team.teamLeader.name) || 
+           searchRegex.test(team.teamLeader.email) || 
+           searchRegex.test(team.teamLeader.contactNo))) {
+        teamMemberResults.push({
+          ...team.teamLeader,
+          participantType: 'team-leader',
+          teamInfo: {
+            teamId: team._id,
+            teamName: team.teamName,
+            eventName: team.eventName,
+            totalMembers: team.teamMembers.length + 1
+          }
+        });
+      }
+
+      // Check team members
+      for (const member of team.teamMembers) {
+        if (member.userId && 
+            (searchRegex.test(member.userId.name) || 
+             searchRegex.test(member.userId.email) || 
+             searchRegex.test(member.userId.contactNo))) {
+          teamMemberResults.push({
+            ...member.userId,
+            participantType: 'team-member',
+            teamInfo: {
+              teamId: team._id,
+              teamName: team.teamName,
+              eventName: team.eventName,
+              teamLeaderName: team.teamLeader.name,
+              totalMembers: team.teamMembers.length + 1
+            }
+          });
+        }
+      }
+    }
+
+    // Combine results and mark participant types
+    const individualUsers = users.map(user => ({
+      ...user,
+      participantType: user.teamRegistrations?.length > 0 ? 'team-leader' : 'individual'
+    }));
+
+    const allResults = [...individualUsers, ...teamMemberResults];
+    
+    // Remove duplicates based on email
+    const uniqueResults = allResults.filter((participant, index, self) => 
+      index === self.findIndex(p => p.email === participant.email)
+    );
+
+    const totalCount = uniqueResults.length;
+
+    res.json({
+      success: true,
+      participants: uniqueResults.slice(0, parseInt(limit)),
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalCount / parseInt(limit)),
+        totalCount,
+        limit: parseInt(limit)
+      },
+      searchQuery: query,
+      eventFilter: eventFilter || 'all'
+    });
+
+  } catch (error) {
+    console.error('Error searching participants:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Get participant details with registered events
+router.get("/coordinator/participant/:id", verifyAdmin, async (req, res) => {
+  try {
+    const participantId = req.params.id;
+
+    // Find participant in Users collection
+    const user = await User.findById(participantId, '-password')
+      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Participant not found'
+      });
+    }
+
+    // Get team information if participant is in teams
+    const teamCompositions = await TeamComposition.find({
+      $or: [
+        { teamLeader: user._id },
+        { 'teamMembers.userId': user._id }
+      ]
+    }).populate('teamLeader', 'name email')
+      .populate('teamMembers.userId', 'name email')
+      .lean();
+
+    // Get events details
+    const eventNames = [...new Set([
+      ...(user.events || []),
+      ...teamCompositions.map(team => team.eventName)
+    ])];
+
+    const events = await Event.find({
+      name: { $in: eventNames }
+    }).lean();
+
+    // Get purchase history
+    const purchases = await Purchase.find({
+      $or: [
+        { userId: user._id },
+        { 'userDetails.email': user.email }
+      ]
+    }).sort({ purchaseDate: -1 }).lean();
+
+    const participantDetails = {
+      ...user,
+      teamParticipations: teamCompositions.map(team => ({
+        teamId: team._id,
+        teamName: team.teamName,
+        eventName: team.eventName,
+        role: team.teamLeader._id.toString() === user._id.toString() ? 'Team Leader' : 'Team Member',
+        totalMembers: team.teamMembers.length + 1,
+        teamLeader: team.teamLeader,
+        teamMembers: team.teamMembers
+      })),
+      eventsDetails: events,
+      purchaseHistory: purchases.map(purchase => ({
+        orderId: purchase.orderId,
+        totalAmount: purchase.totalAmount,
+        paymentStatus: purchase.paymentStatus,
+        purchaseDate: purchase.purchaseDate,
+        items: purchase.items
+      }))
+    };
+
+    res.json({
+      success: true,
+      participant: participantDetails
+    });
+
+  } catch (error) {
+    console.error('Error fetching participant details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Reset entry status for a participant
+router.post("/coordinator/reset-entry/:id", verifyAdmin, async (req, res) => {
+  try {
+    const participantId = req.params.id;
+    const { reason } = req.body;
+
+    // Find and update participant
+    const user = await User.findById(participantId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Participant not found'
+      });
+    }
+
+    const previousEntryStatus = {
+      hasEntered: user.hasEntered,
+      entryTime: user.entryTime
+    };
+
+    // Reset entry status
+    user.hasEntered = false;
+    user.entryTime = null;
+    await user.save();
+
+    // Log the action (you might want to create an audit log)
+    console.log(`Entry status reset for ${user.name} (${user.email}) by admin. Reason: ${reason || 'No reason provided'}`);
+
+    res.json({
+      success: true,
+      message: 'Entry status reset successfully',
+      participant: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        previousStatus: previousEntryStatus,
+        currentStatus: {
+          hasEntered: user.hasEntered,
+          entryTime: user.entryTime
+        }
+      },
+      resetReason: reason || 'No reason provided',
+      resetAt: new Date(),
+      resetBy: req.user?.email || 'Admin'
+    });
+
+  } catch (error) {
+    console.error('Error resetting entry status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Get participants by event for coordinator view
+router.get("/coordinator/participants-by-event/:eventName", verifyAdmin, async (req, res) => {
+  try {
+    const { eventName } = req.params;
+    const { includeTeamMembers = true, status = 'all', limit = 50, page = 1 } = req.query;
+
+    // Find users registered for the event
+    let userFilters = { events: { $in: [eventName] } };
+    
+    // Add status filters
+    if (status === 'entered') {
+      userFilters.hasEntered = true;
+    } else if (status === 'not-entered') {
+      userFilters.hasEntered = false;
+    }
+
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const users = await User.find(userFilters, '-password')
+      .sort({ name: 1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .lean();
+
+    let teamMembers = [];
+    
+    // Include team members if requested
+    if (includeTeamMembers === 'true') {
+      let teamFilters = { eventName: eventName };
+      
+      const teamCompositions = await TeamComposition.find(teamFilters)
+        .populate('teamLeader', 'name email contactNo hasEntered entryTime emailSent')
+        .populate('teamMembers.userId', 'name email contactNo hasEntered entryTime emailSent')
+        .lean();
+
+      teamMembers = teamCompositions.flatMap(team => 
+        team.teamMembers.map(member => ({
+          ...member.userId,
+          participantType: 'team-member',
+          teamInfo: {
+            teamId: team._id,
+            teamName: team.teamName,
+            teamLeader: team.teamLeader.name,
+            role: member.role || 'member'
+          }
+        }))
+      );
+
+      // Apply status filter to team members
+      if (status === 'entered') {
+        teamMembers = teamMembers.filter(member => member.hasEntered);
+      } else if (status === 'not-entered') {
+        teamMembers = teamMembers.filter(member => !member.hasEntered);
+      }
+    }
+
+    const individualParticipants = users.map(user => ({
+      ...user,
+      participantType: 'individual'
+    }));
+
+    const allParticipants = [...individualParticipants, ...teamMembers];
+    const totalCount = allParticipants.length;
+
+    // Get event details
+    const event = await Event.findOne({ name: eventName }).lean();
+
+    const stats = {
+      totalParticipants: allParticipants.length,
+      enteredCount: allParticipants.filter(p => p.hasEntered).length,
+      notEnteredCount: allParticipants.filter(p => !p.hasEntered).length,
+      individualCount: individualParticipants.length,
+      teamMemberCount: teamMembers.length
+    };
+
+    res.json({
+      success: true,
+      eventName,
+      eventDetails: event,
+      participants: allParticipants,
+      stats,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalCount / parseInt(limit)),
+        totalCount,
+        limit: parseInt(limit)
+      },
+      filters: {
+        status,
+        includeTeamMembers
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching participants by event:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// ========================= USER MANAGEMENT ROUTES =========================
+
+// Get all users with advanced filtering and search
+router.get("/manage-users", verifyAdmin, async (req, res) => {
+  try {
+    const { 
+      search, 
+      eventFilter, 
+      statusFilter, 
+      userTypeFilter,
+      sortBy = 'createdAt', 
+      sortOrder = 'desc',
+      page = 1, 
+      limit = 50 
+    } = req.query;
+
+    // Build query filters
+    const filters = {};
+    
+    // Search functionality
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      filters.$or = [
+        { name: searchRegex },
+        { email: searchRegex },
+        { contactNo: searchRegex },
+        { universityName: searchRegex }
+      ];
+    }
+
+    // Event filter
+    if (eventFilter && eventFilter !== 'all') {
+      filters.events = { $in: [eventFilter] };
+    }
+
+    // Status filters
+    if (statusFilter === 'entered') {
+      filters.hasEntered = true;
+    } else if (statusFilter === 'not-entered') {
+      filters.hasEntered = false;
+    } else if (statusFilter === 'validated') {
+      filters.isvalidated = true;
+    } else if (statusFilter === 'not-validated') {
+      filters.isvalidated = false;
+    } else if (statusFilter === 'email-sent') {
+      filters.emailSent = true;
+    } else if (statusFilter === 'email-pending') {
+      filters.emailSent = { $ne: true };
+    }
+
+    // User type filter
+    if (userTypeFilter && userTypeFilter !== 'all') {
+      filters.userType = userTypeFilter;
+    }
+
+    // Pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    
+    // Sort options
+    const sortObject = {};
+    sortObject[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Execute query
+    const users = await User.find(filters, '-password')
+      .sort(sortObject)
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .lean();
+
+    const totalCount = await User.countDocuments(filters);
+
+    // Get additional info for each user
+    const usersWithDetails = await Promise.all(users.map(async (user) => {
+      // Get team information
+      const teamInfo = await TeamComposition.find({
+        $or: [
+          { teamLeader: user._id },
+          { 'teamMembers.userId': user._id }
+        ]
+      }).select('teamName eventName').lean();
+
+      // Get purchase information
+      const purchases = await Purchase.find({
+        $or: [
+          { userId: user._id },
+          { 'userDetails.email': user.email }
+        ]
+      }).select('orderId totalAmount paymentStatus purchaseDate').lean();
+
+      return {
+        ...user,
+        teamParticipations: teamInfo,
+        purchaseHistory: purchases,
+        totalAmountPaid: purchases
+          .filter(p => p.paymentStatus === 'completed')
+          .reduce((sum, p) => sum + (p.totalAmount || 0), 0)
+      };
+    }));
+
+    // Calculate statistics
+    const stats = {
+      totalUsers: totalCount,
+      validatedUsers: await User.countDocuments({ ...filters, isvalidated: true }),
+      enteredUsers: await User.countDocuments({ ...filters, hasEntered: true }),
+      emailSentUsers: await User.countDocuments({ ...filters, emailSent: true }),
+      activeUsers: await User.countDocuments({ ...filters, events: { $exists: true, $not: { $size: 0 } } })
+    };
+
+    res.json({
+      success: true,
+      users: usersWithDetails,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(totalCount / parseInt(limit)),
+        totalCount,
+        limit: parseInt(limit),
+        hasNext: (parseInt(page) * parseInt(limit)) < totalCount,
+        hasPrev: parseInt(page) > 1
+      },
+      stats,
+      filters: {
+        search: search || '',
+        eventFilter: eventFilter || 'all',
+        statusFilter: statusFilter || 'all',
+        userTypeFilter: userTypeFilter || 'all',
+        sortBy,
+        sortOrder
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching users for management:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Update user details
+router.put("/manage-users/:id", verifyAdmin, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const updates = req.body;
+
+    // Remove sensitive fields that shouldn't be updated through this route
+    delete updates.password;
+    delete updates._id;
+    delete updates.createdAt;
+    delete updates.qrCodeBase64;
+
+    // Hash password if it's being updated
+    if (updates.newPassword) {
+      const bcrypt = require('bcrypt');
+      updates.password = await bcrypt.hash(updates.newPassword, 12);
+      delete updates.newPassword;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { ...updates, updatedAt: new Date() },
+      { new: true, select: '-password' }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Log the update action
+    console.log(`User ${updatedUser.email} updated by admin:`, Object.keys(updates));
+
+    res.json({
+      success: true,
+      message: 'User updated successfully',
+      user: updatedUser
+    });
+
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
+// Delete user
+router.delete("/manage-users/:id", verifyAdmin, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { confirmDelete, reason } = req.body;
+
+    if (!confirmDelete) {
+      return res.status(400).json({
+        success: false,
+        message: 'Delete confirmation required'
+      });
+    }
+
+    // Find user first to get details for logging
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check if user is part of any teams
+    const teamInvolvements = await TeamComposition.find({
+      $or: [
+        { teamLeader: userId },
+        { 'teamMembers.userId': userId }
+      ]
+    });
+
+    if (teamInvolvements.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete user who is part of teams. Remove from teams first.',
+        teamInvolvements: teamInvolvements.map(team => ({
+          teamId: team._id,
+          teamName: team.teamName,
+          eventName: team.eventName,
+          role: team.teamLeader.toString() === userId ? 'Team Leader' : 'Team Member'
+        }))
+      });
+    }
+
+    // Check for completed purchases
+    const completedPurchases = await Purchase.find({
+      $or: [
+        { userId: userId },
+        { 'userDetails.email': user.email }
+      ],
+      paymentStatus: 'completed'
+    });
+
+    if (completedPurchases.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete user with completed purchases. This would affect financial records.',
+        completedPurchases: completedPurchases.length
+      });
+    }
+
+    // Delete the user
+    await User.findByIdAndDelete(userId);
+
+    // Log the deletion
+    console.log(`User deleted by admin:`, {
+      deletedUser: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        events: user.events
+      },
+      reason: reason || 'No reason provided',
+      deletedAt: new Date(),
+      deletedBy: req.user?.email || 'Admin'
+    });
+
+    res.json({
+      success: true,
+      message: 'User deleted successfully',
+      deletedUser: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 // ========================= ALL REGISTRATIONS ENDPOINT FOR ADMIN =========================
 
 // Get ALL registrations including individual users, team leaders, and team members (admin only)
@@ -2722,6 +3377,492 @@ router.get("/all-registrations", verifyAdmin, async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error fetching all registrations:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+// ========================= TEAM MANAGEMENT ROUTES =========================
+
+// Add new team
+router.post("/manage-teams/add-team", verifyAdmin, async (req, res) => {
+  try {
+    const {
+      teamName,
+      eventName,
+      teamLeaderEmail,
+      teamLeaderName,
+      teamLeaderContactNo,
+      teamLeaderUniversity,
+      teamMembers = [],
+      sendEmail = true
+    } = req.body;
+
+    // Validate required fields
+    if (!teamName || !eventName || !teamLeaderEmail || !teamLeaderName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Team name, event name, team leader email and name are required'
+      });
+    }
+
+    // Check if event exists
+    const event = await Event.findOne({ name: eventName });
+    if (!event) {
+      return res.status(400).json({
+        success: false,
+        message: 'Event not found'
+      });
+    }
+
+    // Create or find team leader user
+    let teamLeader = await User.findOne({ email: teamLeaderEmail });
+    
+    if (!teamLeader) {
+      // Create new team leader user
+      const bcrypt = require('bcrypt');
+      const shortid = require('shortid');
+      const { generateUserQRCode } = require('../utils/qrCodeService');
+      
+      const defaultPassword = 'Sabrang2025!'; // You might want to generate a random password
+      const hashedPassword = await bcrypt.hash(defaultPassword, 12);
+      
+      teamLeader = new User({
+        name: teamLeaderName,
+        email: teamLeaderEmail,
+        password: hashedPassword,
+        contactNo: teamLeaderContactNo || '',
+        universityName: teamLeaderUniversity || '',
+        events: [eventName],
+        userType: 'participant',
+        referalID: shortid.generate(),
+        isvalidated: true
+      });
+
+      // Generate QR code
+      try {
+        const qrCodeBase64 = await generateUserQRCode(teamLeader._id, {
+          name: teamLeader.name,
+          email: teamLeader.email
+        });
+        
+        teamLeader.qrCode = `${teamLeader._id}`;
+        teamLeader.qrPath = `${teamLeader._id}`;
+        teamLeader.qrCodeBase64 = qrCodeBase64;
+      } catch (qrError) {
+        console.error('QR code generation failed:', qrError);
+      }
+      
+      await teamLeader.save();
+    } else {
+      // Update existing user to include this event
+      if (!teamLeader.events.includes(eventName)) {
+        teamLeader.events.push(eventName);
+        await teamLeader.save();
+      }
+    }
+
+    // Create team members
+    const createdMembers = [];
+    for (const memberData of teamMembers) {
+      if (!memberData.email || !memberData.name) continue;
+      
+      let member = await User.findOne({ email: memberData.email });
+      
+      if (!member) {
+        const bcrypt = require('bcrypt');
+        const shortid = require('shortid');
+        const { generateUserQRCode } = require('../utils/qrCodeService');
+        
+        const defaultPassword = 'Sabrang2025!';
+        const hashedPassword = await bcrypt.hash(defaultPassword, 12);
+        
+        member = new User({
+          name: memberData.name,
+          email: memberData.email,
+          password: hashedPassword,
+          contactNo: memberData.contactNo || '',
+          universityName: memberData.universityName || '',
+          events: [eventName],
+          userType: 'participant',
+          referalID: shortid.generate(),
+          isvalidated: true
+        });
+
+        // Generate QR code
+        try {
+          const qrCodeBase64 = await generateUserQRCode(member._id, {
+            name: member.name,
+            email: member.email
+          });
+          
+          member.qrCode = `${member._id}`;
+          member.qrPath = `${member._id}`;
+          member.qrCodeBase64 = qrCodeBase64;
+        } catch (qrError) {
+          console.error('QR code generation failed:', qrError);
+        }
+        
+        await member.save();
+      } else {
+        // Update existing user to include this event
+        if (!member.events.includes(eventName)) {
+          member.events.push(eventName);
+          await member.save();
+        }
+      }
+      
+      createdMembers.push({
+        userId: member._id,
+        name: member.name,
+        email: member.email,
+        contactNo: member.contactNo,
+        role: memberData.role || 'member'
+      });
+    }
+
+    // Create team composition
+    const teamComposition = new TeamComposition({
+      teamId: shortid.generate(),
+      teamName,
+      eventName,
+      teamLeader: teamLeader._id,
+      teamMembers: createdMembers,
+      totalMembers: createdMembers.length + 1,
+      registrationComplete: true,
+      paymentStatus: 'completed', // Assuming admin-created teams are paid
+      createdAt: new Date()
+    });
+
+    await teamComposition.save();
+
+    // Send registration emails if requested
+    if (sendEmail) {
+      const { sendRegistrationEmail } = require('../utils/emailService');
+      
+      // Send email to team leader
+      if (teamLeader.qrCodeBase64) {
+        try {
+          await sendRegistrationEmail(teamLeader.email, {
+            name: teamLeader.name,
+            events: [eventName],
+            qrCodeBase64: teamLeader.qrCodeBase64
+          });
+          teamLeader.emailSent = true;
+          teamLeader.emailSentAt = new Date();
+          await teamLeader.save();
+        } catch (emailError) {
+          console.error('Failed to send email to team leader:', emailError);
+        }
+      }
+
+      // Send emails to team members
+      for (const memberData of createdMembers) {
+        const member = await User.findById(memberData.userId);
+        if (member && member.qrCodeBase64) {
+          try {
+            await sendRegistrationEmail(member.email, {
+              name: member.name,
+              events: [eventName],
+              qrCodeBase64: member.qrCodeBase64
+            });
+            member.emailSent = true;
+            member.emailSentAt = new Date();
+            await member.save();
+          } catch (emailError) {
+            console.error(`Failed to send email to team member ${member.email}:`, emailError);
+          }
+        }
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Team created successfully',
+      team: {
+        teamId: teamComposition.teamId,
+        teamName: teamComposition.teamName,
+        eventName: teamComposition.eventName,
+        teamLeader: {
+          id: teamLeader._id,
+          name: teamLeader.name,
+          email: teamLeader.email,
+          contactNo: teamLeader.contactNo
+        },
+        teamMembers: createdMembers,
+        totalMembers: teamComposition.totalMembers,
+        emailsSent: sendEmail
+      }
+    });
+
+  } catch (error) {
+    console.error('Error creating team:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+// Add individual user
+router.post("/manage-users/add-user", verifyAdmin, async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      contactNo,
+      gender,
+      age,
+      universityName,
+      address,
+      events = [],
+      userType = 'participant',
+      password,
+      sendEmail = true
+    } = req.body;
+
+    // Validate required fields
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name and email are required'
+      });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'User with this email already exists'
+      });
+    }
+
+    // Validate events exist
+    if (events.length > 0) {
+      const eventCount = await Event.countDocuments({ name: { $in: events } });
+      if (eventCount !== events.length) {
+        return res.status(400).json({
+          success: false,
+          message: 'One or more events not found'
+        });
+      }
+    }
+
+    // Create user
+    const bcrypt = require('bcrypt');
+    const shortid = require('shortid');
+    const { generateUserQRCode } = require('../utils/qrCodeService');
+    
+    const userPassword = password || 'Sabrang2025!'; // Default password if not provided
+    const hashedPassword = await bcrypt.hash(userPassword, 12);
+    
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      contactNo: contactNo || '',
+      gender: gender || '',
+      age: age || null,
+      universityName: universityName || '',
+      address: address || '',
+      events: events,
+      userType,
+      referalID: shortid.generate(),
+      isvalidated: true,
+      createdAt: new Date()
+    });
+
+    // Generate QR code
+    try {
+      const qrCodeBase64 = await generateUserQRCode(newUser._id, {
+        name: newUser.name,
+        email: newUser.email
+      });
+      
+      newUser.qrCode = `${newUser._id}`;
+      newUser.qrPath = `${newUser._id}`;
+      newUser.qrCodeBase64 = qrCodeBase64;
+    } catch (qrError) {
+      console.error('QR code generation failed:', qrError);
+    }
+    
+    await newUser.save();
+
+    // Send registration email if requested
+    if (sendEmail && newUser.qrCodeBase64) {
+      const { sendRegistrationEmail } = require('../utils/emailService');
+      
+      try {
+        await sendRegistrationEmail(newUser.email, {
+          name: newUser.name,
+          events: events,
+          qrCodeBase64: newUser.qrCodeBase64
+        });
+        newUser.emailSent = true;
+        newUser.emailSentAt = new Date();
+        await newUser.save();
+      } catch (emailError) {
+        console.error('Failed to send registration email:', emailError);
+      }
+    }
+
+    // Remove password from response
+    const responseUser = newUser.toObject();
+    delete responseUser.password;
+
+    res.status(201).json({
+      success: true,
+      message: 'User created successfully',
+      user: responseUser,
+      credentials: password ? null : {
+        defaultPassword: userPassword,
+        message: 'Please share these credentials with the user'
+      },
+      emailSent: sendEmail && newUser.emailSent
+    });
+
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+// Bulk add users from CSV data
+router.post("/manage-users/bulk-add", verifyAdmin, async (req, res) => {
+  try {
+    const { users, defaultPassword = 'Sabrang2025!', sendEmails = false } = req.body;
+
+    if (!users || !Array.isArray(users) || users.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Users array is required'
+      });
+    }
+
+    const results = {
+      total: users.length,
+      created: 0,
+      failed: 0,
+      skipped: 0,
+      details: []
+    };
+
+    const bcrypt = require('bcrypt');
+    const shortid = require('shortid');
+    const { generateUserQRCode } = require('../utils/qrCodeService');
+    const { sendRegistrationEmail } = require('../utils/emailService');
+
+    for (const userData of users) {
+      try {
+        if (!userData.name || !userData.email) {
+          results.failed++;
+          results.details.push({
+            email: userData.email || 'Unknown',
+            status: 'failed',
+            error: 'Name and email are required'
+          });
+          continue;
+        }
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: userData.email });
+        if (existingUser) {
+          results.skipped++;
+          results.details.push({
+            email: userData.email,
+            status: 'skipped',
+            reason: 'User already exists'
+          });
+          continue;
+        }
+
+        // Create user
+        const hashedPassword = await bcrypt.hash(defaultPassword, 12);
+        
+        const newUser = new User({
+          name: userData.name,
+          email: userData.email,
+          password: hashedPassword,
+          contactNo: userData.contactNo || '',
+          gender: userData.gender || '',
+          age: userData.age || null,
+          universityName: userData.universityName || '',
+          address: userData.address || '',
+          events: userData.events || [],
+          userType: userData.userType || 'participant',
+          referalID: shortid.generate(),
+          isvalidated: true,
+          createdAt: new Date()
+        });
+
+        // Generate QR code
+        try {
+          const qrCodeBase64 = await generateUserQRCode(newUser._id, {
+            name: newUser.name,
+            email: newUser.email
+          });
+          
+          newUser.qrCode = `${newUser._id}`;
+          newUser.qrPath = `${newUser._id}`;
+          newUser.qrCodeBase64 = qrCodeBase64;
+        } catch (qrError) {
+          console.error('QR code generation failed:', qrError);
+        }
+        
+        await newUser.save();
+
+        // Send registration email if requested
+        if (sendEmails && newUser.qrCodeBase64) {
+          try {
+            await sendRegistrationEmail(newUser.email, {
+              name: newUser.name,
+              events: userData.events || [],
+              qrCodeBase64: newUser.qrCodeBase64
+            });
+            newUser.emailSent = true;
+            newUser.emailSentAt = new Date();
+            await newUser.save();
+          } catch (emailError) {
+            console.error(`Failed to send email to ${newUser.email}:`, emailError);
+          }
+        }
+
+        results.created++;
+        results.details.push({
+          email: userData.email,
+          name: userData.name,
+          status: 'created',
+          emailSent: sendEmails && newUser.emailSent
+        });
+
+      } catch (userError) {
+        results.failed++;
+        results.details.push({
+          email: userData.email || 'Unknown',
+          status: 'failed',
+          error: userError.message
+        });
+        console.error(`Error creating user ${userData.email}:`, userError);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Bulk user creation completed. ${results.created} created, ${results.failed} failed, ${results.skipped} skipped.`,
+      results
+    });
+
+  } catch (error) {
+    console.error('Error in bulk user creation:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
