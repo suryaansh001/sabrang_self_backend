@@ -2843,6 +2843,128 @@ router.get("/coordinator/participants-by-event/:eventName", verifyAdmin, async (
   }
 });
 
+// Alias route for search-participants (for easier access)
+router.get("/search-participants", verifyAdmin, async (req, res) => {
+  try {
+    const { query, eventFilter, limit = 20, page = 1 } = req.query;
+
+    if (!query || query.trim().length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search query must be at least 2 characters long'
+      });
+    }
+
+    // Build search conditions
+    const searchConditions = {
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { email: { $regex: query, $options: 'i' } },
+        { phone: { $regex: query, $options: 'i' } }
+      ]
+    };
+
+    // Apply event filter if provided
+    let pipeline = [
+      { $match: searchConditions }
+    ];
+
+    if (eventFilter && eventFilter !== 'all') {
+      pipeline.push({
+        $lookup: {
+          from: 'teamcompositions',
+          let: { userId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$eventName', eventFilter] },
+                    {
+                      $or: [
+                        { $eq: ['$teamLeader', '$$userId'] },
+                        { $in: ['$$userId', '$teamMembers.userId'] }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'eventTeams'
+        }
+      });
+      pipeline.push({
+        $match: { 'eventTeams.0': { $exists: true } }
+      });
+    }
+
+    // Add pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: parseInt(limit) });
+
+    // Execute search
+    const participants = await User.aggregate(pipeline);
+
+    // Get total count for pagination
+    const totalPipeline = [
+      { $match: searchConditions }
+    ];
+    if (eventFilter && eventFilter !== 'all') {
+      totalPipeline.push({
+        $lookup: {
+          from: 'teamcompositions',
+          let: { userId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$eventName', eventFilter] },
+                    {
+                      $or: [
+                        { $eq: ['$teamLeader', '$$userId'] },
+                        { $in: ['$$userId', '$teamMembers.userId'] }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'eventTeams'
+        }
+      });
+      totalPipeline.push({
+        $match: { 'eventTeams.0': { $exists: true } }
+      });
+    }
+    totalPipeline.push({ $count: 'total' });
+
+    const totalResult = await User.aggregate(totalPipeline);
+    const total = totalResult.length > 0 ? totalResult[0].total : 0;
+
+    res.json({
+      success: true,
+      participants,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / parseInt(limit))
+      }
+    });
+
+  } catch (error) {
+    console.error('Error searching participants:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+});
+
 // ========================= USER MANAGEMENT ROUTES =========================
 
 // Get all users with advanced filtering and search
