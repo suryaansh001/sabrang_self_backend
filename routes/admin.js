@@ -2970,6 +2970,28 @@ router.get("/search-participants", async (req, res) => {
 // Get all users with advanced filtering and search
 router.get("/manage-users", async (req, res) => {
   try {
+    console.log('📥 GET /admin/manage-users - Query params:', req.query);
+    
+    // Simple test - just return a few users without complex filtering
+    const users = await User.find({}).limit(5).select('name email phone college createdAt').lean();
+    
+    console.log('✅ Found users:', users.length);
+    
+    return res.json({
+      success: true,
+      users: users,
+      totalUsers: users.length,
+      totalPages: 1,
+      currentPage: 1,
+      stats: {
+        totalUsers: users.length,
+        activeUsers: users.length,
+        inactiveUsers: 0,
+        adminUsers: 0
+      }
+    });
+
+    /* ORIGINAL COMPLEX LOGIC COMMENTED OUT FOR DEBUGGING
     const { 
       search, 
       eventFilter, 
@@ -3096,11 +3118,14 @@ router.get("/manage-users", async (req, res) => {
       }
     });
 
+    END OF COMMENTED COMPLEX LOGIC */
+
   } catch (error) {
     console.error('Error fetching users for management:', error);
     res.status(500).json({
       success: false,
-      message: 'Internal server error'
+      message: 'Internal server error',
+      error: error.message
     });
   }
 });
