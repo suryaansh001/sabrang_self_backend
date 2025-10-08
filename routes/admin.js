@@ -406,7 +406,7 @@ router.get("/users", verifyAdmin, async (req, res) => {
       .sort(sortObject)
       .skip(skip)
       .limit(parseInt(limit))
-      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .populate('teamRegistrations.teamCompositionId', 'teamName eventName')
       .lean();
 
     // Get total count for pagination
@@ -462,7 +462,7 @@ router.get("/users/by-event/:eventName", verifyAdmin, async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit))
-      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .populate('teamRegistrations.teamCompositionId', 'teamName eventName')
       .lean();
 
     let teamMembers = [];
@@ -1994,7 +1994,7 @@ router.get("/export/users", verifyAdmin, async (req, res) => {
 
     // Get users
     const users = await User.find(filters, '-password')
-      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .populate('teamRegistrations.teamCompositionId', 'teamName eventName')
       .sort({ createdAt: -1 })
       .lean();
 
@@ -2507,7 +2507,7 @@ router.get("/coordinator/search-participants", async (req, res) => {
 
     // Search in Users collection
     const users = await User.find(filters, '-password')
-      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .populate('teamRegistrations.teamCompositionId', 'teamName eventName')
       .sort({ name: 1 })
       .skip(skip)
       .limit(parseInt(limit))
@@ -2612,7 +2612,7 @@ router.get("/coordinator/participant/:id", verifyAdmin, async (req, res) => {
 
     // Find participant in Users collection
     const user = await User.findById(participantId, '-password')
-      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .populate('teamRegistrations.teamCompositionId', 'teamName eventName')
       .lean();
 
     if (!user) {
@@ -3054,7 +3054,7 @@ router.get("/manage-users", async (req, res) => {
       .sort(sortObject)
       .skip(skip)
       .limit(parseInt(limit))
-      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .populate('teamRegistrations.teamCompositionId', 'teamName eventName')
       .lean();
 
     const totalCount = await User.countDocuments(filters);
@@ -3199,7 +3199,7 @@ router.get("/manage-users/:id", async (req, res) => {
     const userId = req.params.id;
 
     const user = await User.findById(userId, '-password')
-      .populate('teamRegistrations.teamId', 'teamName eventName')
+      .populate('teamRegistrations.teamCompositionId', 'teamName eventName')
       .lean();
 
     if (!user) {
