@@ -201,7 +201,7 @@ const teamCompositionSchema = new mongoose.Schema({
   
   // Team metadata
   totalMembers: { type: Number, required: true },
-  maxTeamSize: { type: Number, default: 10 },
+  maxTeamSize: { type: Number, default: 25 }, // Updated to accommodate larger teams like Dance Battle (25 members)
   registrationComplete: { type: Boolean, default: true },
   
   // Entry tracking for entire team
