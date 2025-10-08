@@ -628,57 +628,7 @@ router.get("/team/:teamId", verifyAdmin, async (req, res) => {
   }
 });
 
-// Get all teams with their members (admin only)
-router.get("/teams", verifyAdmin, async (req, res) => {
-  try {
-    const teams = await TeamComposition.find({})
-      .populate('teamLeader', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events')
-      .populate('teamMembers.user', 'name email contactNo gender age universityName address profileImage qrPath hasEntered entryTime events');
-
-    const teamsWithMembers = teams.map((teamComposition) => {
-      return {
-        teamId: teamComposition.teamId,
-        mainPerson: {
-          id: teamComposition.teamLeader._id,
-          name: teamComposition.teamLeader.name,
-          email: teamComposition.teamLeader.email,
-          contactNo: teamComposition.teamLeader.contactNo,
-          gender: teamComposition.teamLeader.gender,
-          age: teamComposition.teamLeader.age,
-          universityName: teamComposition.teamLeader.universityName,
-          address: teamComposition.teamLeader.address,
-          profileImage: teamComposition.teamLeader.profileImage,
-          qrPath: teamComposition.teamLeader.qrPath,
-          hasEntered: teamComposition.teamLeader.hasEntered,
-          entryTime: teamComposition.teamLeader.entryTime,
-          events: teamComposition.teamLeader.events
-        },
-        teamMembers: teamComposition.teamMembers.map(member => ({
-          id: member.user._id,
-          name: member.user.name,
-          email: member.user.email,
-          contactNo: member.user.contactNo,
-          gender: member.user.gender,
-          age: member.user.age,
-          universityName: member.user.universityName,
-          address: member.user.address,
-          profileImage: member.user.profileImage,
-          qrPath: member.user.qrPath,
-          hasEntered: member.user.hasEntered,
-          entryTime: member.user.entryTime,
-          events: member.user.events
-        })),
-        teamSize: teamComposition.teamMembers.length + 1
-      };
-    });
-
-    res.json(teamsWithMembers);
-
-  } catch (error) {
-    console.error('Error fetching teams:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+// Old teams route removed - using the new one at the end of the file
 
 // ========================= CHECKOUT OFFER ROUTES =========================
 
@@ -1268,8 +1218,8 @@ router.get("/team-members-email-status", verifyAdmin, async (req, res) => {
   try {
     // Get all team compositions with member details
     const teamCompositions = await TeamComposition.find({})
-      .populate('teamLeader', 'name email')
-      .populate('teamMembers.user', 'name email contactNo universityName events hasEntered entryTime isvalidated qrPath createdAt emailSent emailSentAt emailSentBy')
+      .populate('teamLeader.userId', 'name email')
+      .populate('teamMembers.userId', 'name email contactNo universityName events hasEntered entryTime isvalidated qrPath createdAt emailSent emailSentAt emailSentBy')
       .sort({ createdAt: -1 });
 
     // Flatten team members for email status view
@@ -1277,22 +1227,22 @@ router.get("/team-members-email-status", verifyAdmin, async (req, res) => {
     for (const composition of teamCompositions) {
       composition.teamMembers.forEach(member => {
         allTeamMembers.push({
-          _id: member.user._id,
-          name: member.user.name,
-          email: member.user.email,
-          contactNo: member.user.contactNo,
-          universityName: member.user.universityName,
-          events: member.user.events,
+          _id: member.userId._id,
+          name: member.userId.name,
+          email: member.userId.email,
+          contactNo: member.userId.contactNo,
+          universityName: member.userId.universityName,
+          events: member.userId.events,
           teamId: composition.teamId,
-          teamLeaderName: composition.teamLeader.name,
-          emailSent: member.user.emailSent || false,
-          emailSentAt: member.user.emailSentAt,
-          emailSentBy: member.user.emailSentBy,
-          hasEntered: member.user.hasEntered,
-          entryTime: member.user.entryTime,
-          isvalidated: member.user.isvalidated,
-          qrPath: member.user.qrPath,
-          createdAt: member.user.createdAt || new Date()
+          teamLeaderName: composition.teamLeader.userId.name,
+          emailSent: member.userId.emailSent || false,
+          emailSentAt: member.userId.emailSentAt,
+          emailSentBy: member.userId.emailSentBy,
+          hasEntered: member.userId.hasEntered,
+          entryTime: member.userId.entryTime,
+          isvalidated: member.userId.isvalidated,
+          qrPath: member.userId.qrPath,
+          createdAt: member.userId.createdAt || new Date()
         });
       });
     }
@@ -1458,13 +1408,13 @@ router.post("/send-bulk-emails", verifyAdmin, async (req, res) => {
     if (targetType === 'team-members' || targetType === 'both') {
       // Get all team members from team compositions who haven't received emails
       const teamCompositions = await TeamComposition.find({})
-        .populate('teamMembers.user', 'name email events qrPath emailSent');
+        .populate('teamMembers.userId', 'name email events qrPath emailSent');
       
       const teamMembersToEmail = [];
       for (const composition of teamCompositions) {
         for (const member of composition.teamMembers) {
-          if (!member.user.emailSent) {
-            teamMembersToEmail.push(member.user);
+          if (!member.userId.emailSent) {
+            teamMembersToEmail.push(member.userId);
           }
         }
       }
@@ -2972,26 +2922,6 @@ router.get("/manage-users", async (req, res) => {
   try {
     console.log('📥 GET /admin/manage-users - Query params:', req.query);
     
-    // Simple test - just return a few users without complex filtering
-    const users = await User.find({}).limit(5).select('name email phone college createdAt').lean();
-    
-    console.log('✅ Found users:', users.length);
-    
-    return res.json({
-      success: true,
-      users: users,
-      totalUsers: users.length,
-      totalPages: 1,
-      currentPage: 1,
-      stats: {
-        totalUsers: users.length,
-        activeUsers: users.length,
-        inactiveUsers: 0,
-        adminUsers: 0
-      }
-    });
-
-    /* ORIGINAL COMPLEX LOGIC COMMENTED OUT FOR DEBUGGING
     const { 
       search, 
       eventFilter, 
@@ -3000,7 +2930,9 @@ router.get("/manage-users", async (req, res) => {
       sortBy = 'createdAt', 
       sortOrder = 'desc',
       page = 1, 
-      limit = 50 
+      limit = 20,
+      format,
+      export: isExport
     } = req.query;
 
     // Build query filters
@@ -3042,7 +2974,96 @@ router.get("/manage-users", async (req, res) => {
       filters.userType = userTypeFilter;
     }
 
-    // Pagination
+    // Handle Excel export (CSV format that opens well in Excel)
+    if (format === 'excel' && isExport === 'true') {
+      console.log('📊 Exporting users to CSV (Excel-compatible) with filters:', filters);
+      
+      // Get all matching users for export (no pagination)
+      const sortObject = {};
+      sortObject[sortBy] = sortOrder === 'desc' ? -1 : 1;
+      
+      const users = await User.find(filters, '-password')
+        .sort(sortObject)
+        .lean();
+
+      // Get additional info for each user
+      const usersWithDetails = await Promise.all(users.map(async (user) => {
+        // Get team information
+        const teamInfo = await TeamComposition.find({
+          $or: [
+            { teamLeader: user._id },
+            { 'teamMembers.userId': user._id }
+          ]
+        }).select('teamName eventName').lean();
+
+        // Get purchase information
+        const purchases = await Purchase.find({
+          $or: [
+            { userId: user._id },
+            { 'userDetails.email': user.email }
+          ]
+        }).select('orderId totalAmount paymentStatus purchaseDate').lean();
+
+        return {
+          ...user,
+          teamParticipations: teamInfo || [],
+          purchaseHistory: purchases || [],
+          totalAmountPaid: purchases
+            .filter(p => p.paymentStatus === 'completed')
+            .reduce((sum, p) => sum + (p.totalAmount || 0), 0)
+        };
+      }));
+
+      // Create CSV content
+      const csvHeaders = [
+        'Name', 'Email', 'Contact', 'Gender', 'Age', 'University', 'Address', 
+        'User Type', 'Events', 'Validated', 'Entered', 'Email Sent', 
+        'Total Paid', 'Created At', 'Teams'
+      ];
+
+      // Helper function to escape CSV values
+      const escapeCsvValue = (value) => {
+        if (value === null || value === undefined) return '';
+        const str = String(value);
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
+
+      // Build CSV content
+      let csvContent = csvHeaders.join(',') + '\n';
+      
+      usersWithDetails.forEach(user => {
+        const row = [
+          escapeCsvValue(user.name || ''),
+          escapeCsvValue(user.email || ''),
+          escapeCsvValue(user.contactNo || user.phone || ''),
+          escapeCsvValue(user.gender || ''),
+          escapeCsvValue(user.age || ''),
+          escapeCsvValue(user.universityName || user.college || ''),
+          escapeCsvValue(user.address || ''),
+          escapeCsvValue(user.userType || 'participant'),
+          escapeCsvValue((user.events || []).join('; ')),
+          escapeCsvValue(user.isvalidated ? 'Yes' : 'No'),
+          escapeCsvValue(user.hasEntered ? 'Yes' : 'No'),
+          escapeCsvValue(user.emailSent ? 'Yes' : 'No'),
+          escapeCsvValue(user.totalAmountPaid || 0),
+          escapeCsvValue(user.createdAt ? new Date(user.createdAt).toLocaleString() : ''),
+          escapeCsvValue((user.teamParticipations || []).map(t => `${t.teamName} (${t.eventName})`).join('; '))
+        ];
+        csvContent += row.join(',') + '\n';
+      });
+
+      // Set response headers for CSV download (will open in Excel)
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', 'attachment; filename="users_export.csv"');
+      
+      console.log(`✅ CSV export completed: ${usersWithDetails.length} users`);
+      return res.send('\ufeff' + csvContent); // BOM for proper Excel UTF-8 handling
+    }
+
+    // Regular pagination for normal requests
     const skip = (parseInt(page) - 1) * parseInt(limit);
     
     // Sort options
@@ -3054,20 +3075,29 @@ router.get("/manage-users", async (req, res) => {
       .sort(sortObject)
       .skip(skip)
       .limit(parseInt(limit))
-      .populate('teamRegistrations.teamCompositionId', 'teamName eventName')
       .lean();
 
     const totalCount = await User.countDocuments(filters);
 
     // Get additional info for each user
     const usersWithDetails = await Promise.all(users.map(async (user) => {
-      // Get team information
+      // Get team information - find teams where user is leader or member
       const teamInfo = await TeamComposition.find({
         $or: [
-          { teamLeader: user._id },
+          { 'teamLeader.userId': user._id },
           { 'teamMembers.userId': user._id }
         ]
-      }).select('teamName eventName').lean();
+      }).select('teamName eventName teamLeader teamMembers registrationComplete totalMembers').lean();
+
+      // Transform team info to match frontend expectations
+      const teamParticipations = teamInfo.map(team => ({
+        teamId: team._id,
+        teamName: team.teamName,
+        eventName: team.eventName,
+        isLeader: team.teamLeader && team.teamLeader.userId && team.teamLeader.userId.toString() === user._id.toString(),
+        registrationComplete: team.registrationComplete || false,
+        totalMembers: team.totalMembers || 0
+      }));
 
       // Get purchase information
       const purchases = await Purchase.find({
@@ -3079,8 +3109,8 @@ router.get("/manage-users", async (req, res) => {
 
       return {
         ...user,
-        teamParticipations: teamInfo,
-        purchaseHistory: purchases,
+        teamParticipations: teamParticipations || [],
+        purchaseHistory: purchases || [],
         totalAmountPaid: purchases
           .filter(p => p.paymentStatus === 'completed')
           .reduce((sum, p) => sum + (p.totalAmount || 0), 0)
@@ -3089,12 +3119,14 @@ router.get("/manage-users", async (req, res) => {
 
     // Calculate statistics
     const stats = {
-      totalUsers: totalCount,
+      totalUsers: await User.countDocuments({}), // Total users in system (not filtered)
       validatedUsers: await User.countDocuments({ ...filters, isvalidated: true }),
       enteredUsers: await User.countDocuments({ ...filters, hasEntered: true }),
       emailSentUsers: await User.countDocuments({ ...filters, emailSent: true }),
       activeUsers: await User.countDocuments({ ...filters, events: { $exists: true, $not: { $size: 0 } } })
     };
+
+    console.log('✅ Found users:', usersWithDetails.length);
 
     res.json({
       success: true,
@@ -3117,8 +3149,6 @@ router.get("/manage-users", async (req, res) => {
         sortOrder
       }
     });
-
-    END OF COMMENTED COMPLEX LOGIC */
 
   } catch (error) {
     console.error('Error fetching users for management:', error);
@@ -4333,7 +4363,90 @@ router.post("/manage-users/bulk-add", verifyAdmin, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in bulk user creation:', error);
+    console.error('Error in manage-users route:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+});
+
+// Get all teams with member details
+router.get("/teams", async (req, res) => {
+  try {
+    console.log('📥 GET /admin/teams - Query params:', req.query);
+    
+    const { 
+      search, 
+      eventFilter,
+      sortBy = 'createdAt', 
+      sortOrder = 'desc',
+      limit = 100 
+    } = req.query;
+
+    // Build query filters for teams
+    const filters = {};
+    
+    // Event filter
+    if (eventFilter && eventFilter !== 'all') {
+      filters.eventName = eventFilter;
+    }
+    
+    // Search functionality (team name or leader name)
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      filters.$or = [
+        { teamName: searchRegex },
+        { 'teamLeader.name': searchRegex }
+      ];
+    }
+
+    // Sort options
+    const sortObject = {};
+    sortObject[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Get teams (without populate to avoid schema issues)
+    const teams = await TeamComposition.find(filters)
+      .sort(sortObject)
+      .limit(parseInt(limit))
+      .lean();
+
+    // Transform teams data for frontend
+    const teamsWithDetails = teams.map(team => ({
+      _id: team._id,
+      teamName: team.teamName,
+      eventName: team.eventName,
+      leader: team.teamLeader ? {
+        _id: team.teamLeader.userId,
+        name: team.teamLeader.name,
+        email: team.teamLeader.email,
+        hasEntered: team.teamLeader.hasEntered || false
+      } : null,
+      members: (team.teamMembers || [])
+        .filter(member => member && member.userId) // Filter out empty slots
+        .map(member => ({
+          _id: member.userId,
+          name: member.name,
+          email: member.email,
+          hasEntered: member.hasEntered || false
+        })),
+      totalMembers: team.totalMembers || 0,
+      registrationComplete: team.registrationComplete || false,
+      paymentStatus: team.paymentStatus || 'pending',
+      createdAt: team.createdAt
+    }));
+
+    console.log(`✅ Found teams: ${teamsWithDetails.length}`);
+
+    res.json({
+      success: true,
+      teams: teamsWithDetails,
+      totalCount: teamsWithDetails.length
+    });
+
+  } catch (error) {
+    console.error('Error in teams route:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
