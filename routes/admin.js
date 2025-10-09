@@ -222,16 +222,7 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
       isTeamMember: isTeamMember
     });
 
-    // Check if user has already entered
-    if (user.hasEntered) {
-      console.log(`🚫 Entry denied - ${user.name} has already entered at ${user.entryTime}`);
-      return res.json({
-        success: false,
-        message: 'Access denied - User has already entered',
-        playBuzzer: true,
-        entryTime: user.entryTime
-      });
-    }
+    // Note: All validation checks removed - allowing entry regardless of previous status or validation
 
     // Update user entry status
     const entryTime = new Date();
@@ -4434,6 +4425,7 @@ router.get("/teams", async (req, res) => {
       totalMembers: team.totalMembers || 0,
       registrationComplete: team.registrationComplete || false,
       paymentStatus: team.paymentStatus || 'pending',
+      purchaseId: team.purchaseId,
       createdAt: team.createdAt
     }));
 
