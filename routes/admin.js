@@ -136,44 +136,80 @@ router.get("/verify/:id", verifyAdmin, async (req, res) => {
 
     const data = {
       success: true,
-      // Basic user information
+      // PROMINENT DISPLAY INFORMATION (First things shown)
+      displayInfo: {
+        name: person.name,
+        email: person.email,
+        contactNo: person.contactNo || "",
+        universityName: person.universityName || "",
+        events: person.events || [],
+        eventsCount: (person.events || []).length
+      },
+      // ENTRY STATUS (Critical for scanning)
+      entryStatus: {
+        hasEntered: person.hasEntered,
+        entryTime: person.entryTime,
+        isvalidated: person.isvalidated,
+        allowEntry: !person.hasEntered && person.isvalidated,
+        entryPermission: {
+          allowed: !person.hasEntered && person.isvalidated,
+          reason: person.hasEntered ? "Already entered" : 
+                  !person.isvalidated ? "Not validated" : "Entry allowed"
+        }
+      },
+      // BASIC USER INFORMATION
+      userInfo: {
+        _id: person._id,
+        name: person.name,
+        email: person.email,
+        contactNo: person.contactNo || "",
+        gender: person.gender || "",
+        age: person.age || null,
+        universityName: person.universityName || "",
+        address: person.address || "",
+        profileImage: person.profileImage || "",
+        userType: person.userType || "participant",
+        finalPrice: person.finalPrice || 0,
+        createdAt: person.createdAt,
+        updatedAt: person.updatedAt
+      },
+      // QR CODE INFORMATION
+      qrInfo: {
+        qrPath: person.qrPath || "",
+        qrCodeBase64: person.qrCodeBase64 ? "Available" : "Not Available"
+      },
+      // EVENT INFORMATION
+      eventInfo: {
+        events: person.events || [],
+        eventsCount: (person.events || []).length,
+        eventsDisplay: (person.events || []).join(", ") || "No events registered"
+      },
+      // TEAM INFORMATION
+      teamInfo: {
+        teamData: teamData,
+        isInTeam: teamData.teams.length > 0,
+        totalTeams: teamData.teams.length,
+        teamSummary: teamData.teams.length > 0 ? 
+          teamData.teams.map(team => `${team.teamName} (${team.eventName}) - ${team.role}`).join("; ") :
+          "Not in any team"
+      },
+      // REGISTRATION & PAYMENT INFORMATION
+      registrationInfo: {
+        registrationDetails: registrationDetails,
+        paymentHistory: paymentHistory,
+        registrationSummary: `${registrationDetails.totalRegistrations} registration(s) - Status: ${registrationDetails.status}`
+      },
+      // LEGACY FIELDS (for backward compatibility)
       _id: person._id,
       name: person.name,
       email: person.email,
       contactNo: person.contactNo || "",
-      gender: person.gender || "",
-      age: person.age || null,
-      universityName: person.universityName || "",
-      address: person.address || "",
-      profileImage: person.profileImage || "",
-      userType: person.userType || "participant",
-      // QR code information
-      qrPath: person.qrPath || "",
-      qrCodeBase64: person.qrCodeBase64 ? "Available" : "Not Available",
-      isvalidated: person.isvalidated,
       hasEntered: person.hasEntered,
       entryTime: person.entryTime,
+      isvalidated: person.isvalidated,
       allowEntry: !person.hasEntered && person.isvalidated,
-      // Event information
       events: person.events || [],
-      eventsCount: (person.events || []).length,
-      // Team information
-      teamData: teamData,
-      isInTeam: teamData.teams.length > 0,
-      totalTeams: teamData.teams.length,
-      // Registration information
-      registrationDetails: registrationDetails,
-      paymentHistory: paymentHistory,
-      // Additional information
-      createdAt: person.createdAt,
-      updatedAt: person.updatedAt,
-      finalPrice: person.finalPrice || 0,
-      // Entry permission details
-      entryPermission: {
-        allowed: !person.hasEntered && person.isvalidated,
-        reason: person.hasEntered ? "Already entered" : 
-                !person.isvalidated ? "Not validated" : "Entry allowed"
-      }
+      eventsCount: (person.events || []).length
     };
 
     res.json(data); 
@@ -421,10 +457,49 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
       message: 'Entry allowed successfully',
       playBuzzer: false,
       action: 'allow_entry',
+      // PROMINENT DISPLAY INFORMATION
+      displayInfo: {
+        name: user.name,
+        email: user.email,
+        contactNo: user.contactNo || "",
+        universityName: user.universityName || "",
+        events: user.events || [],
+        eventsDisplay: (user.events || []).join(", ") || "No events",
+        entryStatus: `✅ Entry Granted at ${entryTime.toLocaleString()}`,
+        approvedBy: adminName
+      },
       // Entry details
+      entryDetails: {
+        entryTime: entryTime,
+        approvedBy: adminName,
+        entryTimestamp: entryTime.toISOString()
+      },
+      // User information
+      userInfo: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        contactNo: user.contactNo || "",
+        universityName: user.universityName || "",
+        events: user.events,
+        userType: user.userType
+      },
+      // Team information
+      teamInfo: {
+        teamData: teamData,
+        teamSummary: teamData.teams.length > 0 ? 
+          teamData.teams.map(team => `${team.teamName} (${team.eventName}) - ${team.role}`).join("; ") :
+          "Not in any team"
+      },
+      // Statistics
+      stats: {
+        totalEvents: user.events.length,
+        totalTeams: teamData.teams.length,
+        entryTimestamp: entryTime.toISOString()
+      },
+      // Legacy fields (for backward compatibility)
       entryTime: entryTime,
       approvedBy: adminName,
-      // User information
       user: {
         _id: user._id,
         name: user.name,
@@ -432,14 +507,7 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
         events: user.events,
         userType: user.userType
       },
-      // Team information
-      teamData: teamData,
-      // Statistics
-      stats: {
-        totalEvents: user.events.length,
-        totalTeams: teamData.teams.length,
-        entryTimestamp: entryTime.toISOString()
-      }
+      teamData: teamData
     };
 
     res.json(response);
@@ -634,10 +702,19 @@ router.post("/bulk-verify", verifyAdmin, async (req, res) => {
           success: true,
           status: user.hasEntered ? 'already_entered' : 
                   eligibility.allowed ? 'eligible' : 'not_eligible',
+          // Prominent display information
+          displayName: user.name,
+          displayEmail: user.email,
+          displayStatus: user.hasEntered ? `Already Entered at ${user.entryTime}` : 
+                        eligibility.allowed ? 'Ready for Entry' : eligibility.message,
+          displayEvents: (user.events || []).join(", ") || "No events",
+          // Detailed user information
           user: {
             _id: user._id,
             name: user.name,
             email: user.email,
+            contactNo: user.contactNo || "",
+            universityName: user.universityName || "",
             events: user.events,
             hasEntered: user.hasEntered,
             entryTime: user.entryTime,
