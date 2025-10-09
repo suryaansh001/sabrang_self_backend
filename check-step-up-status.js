@@ -8,7 +8,7 @@ const { User, TeamComposition } = require('./models/models');
 async function checkStepUpStatus() {
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/sabrang');
+    await mongoose.connect(process.env.mongodb || 'mongodb://localhost:27017/sabrang');
     console.log('✅ Connected to MongoDB');
     
     // Check total team compositions

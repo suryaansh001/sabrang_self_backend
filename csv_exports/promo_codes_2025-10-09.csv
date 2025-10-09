@@ -1,0 +1,15 @@
+# PromoCode Schema Export
+# Exported on: 2025-10-09T13:38:06.271Z
+# Total records: 9
+# Fields: 19
+
+"__v","_id","allowedEmailDomains","applicableEvents","applicableOffers","code","createdAt","createdBy","description","discountType","discountValue","isActive","maxDiscountAmount","minOrderAmount","usageLimit","usedBy","usedCount","validFrom","validUntil"
+0,"68e404111a89b5e36b4bed1c","[]","[]","[]","SPECIALOFFER","2025-10-06T18:01:53.829Z","68d61f8dfacb0b2c35ce5f47","","percentage",25,true,"",101,1,"[]",0,"2025-10-06T18:01:53.829Z","2025-10-13T00:00:00.000Z"
+0,"68e67158f59a631cd8e6d9ab","[]","[]","[]","SMEK","2025-10-08T14:12:40.003Z","68d61f8dfacb0b2c35ce5f47","","percentage",50,true,101,101,1,"[]",0,"2025-10-08T14:12:40.002Z","2025-10-09T00:00:00.000Z"
+0,"68e67884f59a631cd8e6da05","[]","[]","[]","VISITOR","2025-10-08T14:43:16.497Z","68d61f8dfacb0b2c35ce5f47","","fixed",68,true,"",0,1,"[]",0,"2025-10-08T14:43:16.497Z","2025-10-12T00:00:00.000Z"
+0,"68e67b1bf59a631cd8e6da74","[]","[]","[]","BDSM","2025-10-08T14:54:19.926Z","68d61f8dfacb0b2c35ce5f47","","fixed",1498,true,"",0,1,"[]",0,"2025-10-08T14:54:19.926Z","2025-10-12T00:00:00.000Z"
+0,"68e68bd88412721e24e4ff6b","[]","[]","[]","LESBO","2025-10-08T16:05:44.760Z","68d61f8dfacb0b2c35ce5f47","","fixed",2498,true,"",0,1,"[]",0,"2025-10-08T16:05:44.760Z","2025-10-12T00:00:00.000Z"
+0,"68e692c78412721e24e50d07","[]","[]","[]","DFG","2025-10-08T16:35:19.741Z","68d61f8dfacb0b2c35ce5f47","","fixed",749,true,"",0,1,"[]",0,"2025-10-08T16:35:19.741Z","2025-10-09T00:00:00.000Z"
+0,"68e6cff2c51438c537ef7f79","[]","[]","[]","FORSMWITHLOVE","2025-10-08T20:56:18.297Z","68d61f8dfacb0b2c35ce5f47","","percentage",50,true,"",0,1,"[]",0,"2025-10-08T20:56:18.297Z","2025-10-08T00:00:00.000Z"
+0,"68e77672c51438c537efc394","[]","[]","[]","SAVE75","2025-10-09T08:46:42.578Z","68d61f8dfacb0b2c35ce5f47","","percentage",75,true,"",100,1,"[]",0,"2025-10-09T08:46:42.578Z","2025-10-12T00:00:00.000Z"
+0,"68e788a9c51438c537efcb25","[]","[]","[]","EXCLUSIVE","2025-10-09T10:04:25.439Z","68d61f8dfacb0b2c35ce5f47","","percentage",50,true,"",0,1,"[]",0,"2025-10-09T10:04:25.439Z","2025-10-08T00:00:00.000Z"

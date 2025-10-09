@@ -1,0 +1,134 @@
+{
+  "timestamp": "2025-10-09T05:51:56.668Z",
+  "summary": {
+    "totalTeams": 1,
+    "eventVariants": 1,
+    "individualUsers": 3,
+    "issuesFound": 0
+  },
+  "eventVariants": [
+    "BAND JAM"
+  ],
+  "teamStats": {
+    "BAND JAM": {
+      "count": 1,
+      "teams": [
+        {
+          "teamLeader": {
+            "userId": "68e224a5e6eb1663067bd178",
+            "name": "Saarang Agarwal",
+            "email": "saarang.23fe10cse00093@muj.manipal.edu",
+            "hasEntered": false
+          },
+          "teamEntryStatus": {
+            "totalEntered": 0,
+            "pendingEntry": 0,
+            "allEntered": false
+          },
+          "_id": "68e6afbcc91c5f5a4ace5f4e",
+          "eventName": "BAND JAM",
+          "teamName": "200ft.",
+          "teamMembers": [
+            {
+              "userId": "68e224a4e6eb1663067bd177",
+              "name": "Rohitansh Srivastava",
+              "email": "rohitansh.23fe10cii00083@muj.manipal.edu",
+              "hasEntered": false,
+              "role": "member",
+              "_id": "68e6afbcc91c5f5a4ace5f4f"
+            },
+            {
+              "userId": "68e224a6e6eb1663067bd179",
+              "name": "Ayush Shashi",
+              "email": "ayush.229309230@muj.manipal.edu",
+              "hasEntered": false,
+              "role": "member",
+              "_id": "68e6afbcc91c5f5a4ace5f50"
+            },
+            {
+              "userId": "68e224a6e6eb1663067bd17a",
+              "name": "Aryaveer Ralhan",
+              "email": "aryaveer6805@gmail.com",
+              "hasEntered": false,
+              "role": "member",
+              "_id": "68e6afbcc91c5f5a4ace5f51"
+            },
+            {
+              "userId": "68e224a7e6eb1663067bd17b",
+              "name": "Vedant Patil",
+              "email": "vedantmusic485@gmail.com",
+              "hasEntered": false,
+              "role": "member",
+              "_id": "68e6afbcc91c5f5a4ace5f52"
+            },
+            {
+              "userId": "68e224a8e6eb1663067bd17c",
+              "name": "Aditya Ranjan",
+              "email": "adityaranjanmuj@gmail.com",
+              "hasEntered": false,
+              "role": "member",
+              "_id": "68e6afbcc91c5f5a4ace5f53"
+            },
+            {
+              "userId": "68e224a9e6eb1663067bd17d",
+              "name": "Suryansh Panda",
+              "email": "suryanshpanda2005@gmail.com",
+              "hasEntered": false,
+              "role": "member",
+              "_id": "68e6afbcc91c5f5a4ace5f54"
+            }
+          ],
+          "totalMembers": 7,
+          "maxTeamSize": 10,
+          "registrationComplete": true,
+          "paymentStatus": "pending",
+          "createdAt": "2025-10-08T18:38:52.762Z",
+          "updatedAt": "2025-10-08T18:38:52.762Z",
+          "__v": 0
+        }
+      ]
+    }
+  },
+  "issues": [],
+  "teams": [
+    {
+      "id": "68e6afbcc91c5f5a4ace5f4e",
+      "name": "200ft.",
+      "eventName": "BAND JAM",
+      "leaderName": "Saarang Agarwal",
+      "leaderEmail": "saarang.23fe10cse00093@muj.manipal.edu",
+      "membersCount": 6,
+      "createdAt": "2025-10-08T18:38:52.762Z",
+      "hasEntered": false
+    }
+  ],
+  "individualUsers": [
+    {
+      "id": "68e6ca61c51438c537ef644e",
+      "name": "Allah",
+      "email": "devamg759@gmail.com",
+      "events": [
+        "BANDJAM"
+      ],
+      "hasEntered": false
+    },
+    {
+      "id": "68e6ca62c51438c537ef6455",
+      "name": "Yash ki muthi",
+      "email": "yashmish10930@gmail.com",
+      "events": [
+        "BANDJAM"
+      ],
+      "hasEntered": false
+    },
+    {
+      "id": "68e6ca62c51438c537ef645a",
+      "name": "Dalit",
+      "email": "yashhh10930@gmail.com",
+      "events": [
+        "BANDJAM"
+      ],
+      "hasEntered": false
+    }
+  ]
+}

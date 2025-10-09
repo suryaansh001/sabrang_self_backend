@@ -1,0 +1,16 @@
+CSV Export Summary Report
+==========================
+Export Date: 2025-10-09T13:38:06.716Z
+Export Directory: ./csv_exports
+
+Files Generated:
+----------------
+✅ User: csv_exports/users_2025-10-09.csv
+✅ Event: csv_exports/events_2025-10-09.csv
+✅ TeamComposition: csv_exports/team_compositions_2025-10-09.csv
+✅ CheckoutOffer: csv_exports/checkout_offers_2025-10-09.csv
+✅ PromoCode: csv_exports/promo_codes_2025-10-09.csv
+✅ Purchase: csv_exports/purchases_2025-10-09.csv
+
+Total Files: 6/6
+Export completed at: 2025-10-09T13:38:06.716Z

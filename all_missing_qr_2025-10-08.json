@@ -1,0 +1,797 @@
+[
+  {
+    "id": "68e68d3a8412721e24e4ffbe",
+    "name": "Harshit Dubey",
+    "email": "harshitdubey7042@gmail.com",
+    "phone": "8306630421",
+    "university": "JECRC University ",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 21:41:38 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e679a5f59a631cd8e6da35",
+    "name": "Chaitanya Sharma",
+    "email": "sharmachaitanya980@gmail.com",
+    "phone": "9119219535",
+    "university": "Jecrc University ",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 20:18:05 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e66686f59a631cd8e6d6a5",
+    "name": "Lakshay pateriya ",
+    "email": "lakshaypateriya76@gmail.com",
+    "phone": "Not provided",
+    "university": "Not provided",
+    "events": [],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 18:56:30 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e66138f59a631cd8e6d645",
+    "name": "Astha Barnwal ",
+    "email": "asthabarnwal@jklu.edu.in",
+    "phone": "7987019118",
+    "university": "JK Lakshmipat University ",
+    "events": [],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 18:33:52 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e660f4f59a631cd8e6d637",
+    "name": "Jheel jain",
+    "email": "jainjheel1406@gmail.com",
+    "phone": "9929001325",
+    "university": "JK LAKSHMIPAT UNIVERSITY ",
+    "events": [],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 18:32:44 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e65f04f59a631cd8e6d5e4",
+    "name": "Mayank Shankar Pathak",
+    "email": "pathakmayank522@gmail.com",
+    "phone": "9131171030",
+    "university": "JK lakshmipat University",
+    "events": [],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 18:24:28 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e65da3f59a631cd8e6d55b",
+    "name": "Pratigya ",
+    "email": "pratigyabomb@jklu.edu.in",
+    "phone": "6264667506",
+    "university": "Jk Lakshmipat ",
+    "events": [],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 18:18:35 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e65d58f59a631cd8e6d54b",
+    "name": "Chahak Agarwal ",
+    "email": "chahakagarwal@jklu.edu.in",
+    "phone": "6350673074",
+    "university": "JK laxmipath university ",
+    "events": [
+      "FOCUS"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 18:17:20 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e65304f59a631cd8e6d484",
+    "name": "Bhawesh Chandnani ",
+    "email": "bhaweshchandnani958@gmail.com",
+    "phone": "7877775484",
+    "university": "Jk Lakshmipat University ",
+    "events": [
+      "COURTROOM"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 17:33:16 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e62c333c3c531073bca4e0",
+    "name": "Vikaschoudhary",
+    "email": "vikaschoudhary@jklu.edu.in",
+    "phone": "6376189881",
+    "university": "Jklu",
+    "events": [
+      "BIDDING BEFORE WICKET"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 14:47:39 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e6178b1a89b5e36b4d2a8d",
+    "name": "Rimjhim Rajwaniya ",
+    "email": "rimjhimrajwaniya@jklu.edu.in",
+    "phone": "6378038020",
+    "university": "Jk Lakshmipth university ",
+    "events": [
+      "BIDDING BEFORE WICKET"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 13:19:31 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e6125b1a89b5e36b4d2a79",
+    "name": "Neelu kumawat  ",
+    "email": "neelukumawat05@gmail.com",
+    "phone": "8000545083",
+    "university": "Chinmay tutorials ",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 12:57:23 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e6046b1a89b5e36b4d24dc",
+    "name": "Vikas choudhary ",
+    "email": "burarikaand@gmail.com",
+    "phone": "7340163139",
+    "university": "Poddar international college ",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 11:57:55 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e5ea661a89b5e36b4cfc5d",
+    "name": "VARUN TEJA ANKARLA ",
+    "email": "a.varunteja@jklu.edu.in",
+    "phone": "9573857352",
+    "university": "Jk lakshmipat university ",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 10:06:54 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e5c7261a89b5e36b4cf303",
+    "name": "wer",
+    "email": "sharmadev0042@gmail.com",
+    "phone": "1231231231",
+    "university": "scsgd",
+    "events": [
+      "DUMB SHOW",
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 07:36:30 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e500e21a89b5e36b4ca97c",
+    "name": "JINAL LODHA",
+    "email": "jinallodha171@gmail.com",
+    "phone": "9983658102",
+    "university": "JK Lakshmipat University ",
+    "events": [
+      "IN CONVERSATION WITH"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Tue Oct 07 2025 17:30:34 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e4e2611a89b5e36b4ca66b",
+    "name": "Sanchi Dhoopia",
+    "email": "dhoopiasanchi@gmail.com",
+    "phone": "9664356901",
+    "university": "JKLU",
+    "events": [
+      "CLAY MODELLING"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Tue Oct 07 2025 15:20:25 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e4c75c1a89b5e36b4ca2b3",
+    "name": "Parth Mundra",
+    "email": "mundraparth06@gmail.com",
+    "phone": "9664098829",
+    "university": "Jk lakshmipath University ",
+    "events": [
+      "COURTROOM"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Tue Oct 07 2025 13:25:08 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e4b5111a89b5e36b4ca021",
+    "name": "Siya Sharma ",
+    "email": "siyasharma@jklu.edu.in",
+    "phone": "9119218502",
+    "university": "Jk Lakshmipat University ",
+    "events": [
+      "COURTROOM"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Tue Oct 07 2025 12:07:05 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e4a2381a89b5e36b4c9926",
+    "name": "Aditi Mishra",
+    "email": "Catnoirmish119@gmail.com",
+    "phone": "8233803023",
+    "university": "S s jain subodh pg college ",
+    "events": [
+      "ART RELAY"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Tue Oct 07 2025 10:46:40 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e3b9a61a89b5e36b4bead8",
+    "name": "Divyaraj Singh",
+    "email": "divyarajsingh532@gmail.com",
+    "phone": "8769399707",
+    "university": "Jecrc foundation ",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Mon Oct 06 2025 18:14:22 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e3954e1a89b5e36b4bea24",
+    "name": "Jitesh khandelwal ",
+    "email": "jiteshbhiwal191@gmail.com",
+    "phone": "7877516411",
+    "university": "Jklu",
+    "events": [
+      "IN CONVERSATION WITH"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Mon Oct 06 2025 15:39:18 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e34a7c1a89b5e36b4be8ba",
+    "name": "Garvishtha Asnani ",
+    "email": "garvishtha18@gmail.com",
+    "phone": "7878504220",
+    "university": "Jk lakshmipat university ",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Mon Oct 06 2025 10:20:04 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e2133207a7eecad86851ea",
+    "name": "Yagyavalkya sharma",
+    "email": "yagyavalkyasharma2@gmail.com",
+    "phone": "9829587737",
+    "university": "Subodh",
+    "events": [
+      "VERSEVAAD"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sun Oct 05 2025 12:11:54 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e11b3907a7eecad86847a6",
+    "name": "Dishika sharma ",
+    "email": "Dishikasharma@jklu.edu.in",
+    "phone": "8949133702",
+    "university": "Jk lakshmipat university jaipur",
+    "events": [
+      "DUMB SHOW"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Oct 04 2025 18:33:53 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e09b7196dba236d306feee",
+    "name": "devam gupta",
+    "email": "devamg759@gmail.com",
+    "phone": "7340015201",
+    "university": "jklu",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Oct 04 2025 09:28:41 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e066c896dba236d306fecc",
+    "name": "Amana",
+    "email": "aman@djjs.j",
+    "phone": "9456608637",
+    "university": "Bsbab",
+    "events": [
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Oct 04 2025 05:44:00 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e0622096dba236d306fe56",
+    "name": "sdfd",
+    "email": "sur@jkluedu.in",
+    "phone": "6376905585",
+    "university": "jklu",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Oct 04 2025 05:24:08 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e0596bd8fb35af82609522",
+    "name": "dsfw",
+    "email": "sur@jklu.edu.in",
+    "phone": "6376905585",
+    "university": "kjh",
+    "events": [
+      "DUMB SHOW"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Oct 04 2025 04:46:59 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e03e0e59d10ca698d55d89",
+    "name": "Name",
+    "email": "hello@FNB.hmm",
+    "phone": "9456608637",
+    "university": "Hello",
+    "events": [
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Oct 04 2025 02:50:14 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e0206126cd6a55d22a7304",
+    "name": "Arshiyaa yadav",
+    "email": "arshiyaa9103@gmail.com",
+    "phone": "7976616005",
+    "university": "JKLU",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Oct 04 2025 00:43:37 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e01ef926cd6a55d22a72e6",
+    "name": "Ashiii",
+    "email": "ashutoshyadavv510@gmail.com",
+    "phone": "9259068512",
+    "university": "Dps",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Oct 04 2025 00:37:37 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68dff8cc26cd6a55d22a7247",
+    "name": "TILAK SINGH TANWAR",
+    "email": "ts545099@gmail.com",
+    "phone": "6376637015",
+    "university": "Rajasthan university",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Fri Oct 03 2025 21:54:44 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68dfc8bd26cd6a55d22a7077",
+    "name": "Pragyansh Mishra",
+    "email": "mishrapragyansh22@gmail.com",
+    "phone": "7597291845",
+    "university": "jecrc",
+    "events": [
+      "ECHOES OF NOOR"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Fri Oct 03 2025 18:29:41 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68dfbbdc029386527f6ff127",
+    "name": "Test Visitor Only",
+    "email": "visitor.only@test.com",
+    "phone": "9876543210",
+    "university": "Not provided",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Fri Oct 03 2025 17:34:44 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68dfbbdb029386527f6ff123",
+    "name": "Test Main User",
+    "email": "main.user@test.com",
+    "phone": "9876543211",
+    "university": "Main University",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Fri Oct 03 2025 17:34:43 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68dfb32b26cd6a55d22a6f4b",
+    "name": "Cnt",
+    "email": "chk@gmail.com",
+    "phone": "9456608637",
+    "university": "And",
+    "events": [
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Fri Oct 03 2025 16:57:39 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68df84423ed2c60c9074a63d",
+    "name": "Prashant Sharma ",
+    "email": "PRASHANTSHARMA@jklu.edu.in",
+    "phone": "8949022638",
+    "university": "Jk lakshmipat university ",
+    "events": [
+      "FREE FIRE TOURNAMENT"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Fri Oct 03 2025 13:37:30 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68db58e7400fb06520dd584b",
+    "name": "Raghav Sharma ",
+    "email": "raghavsharma2025@jklu.edu.in",
+    "phone": "7849902293",
+    "university": "JK LAKSHMIPAT UNIVERSITY ",
+    "events": [
+      "DUMB SHOW"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Tue Sep 30 2025 09:43:27 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68dace91e277f3de4153cce6",
+    "name": "w",
+    "email": "suryaansh@jklu.edu.in",
+    "phone": "6376905585",
+    "university": "jklu",
+    "events": [
+      "IN CONVERSATION WITH",
+      "VISITOR_PASS"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Mon Sep 29 2025 23:53:13 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68da3ddb5e5e087a02ed0172",
+    "name": "ANVI VASHIST ",
+    "email": "vashistanvi@gmail.com",
+    "phone": "8875513050",
+    "university": "jk lakshmipath university ",
+    "events": [
+      "IN CONVERSATION WITH"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Mon Sep 29 2025 13:35:47 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68da25365e5e087a02ed0100",
+    "name": "Aaditya rawat",
+    "email": "adityarawat9362@gamil.com",
+    "phone": "7742780088",
+    "university": "Dab ",
+    "events": [
+      "IN CONVERSATION WITH"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Mon Sep 29 2025 11:50:38 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d91cde4277b8a32335dc66",
+    "name": "Aman Choudhary ",
+    "email": "amanchoudhary@jklu.edu.in",
+    "phone": "6375830028",
+    "university": "Jklu",
+    "events": [
+      "IN CONVERSATION WITH",
+      "BIDDING BEFORE WICKET",
+      "COURTROOM"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sun Sep 28 2025 17:02:46 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d9158a4277b8a32335dc24",
+    "name": "Rudrapal Singh Shekhawat ",
+    "email": "rudrapalsinghshekhawat@jklu.edu.in",
+    "phone": "7737472264",
+    "university": "Jk Lakshmipat University ",
+    "events": [
+      "IN CONVERSATION WITH"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sun Sep 28 2025 16:31:30 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d784607e3f479de85e411e",
+    "name": "tera bhai",
+    "email": "bhai@jklu.com",
+    "phone": "1231231231",
+    "university": "jklu",
+    "events": [
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Sep 27 2025 11:59:52 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d784607e3f479de85e411b",
+    "name": "teri maa",
+    "email": "maa@mkc.com",
+    "phone": "1231231231",
+    "university": "jklu",
+    "events": [
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Sep 27 2025 11:59:52 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d7845f7e3f479de85e4118",
+    "name": "tera daddy",
+    "email": "daddy@gmail.com",
+    "phone": "1231231231",
+    "university": "jklu",
+    "events": [
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Sep 27 2025 11:59:51 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d783b67e3f479de85e410d",
+    "name": "anmol",
+    "email": "anmolsahu@gmail.com",
+    "phone": "8209317312",
+    "university": "jklu",
+    "events": [
+      "DUMB SHOW"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Sat Sep 27 2025 11:57:02 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d61f8dfacb0b2c35ce5f47",
+    "name": "Admin MKC",
+    "email": "admin@mkc.com",
+    "phone": "Not provided",
+    "university": "Not provided",
+    "events": [],
+    "userType": "Individual User",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Fri Sep 26 2025 10:37:25 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d56ea6a6f195dd11af6529",
+    "name": "Gaurav Sharma",
+    "email": "gauravsharma2025@jklu.edu.in",
+    "phone": "9351054737",
+    "university": "JK LAKSHMIPAT UNIVERSITY",
+    "events": [
+      "COURTROOM"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Thu Sep 25 2025 22:02:38 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68d2b313f786250a0b3ddf7e",
+    "name": "Aditya Somani",
+    "email": "adityasomani@jklu.edu.in",
+    "phone": "8233116585",
+    "university": "JK Lakshmipat University",
+    "events": [
+      "FOCUS"
+    ],
+    "userType": "Individual User",
+    "validated": "❌ No",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Tue Sep 23 2025 20:17:47 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e5c7261a89b5e36b4cf303",
+    "name": "wer",
+    "email": "sharmadev0042@gmail.com",
+    "phone": "1231231231",
+    "university": "scsgd",
+    "events": [
+      "DUMB SHOW",
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Team Member",
+    "teamName": "suryaansh's Team",
+    "teamLeader": "suryaansh",
+    "eventName": "DUMB SHOW",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 07:36:30 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e5c7261a89b5e36b4cf303",
+    "name": "wer",
+    "email": "sharmadev0042@gmail.com",
+    "phone": "1231231231",
+    "university": "scsgd",
+    "events": [
+      "DUMB SHOW",
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Team Member",
+    "teamName": "suryaansh's Team",
+    "teamLeader": "suryaansh",
+    "eventName": "DUMB SHOW",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 07:36:30 GMT+0530 (India Standard Time)"
+  }
+]

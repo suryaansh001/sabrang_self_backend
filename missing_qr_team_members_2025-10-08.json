@@ -1,0 +1,40 @@
+[
+  {
+    "id": "68e5c7261a89b5e36b4cf303",
+    "name": "wer",
+    "email": "sharmadev0042@gmail.com",
+    "phone": "1231231231",
+    "university": "scsgd",
+    "events": [
+      "DUMB SHOW",
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Team Member",
+    "teamName": "suryaansh's Team",
+    "teamLeader": "suryaansh",
+    "eventName": "DUMB SHOW",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 07:36:30 GMT+0530 (India Standard Time)"
+  },
+  {
+    "id": "68e5c7261a89b5e36b4cf303",
+    "name": "wer",
+    "email": "sharmadev0042@gmail.com",
+    "phone": "1231231231",
+    "university": "scsgd",
+    "events": [
+      "DUMB SHOW",
+      "BGMI TOURNAMENT"
+    ],
+    "userType": "Team Member",
+    "teamName": "suryaansh's Team",
+    "teamLeader": "suryaansh",
+    "eventName": "DUMB SHOW",
+    "validated": "✅ Yes",
+    "qrGenerated": "❌ Not generated",
+    "emailSent": "❌ No",
+    "created": "Wed Oct 08 2025 07:36:30 GMT+0530 (India Standard Time)"
+  }
+]
