@@ -98,118 +98,79 @@ router.post('/promo-codes/validate', async (req, res) => {
 });
 
 
-// Enhanced QR scanning route - fetches comprehensive member details
+// Unified QR scanning route - handles both team leaders and team members
 router.get("/verify/:id", verifyAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(`🔍 QR scan initiated for ID: ${id}`);
     
-    // Find the user in the database
+    // First try to find as User (main person/team leader)
     let person = await User.findById(id);
+    let isTeamMember = false;
+    let teamInfo = null;
+    
+    if (!person) {
+      return res.status(404).json({
+        success: false,
+        message: 'Person not found'
+      });
+    } else if (person.teamRegistrations && person.teamRegistrations.length > 0) {
+      // If person has team registrations, get team info
+      const latestTeamReg = person.teamRegistrations[person.teamRegistrations.length - 1];
+      if (latestTeamReg.teamId) {
+        const teamComposition = await TeamComposition.findOne({ teamId: latestTeamReg.teamId });
+        if (teamComposition) {
+          teamInfo = {
+            teamId: latestTeamReg.teamId,
+            teamSize: teamComposition.teamMembers.length,
+            isTeamLeader: teamComposition.teamLeader.toString() === person._id.toString()
+          };
+        }
+      }
+    }
     
     if (!person) {
       console.log(`❌ QR verification failed - Person not found: ${id}`);
       return res.status(404).json({ 
         success: false,
         error: 'Person not found',
-        message: 'No user found with this QR code'
+        message: 'No user or team member found with this QR code'
       });
     }
-
-    // Fetch comprehensive team information
-    const teamData = await getComprehensiveTeamInfo(person._id);
-    
-    // Get registration details from purchases collection
-    const registrationDetails = await getRegistrationDetails(person.email);
-    
-    // Get payment history
-    const paymentHistory = await getPaymentHistory(person.email);
 
     console.log(`👤 QR verification for ${person.name} (${person.email}):`, {
       hasEntered: person.hasEntered,
       entryTime: person.entryTime,
       isvalidated: person.isvalidated,
-      teamsCount: teamData.teams.length,
-      eventsCount: person.events.length,
-      registrationStatus: registrationDetails.status
+      isTeamMember: isTeamMember,
+      teamInfo: teamInfo
     });
 
     const data = {
       success: true,
-      // PROMINENT DISPLAY INFORMATION (First things shown)
-      displayInfo: {
-        name: person.name,
-        email: person.email,
-        contactNo: person.contactNo || "",
-        universityName: person.universityName || "",
-        events: person.events || [],
-        eventsCount: (person.events || []).length
-      },
-      // ENTRY STATUS (Critical for scanning)
-      entryStatus: {
-        hasEntered: person.hasEntered,
-        entryTime: person.entryTime,
-        isvalidated: person.isvalidated,
-        allowEntry: !person.hasEntered && person.isvalidated,
-        entryPermission: {
-          allowed: !person.hasEntered && person.isvalidated,
-          reason: person.hasEntered ? "Already entered" : 
-                  !person.isvalidated ? "Not validated" : "Entry allowed"
-        }
-      },
-      // BASIC USER INFORMATION
-      userInfo: {
-        _id: person._id,
-        name: person.name,
-        email: person.email,
-        contactNo: person.contactNo || "",
-        gender: person.gender || "",
-        age: person.age || null,
-        universityName: person.universityName || "",
-        address: person.address || "",
-        profileImage: person.profileImage || "",
-        userType: person.userType || "participant",
-        finalPrice: person.finalPrice || 0,
-        createdAt: person.createdAt,
-        updatedAt: person.updatedAt
-      },
-      // QR CODE INFORMATION
-      qrInfo: {
-        qrPath: person.qrPath || "",
-        qrCodeBase64: person.qrCodeBase64 ? "Available" : "Not Available"
-      },
-      // EVENT INFORMATION
-      eventInfo: {
-        events: person.events || [],
-        eventsCount: (person.events || []).length,
-        eventsDisplay: (person.events || []).join(", ") || "No events registered"
-      },
-      // TEAM INFORMATION
-      teamInfo: {
-        teamData: teamData,
-        isInTeam: teamData.teams.length > 0,
-        totalTeams: teamData.teams.length,
-        teamSummary: teamData.teams.length > 0 ? 
-          teamData.teams.map(team => `${team.teamName} (${team.eventName}) - ${team.role}`).join("; ") :
-          "Not in any team"
-      },
-      // REGISTRATION & PAYMENT INFORMATION
-      registrationInfo: {
-        registrationDetails: registrationDetails,
-        paymentHistory: paymentHistory,
-        registrationSummary: `${registrationDetails.totalRegistrations} registration(s) - Status: ${registrationDetails.status}`
-      },
-      // LEGACY FIELDS (for backward compatibility)
       _id: person._id,
       name: person.name,
       email: person.email,
       contactNo: person.contactNo || "",
+      gender: person.gender || "",
+      age: person.age || null,
+      universityName: person.universityName || "",
+      address: person.address || "",
+      profileImage: person.profileImage || "",
+      qrPath: person.qrPath || "",
+      isvalidated: person.isvalidated,
       hasEntered: person.hasEntered,
       entryTime: person.entryTime,
-      isvalidated: person.isvalidated,
-      allowEntry: !person.hasEntered && person.isvalidated,
+      allowEntry: true, // Always allow entry regardless of validation or previous entry status
+      isTeamMember: isTeamMember,
+      isTeamLeader: !isTeamMember && person.isMainPerson,
       events: person.events || [],
-      eventsCount: (person.events || []).length
+      finalPrice: person.finalPrice || 0,
+      // Team information
+      teamInfo: teamInfo,
+      // If it's a team member, include main person reference
+      ...(isTeamMember && {
+        mainPersonId: person.mainPersonId
+      })
     };
 
     res.json(data); 
@@ -227,598 +188,73 @@ router.get("/verify/:id", verifyAdmin, async (req, res) => {
   }
 });
 
-// Helper function to get comprehensive team information
-async function getComprehensiveTeamInfo(userId) {
-  try {
-    const teams = [];
-    
-    // Find teams where user is a leader (teamLeader.userId matches the userId)
-    const leaderTeams = await TeamComposition.find({ 'teamLeader.userId': userId })
-      .populate('teamMembers.userId', 'name email contactNo hasEntered entryTime')
-      .lean();
-    
-    for (const team of leaderTeams) {
-      teams.push({
-        teamId: team._id,
-        teamName: team.teamName || 'Team Leader',
-        eventName: team.eventName,
-        role: 'Team Leader',
-        totalMembers: team.teamMembers.length + 1, // +1 for leader
-        registrationComplete: team.registrationComplete,
-        createdAt: team.createdAt,
-        teamMembers: team.teamMembers.map(member => ({
-          id: member.userId._id,
-          name: member.userId.name,
-          email: member.userId.email,
-          contactNo: member.userId.contactNo,
-          hasEntered: member.userId.hasEntered,
-          entryTime: member.userId.entryTime
-        }))
-      });
-    }
-    
-    // Find teams where user is a member
-    const memberTeams = await TeamComposition.find({ 'teamMembers.userId': userId })
-      .populate('teamLeader', 'name email contactNo hasEntered entryTime')
-      .populate('teamMembers.userId', 'name email contactNo hasEntered entryTime')
-      .lean();
-    
-    for (const team of memberTeams) {
-      // Skip if already added as leader
-      if (teams.some(t => t.teamId.toString() === team._id.toString())) {
-        continue;
-      }
-      
-      teams.push({
-        teamId: team._id,
-        teamName: team.teamName || 'Team Member',
-        eventName: team.eventName,
-        role: 'Team Member',
-        totalMembers: team.teamMembers.length + 1, // +1 for leader
-        registrationComplete: team.registrationComplete,
-        createdAt: team.createdAt,
-        teamLeader: {
-          id: team.teamLeader._id,
-          name: team.teamLeader.name,
-          email: team.teamLeader.email,
-          contactNo: team.teamLeader.contactNo,
-          hasEntered: team.teamLeader.hasEntered,
-          entryTime: team.teamLeader.entryTime
-        },
-        teamMembers: team.teamMembers
-          .filter(member => member.userId._id.toString() !== userId.toString())
-          .map(member => ({
-            id: member.userId._id,
-            name: member.userId.name,
-            email: member.userId.email,
-            contactNo: member.userId.contactNo,
-            hasEntered: member.userId.hasEntered,
-            entryTime: member.userId.entryTime
-          }))
-      });
-    }
-    
-    return { teams };
-  } catch (error) {
-    console.error('Error fetching team information:', error);
-    return { teams: [] };
-  }
-}
-
-// Helper function to get registration details
-async function getRegistrationDetails(email) {
-  try {
-    // Check purchase records
-    const purchases = await Purchase.find({ 
-      $or: [
-        { 'userDetails.email': email },
-        { 'userDetails.teamMembers.email': email }
-      ]
-    }).sort({ createdAt: -1 }).limit(5).lean();
-    
-    const registrations = purchases.map(purchase => ({
-      purchaseId: purchase._id,
-      orderId: purchase.orderId,
-      events: purchase.userDetails.events || [],
-      totalAmount: purchase.totalAmount,
-      paymentStatus: purchase.paymentStatus,
-      registrationType: purchase.userDetails.teamMembers && purchase.userDetails.teamMembers.length > 0 ? 'team' : 'individual',
-      createdAt: purchase.createdAt,
-      updatedAt: purchase.updatedAt
-    }));
-    
-    return {
-      status: purchases.length > 0 ? 'registered' : 'not_registered',
-      totalRegistrations: purchases.length,
-      registrations: registrations
-    };
-  } catch (error) {
-    console.error('Error fetching registration details:', error);
-    return {
-      status: 'unknown',
-      totalRegistrations: 0,
-      registrations: []
-    };
-  }
-}
-
-// Helper function to get payment history
-async function getPaymentHistory(email) {
-  try {
-    const payments = await Purchase.find({
-      $or: [
-        { 'userDetails.email': email },
-        { 'userDetails.teamMembers.email': email }
-      ],
-      paymentStatus: 'completed'
-    }).sort({ createdAt: -1 }).limit(10).lean();
-    
-    return payments.map(payment => ({
-      orderId: payment.orderId,
-      amount: payment.totalAmount,
-      currency: payment.currency || 'INR',
-      paymentMethod: payment.paymentMethod,
-      events: payment.userDetails.events || [],
-      paidAt: payment.updatedAt,
-      transactionId: payment.transactionId
-    }));
-  } catch (error) {
-    console.error('Error fetching payment history:', error);
-    return [];
-  }
-}
-
-// Enhanced entry control endpoint with comprehensive status updates
+// Allow entry endpoint - UPDATED FOR TEAM SYSTEM
 router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
   try {
     const id = req.params.id;
-    const adminId = req.user ? req.user._id : null;
-    const adminName = req.user ? req.user.name : 'Unknown Admin';
     
-    console.log(`🚪 Entry request initiated by admin: ${adminName} for user ID: ${id}`);
-    
-    // Find the user
+    // Try to find the user
     let user = await User.findById(id);
+    let isTeamMember = false;
     
     if (!user) {
       console.log(`❌ Allow entry failed - User not found: ${id}`);
       return res.status(404).json({ 
         success: false,
         message: 'User not found',
-        playBuzzer: true,
-        action: 'deny_entry',
-        reason: 'user_not_found'
+        playBuzzer: true
       });
     }
 
-    // Get comprehensive team information for logging
-    const teamData = await getComprehensiveTeamInfo(user._id);
+    // Check if user is part of a team
+    const teamComposition = await TeamComposition.findOne({ 
+      $or: [
+        { teamLeader: user._id },
+        { 'teamMembers.userId': user._id }
+      ]
+    });
     
-    console.log(`� Entry validation for ${user.name} (${user.email}):`, {
+    isTeamMember = teamComposition && teamComposition.teamLeader.toString() !== user._id.toString();
+
+    console.log(`🚪 Entry attempt for ${user.name} (${user.email}):`, {
       currentStatus: user.hasEntered ? 'Already entered' : 'Not entered yet',
-      isValidated: user.isvalidated,
       entryTime: user.entryTime,
-      teamsCount: teamData.teams.length,
-      events: user.events
+      isTeamMember: isTeamMember
     });
 
-    // Validation checks
-    const validationResult = await validateEntryEligibility(user, teamData);
-    
-    if (!validationResult.allowed) {
-      console.log(`🚫 Entry denied for ${user.name}: ${validationResult.message}`);
+    // Check if user has already entered
+    if (user.hasEntered) {
+      console.log(`🚫 Entry denied - ${user.name} has already entered at ${user.entryTime}`);
       return res.json({
         success: false,
-        message: validationResult.message,
+        message: 'Access denied - User has already entered',
         playBuzzer: true,
-        action: 'deny_entry',
-        reason: validationResult.reason,
-        details: validationResult.details
+        entryTime: user.entryTime
       });
     }
 
-    // Record entry with comprehensive logging
+    // Update user entry status
     const entryTime = new Date();
-    const entryRecord = {
-      userId: user._id,
-      userName: user.name,
-      userEmail: user.email,
-      entryTime: entryTime,
-      approvedBy: adminId,
-      approvedByName: adminName,
-      userEvents: user.events,
-      teamMemberships: teamData.teams.map(team => ({
-        teamId: team.teamId,
-        teamName: team.teamName,
-        eventName: team.eventName,
-        role: team.role
-      }))
-    };
-
-    // Update user status
     user.hasEntered = true;
     user.entryTime = entryTime;
-    user.lastUpdatedBy = adminId;
-    user.updatedAt = entryTime;
     await user.save();
 
-    // Update team member entry status in team compositions
-    await updateTeamMemberEntryStatus(user._id, entryTime);
+    console.log(`✅ Entry allowed - ${user.name} successfully entered at ${entryTime}`);
 
-    // Log the entry for audit purposes
-    await logEntryEvent(entryRecord);
-
-    console.log(`✅ Entry granted - ${user.name} successfully entered at ${entryTime}`);
-    console.log(`📊 Entry stats: Events: ${user.events.length}, Teams: ${teamData.teams.length}`);
-
-    // Prepare comprehensive response
-    const response = {
+    res.json({
       success: true,
       message: 'Entry allowed successfully',
       playBuzzer: false,
-      action: 'allow_entry',
-      // PROMINENT DISPLAY INFORMATION
-      displayInfo: {
-        name: user.name,
-        email: user.email,
-        contactNo: user.contactNo || "",
-        universityName: user.universityName || "",
-        events: user.events || [],
-        eventsDisplay: (user.events || []).join(", ") || "No events",
-        entryStatus: `✅ Entry Granted at ${entryTime.toLocaleString()}`,
-        approvedBy: adminName
-      },
-      // Entry details
-      entryDetails: {
-        entryTime: entryTime,
-        approvedBy: adminName,
-        entryTimestamp: entryTime.toISOString()
-      },
-      // User information
-      userInfo: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        contactNo: user.contactNo || "",
-        universityName: user.universityName || "",
-        events: user.events,
-        userType: user.userType
-      },
-      // Team information
-      teamInfo: {
-        teamData: teamData,
-        teamSummary: teamData.teams.length > 0 ? 
-          teamData.teams.map(team => `${team.teamName} (${team.eventName}) - ${team.role}`).join("; ") :
-          "Not in any team"
-      },
-      // Statistics
-      stats: {
-        totalEvents: user.events.length,
-        totalTeams: teamData.teams.length,
-        entryTimestamp: entryTime.toISOString()
-      },
-      // Legacy fields (for backward compatibility)
       entryTime: entryTime,
-      approvedBy: adminName,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        events: user.events,
-        userType: user.userType
-      },
-      teamData: teamData
-    };
-
-    res.json(response);
+      isTeamMember: isTeamMember
+    });
 
   } catch (error) {
-    console.error('Error processing entry request:', error);
+    console.error('Error allowing entry:', error);
     res.status(500).json({ 
       success: false,
       message: 'Internal server error',
-      playBuzzer: true,
-      action: 'deny_entry',
-      reason: 'internal_error'
-    });
-  }
-});
-
-// Helper function to validate entry eligibility
-async function validateEntryEligibility(user, teamData) {
-  try {
-    // Check if user has already entered
-    if (user.hasEntered) {
-      return {
-        allowed: false,
-        reason: 'already_entered',
-        message: `User has already entered at ${user.entryTime}`,
-        details: {
-          entryTime: user.entryTime,
-          previousEntry: true
-        }
-      };
-    }
-
-    // Check if user is validated
-    if (!user.isvalidated) {
-      return {
-        allowed: false,
-        reason: 'not_validated',
-        message: 'User is not validated for entry',
-        details: {
-          validationStatus: user.isvalidated,
-          requiresValidation: true
-        }
-      };
-    }
-
-    // Check if user has any events registered
-    if (!user.events || user.events.length === 0) {
-      return {
-        allowed: false,
-        reason: 'no_events',
-        message: 'User has no events registered',
-        details: {
-          eventsCount: 0,
-          requiresEvents: true
-        }
-      };
-    }
-
-    // All checks passed
-    return {
-      allowed: true,
-      reason: 'validated',
-      message: 'Entry allowed',
-      details: {
-        events: user.events,
-        teamsCount: teamData.teams.length,
-        validationStatus: user.isvalidated
-      }
-    };
-
-  } catch (error) {
-    console.error('Error validating entry eligibility:', error);
-    return {
-      allowed: false,
-      reason: 'validation_error',
-      message: 'Entry validation failed',
-      details: { error: error.message }
-    };
-  }
-}
-
-// Helper function to update team member entry status
-async function updateTeamMemberEntryStatus(userId, entryTime) {
-  try {
-    // Update entry status in team compositions where user is a member
-    await TeamComposition.updateMany(
-      { 'teamMembers.userId': userId },
-      {
-        $set: {
-          'teamMembers.$.hasEntered': true,
-          'teamMembers.$.entryTime': entryTime,
-          'updatedAt': entryTime
-        }
-      }
-    );
-
-    // Update team compositions where user is a leader
-    const leaderTeams = await TeamComposition.find({ teamLeader: userId });
-    for (const team of leaderTeams) {
-      team.teamLeader.hasEntered = true;
-      team.teamLeader.entryTime = entryTime;
-      team.updatedAt = entryTime;
-      await team.save();
-    }
-
-    console.log(`✅ Updated team entry status for user: ${userId}`);
-  } catch (error) {
-    console.error('Error updating team member entry status:', error);
-  }
-}
-
-// Helper function to log entry events for audit
-async function logEntryEvent(entryRecord) {
-  try {
-    // You can implement a separate EntryLog collection if needed
-    // For now, we'll just log to console with structured data
-    console.log('📝 ENTRY_LOG:', JSON.stringify({
-      timestamp: entryRecord.entryTime,
-      action: 'user_entry_granted',
-      userId: entryRecord.userId,
-      userName: entryRecord.userName,
-      userEmail: entryRecord.userEmail,
-      approvedBy: entryRecord.approvedByName,
-      events: entryRecord.userEvents,
-      teams: entryRecord.teamMemberships
-    }, null, 2));
-    
-    // You could also save to database if you have an EntryLog model
-    // const entryLog = new EntryLog(entryRecord);
-    // await entryLog.save();
-    
-  } catch (error) {
-    console.error('Error logging entry event:', error);
-  }
-}
-
-// Bulk QR scan endpoint for scanning multiple QR codes at once
-router.post("/bulk-verify", verifyAdmin, async (req, res) => {
-  try {
-    const { qrIds } = req.body;
-    
-    if (!qrIds || !Array.isArray(qrIds) || qrIds.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'QR IDs array is required'
-      });
-    }
-    
-    console.log(`🔍 Bulk QR scan initiated for ${qrIds.length} QR codes`);
-    
-    const results = [];
-    const summary = {
-      total: qrIds.length,
-      found: 0,
-      notFound: 0,
-      alreadyEntered: 0,
-      eligibleForEntry: 0,
-      errors: 0
-    };
-    
-    for (const qrId of qrIds) {
-      try {
-        const user = await User.findById(qrId);
-        
-        if (!user) {
-          summary.notFound++;
-          results.push({
-            qrId: qrId,
-            success: false,
-            status: 'not_found',
-            message: 'User not found'
-          });
-          continue;
-        }
-        
-        summary.found++;
-        
-        // Get comprehensive team info
-        const teamData = await getComprehensiveTeamInfo(user._id);
-        
-        // Check entry eligibility
-        const eligibility = await validateEntryEligibility(user, teamData);
-        
-        if (user.hasEntered) {
-          summary.alreadyEntered++;
-        } else if (eligibility.allowed) {
-          summary.eligibleForEntry++;
-        }
-        
-        results.push({
-          qrId: qrId,
-          success: true,
-          status: user.hasEntered ? 'already_entered' : 
-                  eligibility.allowed ? 'eligible' : 'not_eligible',
-          // Prominent display information
-          displayName: user.name,
-          displayEmail: user.email,
-          displayStatus: user.hasEntered ? `Already Entered at ${user.entryTime}` : 
-                        eligibility.allowed ? 'Ready for Entry' : eligibility.message,
-          displayEvents: (user.events || []).join(", ") || "No events",
-          // Detailed user information
-          user: {
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            contactNo: user.contactNo || "",
-            universityName: user.universityName || "",
-            events: user.events,
-            hasEntered: user.hasEntered,
-            entryTime: user.entryTime,
-            isvalidated: user.isvalidated
-          },
-          teamData: teamData,
-          eligibility: eligibility
-        });
-        
-      } catch (error) {
-        summary.errors++;
-        results.push({
-          qrId: qrId,
-          success: false,
-          status: 'error',
-          message: error.message
-        });
-      }
-    }
-    
-    console.log(`✅ Bulk QR scan completed:`, summary);
-    
-    res.json({
-      success: true,
-      message: 'Bulk QR scan completed',
-      summary: summary,
-      results: results
-    });
-    
-  } catch (error) {
-    console.error('Error in bulk QR verification:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Bulk QR scan failed',
-      error: 'internal_error'
-    });
-  }
-});
-
-// Get detailed entry statistics
-router.get("/entry-stats", verifyAdmin, async (req, res) => {
-  try {
-    console.log('📊 Generating entry statistics...');
-    
-    // Get basic user statistics
-    const totalUsers = await User.countDocuments({});
-    const enteredUsers = await User.countDocuments({ hasEntered: true });
-    const validatedUsers = await User.countDocuments({ isvalidated: true });
-    
-    // Get team statistics
-    const totalTeams = await TeamComposition.countDocuments({});
-    const completeTeams = await TeamComposition.countDocuments({ registrationComplete: true });
-    
-    // Get recent entries (last 24 hours)
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const recentEntries = await User.find({
-      hasEntered: true,
-      entryTime: { $gte: twentyFourHoursAgo }
-    }).select('name email entryTime events').sort({ entryTime: -1 }).limit(20);
-    
-    // Get event-wise statistics
-    const eventStats = await User.aggregate([
-      { $unwind: '$events' },
-      { $group: { 
-        _id: '$events', 
-        totalRegistered: { $sum: 1 },
-        entered: { $sum: { $cond: ['$hasEntered', 1, 0] } }
-      }},
-      { $sort: { totalRegistered: -1 } }
-    ]);
-    
-    const stats = {
-      users: {
-        total: totalUsers,
-        entered: enteredUsers,
-        validated: validatedUsers,
-        entryRate: totalUsers > 0 ? ((enteredUsers / totalUsers) * 100).toFixed(2) : 0
-      },
-      teams: {
-        total: totalTeams,
-        complete: completeTeams,
-        completionRate: totalTeams > 0 ? ((completeTeams / totalTeams) * 100).toFixed(2) : 0
-      },
-      recentActivity: {
-        entriesLast24Hours: recentEntries.length,
-        recentEntries: recentEntries
-      },
-      eventBreakdown: eventStats
-    };
-    
-    console.log('✅ Entry statistics generated successfully');
-    
-    res.json({
-      success: true,
-      stats: stats,
-      generatedAt: new Date()
-    });
-    
-  } catch (error) {
-    console.error('Error generating entry statistics:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to generate statistics',
-      error: 'internal_error'
+      playBuzzer: true
     });
   }
 });
