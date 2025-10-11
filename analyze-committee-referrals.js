@@ -136,10 +136,56 @@ async function analyzeCommitteeReferrals() {
       await connectDB();
     }
     
+    console.log("🚀 Starting optimized committee referrals analysis...");
+    
+    // Step 1: Get all roll numbers from all committees
+    const allRollNumbers = [];
+    Object.values(committeeData).forEach(rollNumbers => {
+      allRollNumbers.push(...rollNumbers.map(roll => roll.trim()));
+    });
+    
+    console.log(`📊 Analyzing ${allRollNumbers.length} total roll numbers...`);
+    
+    // Step 2: Single aggregation query to get all referral counts at once
+    const referralCounts = await User.aggregate([
+      {
+        $match: {
+          referralCode: { $exists: true, $ne: "" }
+        }
+      },
+      {
+        $group: {
+          _id: { $toLower: "$referralCode" },
+          count: { $sum: 1 },
+          users: {
+            $push: {
+              name: "$name",
+              email: "$email",
+              events: "$events",
+              createdAt: "$createdAt",
+              originalReferralCode: "$referralCode"
+            }
+          }
+        }
+      }
+    ]);
+    
+    console.log(`📈 Found ${referralCounts.length} unique referral codes in database`);
+    
+    // Step 3: Create a lookup map for fast access
+    const referralMap = new Map();
+    referralCounts.forEach(item => {
+      referralMap.set(item._id, {
+        count: item.count,
+        users: item.users
+      });
+    });
+    
+    // Step 4: Process each committee using the lookup map
     const results = [];
     
     for (const [committeeName, rollNumbers] of Object.entries(committeeData)) {
-      console.log(`\nAnalyzing ${committeeName}...`);
+      console.log(`\n📋 Processing ${committeeName}...`);
       
       const committeeStats = {
         committeeName,
@@ -148,31 +194,22 @@ async function analyzeCommitteeReferrals() {
         totalReferrals: 0
       };
       
-      // For each roll number in the committee
+      // Process each roll number using the lookup map
       for (const rollNumber of rollNumbers) {
-        // Find users who have this roll number as their referral code (case-insensitive)
-        const referredUsers = await User.find({ 
-          referralCode: { 
-            $regex: new RegExp(`^${rollNumber.trim()}$`, 'i') 
-          }
-        });
+        const normalizedRoll = rollNumber.trim().toLowerCase();
+        const referralData = referralMap.get(normalizedRoll);
         
         const memberData = {
           rollNumber,
-          referralCount: referredUsers.length,
-          referredUsers: referredUsers.map(user => ({
-            name: user.name,
-            email: user.email,
-            events: user.events,
-            createdAt: user.createdAt
-          }))
+          referralCount: referralData ? referralData.count : 0,
+          referredUsers: referralData ? referralData.users : []
         };
         
         committeeStats.memberReferrals.push(memberData);
-        committeeStats.totalReferrals += referredUsers.length;
+        committeeStats.totalReferrals += memberData.referralCount;
         
-        if (referredUsers.length > 0) {
-          console.log(`  ${rollNumber}: ${referredUsers.length} referrals`);
+        if (memberData.referralCount > 0) {
+          console.log(`  ✅ ${rollNumber}: ${memberData.referralCount} referrals`);
         }
       }
       
@@ -180,7 +217,7 @@ async function analyzeCommitteeReferrals() {
       committeeStats.memberReferrals.sort((a, b) => b.referralCount - a.referralCount);
       
       results.push(committeeStats);
-      console.log(`${committeeName} Total: ${committeeStats.totalReferrals} referrals`);
+      console.log(`📊 ${committeeName} Total: ${committeeStats.totalReferrals} referrals`);
     }
     
     // Sort committees by total referrals
