@@ -4449,4 +4449,37 @@ router.get("/teams", async (req, res) => {
   }
 });
 
+// Committee Referrals Analysis endpoint
+router.get('/committee-referrals', async (req, res) => {
+  try {
+    console.log('📊 Analyzing committee referrals...');
+    
+    const results = await analyzeCommitteeReferrals();
+    
+    // Calculate summary statistics
+    const summary = {
+      totalCommittees: results.length,
+      totalMembers: results.reduce((sum, committee) => sum + committee.totalMembers, 0),
+      totalReferrals: results.reduce((sum, committee) => sum + committee.totalReferrals, 0),
+      topPerformingCommittee: results[0] || null,
+      averageReferralsPerCommittee: results.length > 0 ? 
+        (results.reduce((sum, committee) => sum + committee.totalReferrals, 0) / results.length).toFixed(2) : 0
+    };
+
+    res.json({
+      success: true,
+      data: results,
+      summary: summary
+    });
+
+  } catch (error) {
+    console.error('Error analyzing committee referrals:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to analyze committee referrals',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
