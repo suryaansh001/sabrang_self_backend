@@ -2,6 +2,7 @@ const express = require("express");
 const { User, Event, CheckoutOffer, PromoCode, Purchase, TeamComposition } = require("../models/models");
 const { verifyAdmin } = require("../middleware/auth");
 const { sendRegistrationEmail } = require("../utils/emailService");
+const { analyzeCommitteeReferrals } = require("../analyze-committee-referrals");
 const path = require('path');
 const fs = require('fs');
 const router = express.Router();
@@ -3078,7 +3079,7 @@ router.get("/manage-users", async (req, res) => {
           { 'teamLeader.userId': user._id },
           { 'teamMembers.userId': user._id }
         ]
-      }).select('teamName eventName teamLeader teamMembers registrationComplete totalMembers').lean();
+      }).select('teamName eventName teamLeader teamMembers registrationComplete totalMembers purchaseId').lean();
 
       // Transform team info to match frontend expectations
       const teamParticipations = teamInfo.map(team => ({
@@ -3087,7 +3088,8 @@ router.get("/manage-users", async (req, res) => {
         eventName: team.eventName,
         isLeader: team.teamLeader && team.teamLeader.userId && team.teamLeader.userId.toString() === user._id.toString(),
         registrationComplete: team.registrationComplete || false,
-        totalMembers: team.totalMembers || 0
+        totalMembers: team.totalMembers || 0,
+        purchaseId: team.purchaseId
       }));
 
       // Get purchase information
