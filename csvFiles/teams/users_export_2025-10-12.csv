@@ -1,0 +1,785 @@
+Name,Email,Contact,Gender,Age,University,Address,User Type,Events,Validated,Entered,Email Sent,Total Paid,Created At,Teams
+Parth ,shivkumarpareek1234@gmail.com,9828933368,male,18,Poornima ,68/8 Heera Path Mansarover ,participant,VISITOR_PASS,Yes,No,No,0,"10/11/2025, 5:40:47 PM",
+Khushboo udhani,Khushbooudhani1@gmail.com,8209705803,female,19,Sydenham College of Commerce and Economics,"425 BARKAT NAGAR, TONK PHATAK, JAIPUR, RAJASTHAN,",participant,VISITOR_PASS,Yes,No,No,0,"10/11/2025, 5:37:13 PM",
+Rudraksh,bhardwajrudraksh555@gmail.com,8949434390,male,20,Rajasthan College ,"A 33 Rajiv Vihar A mangyawas mansarovar, near yugantar international school ",participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 5:20:27 PM",
+Himanshi kasotia,himanshikaso1234@gmail.com,8239219919,female,19,Swasthya Kalyan Institute Of Medical Technology & Nursing,44 SHRI KALYAN NAGAR KARTARPURA POST - GANDHI NAGAR TEHSIL - JAIPUR DIST. - JAIPUR (RAJASTHAN) 302015,participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 4:52:34 PM",
+Khushboo udhani,Khushbooudhani@yahoo.com,8209705803,female,19,Sydenham college Mumbai,"Barkat nagar, tonk phatak, jaipur",participant,VISITOR_PASS,Yes,No,No,0,"10/11/2025, 4:46:29 PM",
+Bhavya rihani,bhavyarohani@gmail.com,6376550867,male,20,Jklu,"127 , Vinobha Vihar , model town",participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 3:48:25 PM",
+Raghav khandelwal ,rakhandelwal17@gmail.com,8003828703,male,21,Jk lakshmipat university ,Gayshwbwnebe,participant,VISITOR_PASS,Yes,Yes,Yes,103.5,"10/11/2025, 3:19:33 PM",
+Mohit sharma,mohitttsh123@gmail.com,6376712156,male,21,Jk laxmipat ,Gopalpura jaipur,participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/11/2025, 3:11:28 PM",
+ankita ,priyankajaswal6023@gmail.com,8699416152,female,25,jerce,samnvay aasra ,participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 2:52:51 PM",
+vivek,priyankaj0616@gmail.com,8699416152,male,23,jecrc,samnvay aasra,participant,VISITOR_PASS,Yes,Yes,Yes,207,"10/11/2025, 2:48:07 PM",
+Sameer Lodi,sameerlodi65@gmail.com,9314532315,male,20,JECRC University ,Mahesh nagar jaipur ,participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 2:38:02 PM",
+Hitesh choudhary ,hiteshchoudhary11223@gmail.com,7062553609,male,18,Jklu,Jaipur ,participant,VISITOR_PASS,Yes,No,No,0,"10/11/2025, 2:36:11 PM",
+NAMAN BORA,namanbora@jklu.edu.in,7891113762,male,18,JKLU,"59 A Maa shakambri nagar , lalarpura , Gandhi path , vaishali nagar",participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 2:00:57 PM",
+Aman Singh Chauhan ,amanchauhan5584@gmail.com,6378417404,male,17,Emmanuel mission Sr. Sec. School ,"Plot no. 20, hari nagar-A,tara nagar ,jhotwara,jaipur ",participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 1:56:16 PM",
+Nusrat ,jhajhariaaman51@gmail.com,8107223851,female,22,Jecrc,Vaishali nagar ,participant,VISITOR_PASS,Yes,Yes,Yes,34.5,"10/11/2025, 1:22:42 PM",
+Vaibhav,vaibhav.ingle@miataoe.ac.in,9673870676,male,24,MIT,Ashiyana Umang B03 609,participant,VISITOR_PASS,Yes,No,Yes,103.5,"10/11/2025, 12:27:49 PM",
+Vasu Bansal ,vsbvasubansal13@gmail.com,7014699099,male,20,JKLU,Jaipur ,participant,COURTROOM,No,Yes,Yes,149.25,"10/11/2025, 12:19:56 PM",
+Sachin Gupta,gupta.sachin9929@gmail.com,9929958003,male,26,Outsider,72/134 Patel marg,participant,VISITOR_PASS,Yes,Yes,Yes,207,"10/11/2025, 11:56:09 AM",
+Sachin mangal,mangalsachinmangal@gmail.com,9079870687,male,27,Wipro,Nahar Road Bharat Mill Colony,participant,VISITOR_PASS,Yes,No,No,0,"10/11/2025, 11:52:31 AM",
+Ipsita laha ,ipsitalaha2611@gmail.com,9172722901,female,23,Amity University ,Vaishali nagar jaipur ,participant,VISITOR_PASS,Yes,Yes,No,0,"10/11/2025, 11:18:30 AM",
+Luvia,LUVIABINDRANI@jklu.edu.in,9829387046,female,21,Jk Lakshmipat University ,"502, 615 bees dukaan",participant,VISITOR_PASS,Yes,No,No,0,"10/11/2025, 11:04:24 AM",
+Yuvraj Soni,yuvrajsoni@jklu.edu.in,9828067878,male,22,JK Lakshmipat University ,"111/305, Agarwal Farm, Mansarovar, Jaipur",participant,VISITOR_PASS,Yes,Yes,Yes,103.5,"10/11/2025, 10:27:52 AM",
+Yati Bhardwaj ,yatibhardwaj9999@gmail.com,9785278900,female,18,Biyani Girls College ,"237, Nirmal Vihar, Benad road, dadi ka phatak, jhotwara ",participant,VISITOR_PASS,Yes,No,No,0,"10/11/2025, 9:52:45 AM",
+Charchika Sharma,charchika1007@gmail.com,8209235400,female,18,Kanodia pg mahila mahavidyalay ,"106/4 Chattrapati Marg, Vijay Path , Mansarovar ",participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/11/2025, 9:52:27 AM",
+Arhaan,arhaan.mohammad7@gmail.com,8078664539,male,18,Rajasthan University ,78 shanti nagar shanti path jhotwara jaipur,participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 9:46:01 AM",
+Vandana Rajauria ,vrajauria345@gmail.com,7017686384,female,25,NA,Mansarovar Jaipur ,participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/11/2025, 9:32:05 AM",
+Jiya Raghuvanshi ,jiyaraghuvanshi21@gmail.com,9057506472,female,19,SS jain Subodh ,88-B khirni phatak ,participant,VISITOR_PASS,Yes,No,Yes,69,"10/11/2025, 8:48:42 AM",
+Shivam Lakshkar,shivamlakshkar57@gmail.com,,,,,,participant,,No,No,No,0,"10/11/2025, 8:05:22 AM",
+Utkarsh Bhargava ,utkarshbhargava2005@gmail.com,9660615734,male,20,JKLU UNIVERSITY ,112/169 thadi market agarwal farm mansarovar jaipur ,participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/11/2025, 8:00:26 AM",
+suryaansh,suryaanshsharma@jklu.edu.in,6376905585,,,,,participant,BGMI TOURNAMENT,Yes,No,Yes,14.68,"10/11/2025, 5:09:50 AM",
+Demo final,sdfdsfs@nullsto.edu.pl,0945660863,,,,,participant,BGMI TOURNAMENT,Yes,No,Yes,1,"10/11/2025, 5:09:37 AM",
+Demo final.2,bijenaba@denipl.net,0945660863,,,,,participant,BGMI TOURNAMENT,Yes,No,Yes,1,"10/11/2025, 5:09:33 AM",
+Test layout ,solomaze67032@gmail.com,9456608637,,,,,participant,Demo Payment; BGMI TOURNAMENT,Yes,No,Yes,3,"10/11/2025, 5:08:59 AM",
+aman,qyqyke@forexzig.com,9456608637,,,,,participant,Demo Payment,Yes,No,Yes,3,"10/11/2025, 5:08:48 AM",
+Allah,devamg759@gmail.com,7007689708,,,,,participant,Demo Payment,Yes,No,Yes,1,"10/11/2025, 5:08:26 AM",
+Saumya Koolwal,saumyakoolwal05@gmail.com,7014269232,,,,,participant,Demo Payment; BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/11/2025, 4:48:44 AM",
+Vinay singh shekhawat ,vinayshekhawat32@gmail.com,9983288932,male,21,Jklu,Jklu Jaipur ,participant,BIDDING BEFORE WICKET,No,No,No,0,"10/11/2025, 4:13:15 AM",
+Nagendra,ms1221254@mse.iitd.ac.in,6392125073,,,,,participant,DANCE BATTLE,Yes,No,No,0,"10/11/2025, 3:39:26 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Aagam Jain,tt1240985@iitd.ac.in,9752147671,,,,,support_staff,DANCE BATTLE,Yes,No,No,0,"10/11/2025, 2:54:40 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Amrit,tt1240909@iitd.ac.in,6204025931,,,,,support_staff,DANCE BATTLE,Yes,No,No,0,"10/11/2025, 2:54:40 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Abhishek Kumar,tt1240654@iitd.ac.in,7009422259,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:39 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Veddant Agrawal,ee3241115@iitd.ac.in,7007719032,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:39 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Gayatri,ce1240151@iitd.ac.in,8767202517,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:39 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Nehal Agarwal,ph1241024@iitd.ac.in,9352040670,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Kanishk Souda,ch7240883@iitd.ac.in,9509492737,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Ashish Salokiya,bb1240957@gmail.com,9098100724,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Saksham Singh,ee1240477@ee.iitd.ac.in,9634799339,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Neel yadav,ee1240302@iitd.ac.in,7014219533,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Koel Kirtania,ph1240008@physics.iitd.ac.in,9926424069,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Anjali Garg,am1240414@iitd.ac.in,9560274425,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Khushi Kataria,ch7240165@iitd.ac.in,9368177871,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Aarush Bansal,am1240207@iitd.ac.in,9810230358,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Tanush Bansal,ee1241076@iitd.ac.in,8285262000,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Pushkal Adlakha,Tt1240845@iitd.ac.in,8920858908,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:38 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Astha Agrawal,hst254602@hss.iitd.ac.in,6389135799,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Vinayak,mt1240012@iitd.ac.in,9289060966,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Srishty,ee1230786@iitd.ac.in,8574438211,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Devansh Jain,ee3230910@iitd.ac.in,9216488054,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Krishna,ms1230865@iitd.ac.in,9928176136,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Om rathi,tt1230913@iitd.ac.in,8421939539,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Sarthak Maurya,ch1230850@iitd.ac.in,7303237442,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Aakriti Harit,ch1230072@iitd.ac.in,6395697607,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Harsh Bagotia,tt1231021@iitd.ac.in,8851430852,,,,,participant,DANCE BATTLE,Yes,No,Yes,0,"10/11/2025, 2:54:37 AM",IIT Delhi Dance Crew (DANCE BATTLE)
+Rijvan khan,Furkankhan1186@gmail.com,9351041739,male,18,St wilfred college of law ,Mansarovar jaipur ,participant,VISITOR_PASS,Yes,No,No,0,"10/10/2025, 9:22:47 PM",
+Het Sadat,hetsadat@gmail.com,7747925498,male,17,Modern school ,Dungarpur ,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 8:14:27 PM",Garv Panwar's Team (FREE FIRE TOURNAMENT)
+Lucky Verma,Lucky.verma5464@gmail.com,8233379223,male,17,Modern school ,Dungarpur ,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 8:14:27 PM",Garv Panwar's Team (FREE FIRE TOURNAMENT)
+Krrish kalal,kalalkrrishh4452@gmail.com,9256585281,male,18,Modern school ,Dungarpur ,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 8:14:26 PM",Garv Panwar's Team (FREE FIRE TOURNAMENT)
+Garv Panwar,garvpanwar10@gmail.com,7300295081,male,19,Jk lakshmipat University ,Jaipur ,participant,FREE FIRE TOURNAMENT,No,No,Yes,450,"10/10/2025, 8:14:25 PM",
+Riddhi vashisth ,riddhivashisth0@gmail.com,8905832462,female,18,Biyani girls college ,"98, krishna nagar, shekhawat Marg, vaishali, jaipur ",participant,DUMB SHOW,No,No,Yes,199,"10/10/2025, 7:14:23 PM",
+Ishaan saraswat,ishaansaraswat@jklu.edu.in,9772134536,male,22,JKLU ,Jaipur,participant,BIDDING BEFORE WICKET,No,Yes,Yes,199,"10/10/2025, 7:00:43 PM",
+Aakash sharma,sharma9621aakash@gmail.com,9782269621,male,23,Skit,"103,karji vihar ajmer road Jaipur",participant,STEP UP,No,Yes,Yes,374.25,"10/10/2025, 6:28:51 PM",
+Rishi patni,bhavyarishi2020@gmail.com,8905541306,male,18,Manipal Institute,144 sai residency Vrindavan Vihar dcm Ajmer road Jaipur,participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 6:13:37 PM",
+Bhuvnesh sharma,xbhuvneshx@gmail.com,6305713360,male,21,Rajasthan university ,27,participant,VISITOR_PASS,Yes,No,No,0,"10/10/2025, 5:56:06 PM",
+Lakshay pateriya,lakshyapateriya@gmail.com,9664381646,male,21,Jecrc,189 rameswar Dham kedia place murlipura,participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/10/2025, 5:38:29 PM",
+Aditya Soni,adimachar@gamil.com,8769618174,male,18,School ,Swankar colony pani peach Jaipur ,participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 5:35:23 PM",
+Adamya sharma,adamyasharma96@gmail.com,7688811281,male,21,Hemvati nandan bahuguna garhwal university ,Plt no. 44 ramesh vihar nadi ka phatak jhotwara,participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 4:51:38 PM",
+Vanshika sharma,vanshikasharma110011@gmail.com,9314139865,female,20,Vgu,Plt no. 44 ramesh vihar nadi ka phatak jhotwara,participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 4:46:58 PM",
+Pallavi Bisht ,bishtlaviii@gmail.com,8209036858,female,19,Apex College ,Rajat path mansarovar ,participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 3:24:51 PM",
+Niharika Adhikari,NIHARIKAADHIKARI@jklu.edu.in,8690813033,female,20,Jk lakshmipat university ,Mansarovar Jaipur ,participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 3:16:28 PM",
+Krishna Khunteta,krishnakhunteta4@gmail.com,9079780833,male,20,JECRC,"Ashoka Tent House, Bhrampuri, Jaipur",participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/10/2025, 2:46:42 PM",
+Yashika,yashikabhatt16@gmail.com,9305042697,female,22,JK Laxmipat University ,609-B samanvay aasra,participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/10/2025, 2:22:25 PM",
+Keshav Pareek,keshavpareek@jklu.edu.in,7357425767,male,21,JK Lakshmipat university,Ajmer road jaipur rajasthan,participant,VISITOR_PASS; Demo Payment,Yes,No,Yes,69,"10/10/2025, 2:18:14 PM",
+Amit Talmale,skaamit9786@gmail.com,8829085833,male,22,JKLU,"Plot No. 19 , Tirupati Vihar 'B' ,Loha Mandi Road",participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/10/2025, 2:16:40 PM",
+Neelesh Rana,neeleshrana0567@gmail.com,8112207797,male,21,JK Lakshmkpat University ,"Plot No. 19 , Tirupati Vihar 'B' ,Loha Mandi Road",participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/10/2025, 2:16:10 PM",
+rayansh kaushal,rayansh8kaushal@gmail.com,9887701430,male,19,Jklu,Jhotwara Nangal pulia,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/10/2025, 2:08:37 PM",
+Ajayraj Singh Shekhawat ,ajayrajsinghshekhawat13@gmail.com,9549652123,male,20,Jklu,"607, Umrao vihar, jaipur",participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/10/2025, 2:06:38 PM",
+Manvendra Singh Shekhawat,starchmaize@gmail.com,9982428977,male,19,Jklu,102 Maharana Pratap nagar khatipura jaipur ,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/10/2025, 1:58:29 PM",
+Samar Raghav,samarraghav25@gmail.com,9289298819,male,18,JK Lakshmipat University ,Gurgaon,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/10/2025, 1:57:30 PM",
+Parth Gupta,parthgupta@jklu.edu.in,7014323271,male,20,JKLU,"Plot no. 96, Sector 8, Vidyadhar Nagar, Papad Ke Hanumanji Road, Jaipur, Jaipur District, Jaipur",participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/10/2025, 1:56:41 PM",
+Manan Vij,vijmanan516@gmail.com,9870113491,male,19,Uni ,206 gokul vatika vaishali ,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/10/2025, 1:56:30 PM",
+Rahul Choudhary,rnjaat2972@gmail.com,7690090957,male,22,Jk laxmipath university ,Mansrover ,participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/10/2025, 1:49:53 PM",
+Pulak Anand ,pulakanand.arch@gmail.com,8375837527,male,22,Vastukala Academy college of architecture ,"Shree aashreya emerald, jhai, jaipur ",participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/10/2025, 1:00:35 PM",
+Naveen Yadav ,raosahab9542@gmail.com,8107646599,male,18,JK Lakshmipat university ,Ramchandrapura Ajmer road Jaipur ,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/10/2025, 12:45:24 PM",
+Arvind Chand,baldishkhanapuri36@gmail.com,7249832203,male,29,Not applicable,Jaipur,participant,VISITOR_PASS,Yes,No,Yes,207,"10/10/2025, 12:35:18 PM",
+Vinita Chauhan,bharat16853@gmail.com,9624416853,female,24,Not applicable,Jaipur,participant,VISITOR_PASS,Yes,No,Yes,207,"10/10/2025, 12:31:10 PM",
+Bharat Kumar,devg1633@gmail.com,9896527244,male,30,Not applicable,Jaipur,participant,VISITOR_PASS,Yes,Yes,Yes,207,"10/10/2025, 12:29:00 PM",
+Dimple Ramrakhani ,DIMPLERAMRAKHANI@JKLU.EDU.IN,7878022982,female,20,Jk lakshmipat university ,Ajmer road,participant,VISITOR_PASS,Yes,No,Yes,138,"10/10/2025, 12:25:06 PM",
+SHAH ALAM,shahalammohammad8087@gmail.com,+91 97617 70932,,22,BIHAR ENGINEERING UNIVERSITY,UTTAR PRADESH,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:57:08 AM",Team MAFIA (BGMI TOURNAMENT)
+SHIWAM,SHIVAMGMUHCHATTI@GMAIL.COM,9162391401,Male,22,BIHAR ENGINEERING UNIVERSITY,UTTAR PRADESH,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:57:06 AM",
+DraXOG,ankitjoshi1439@gmail.com,+91 82357 58455,21,,https://drive.google.com/open?id=1VjnLSs__ME3p3wel3AOO9cnh6wv4KFdw,GHAZIABAD Uttar Pradesh,participant,BGMI TOURNAMENT,Yes,No,No,0,"10/10/2025, 10:57:05 AM",
+Syed Ehtesham Hussain,ankitjoshi@jklu.edu.in,9354116261,Male,21,https://drive.google.com/open?id=1VjnLSs__ME3p3wel3AOO9cnh6wv4KFdw,GHAZIABAD Uttar Pradesh,participant,BGMI TOURNAMENT,Yes,No,No,0,"10/10/2025, 10:57:05 AM",
+Manthan patel,Patelmathan55@gmail.com,8875523574,20,,,,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:56:26 AM",The Emperor (BGMI TOURNAMENT)
+Aditya jangam,adityajangam806@gmail.com,7737418313,20,,,,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:56:17 AM",LIBERAL GODS (BGMI TOURNAMENT)
+Aman verma,vermaaman715915@gmail.com,7014808097,,,,,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:56:16 AM",LIBERAL GODS (BGMI TOURNAMENT)
+Jashraj bhavsar,jash22bh@gmail.com,9460994243,Male,,,,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:56:16 AM",LIBERAL GODS (BGMI TOURNAMENT)
+rajat yadav,arshveersinghchauhan@jklu.edu,9118578844,20,,,,participant,BGMI TOURNAMENT,Yes,No,No,0,"10/10/2025, 10:56:13 AM",
+Pradeep chandeliyaa,chandeliyapp01@gmail.com,8949122361,,21,Aadharsh college,Star City mall kuchaman city,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:54 AM",Gorkha (BGMI TOURNAMENT)
+Manish chandeliya,Manishbarosha35@gmail.com,8766133116,19,,https://drive.google.com/open?id=1AMwAnv7yOGmm9J9RohKA88FYuUHzGhR3,Star City mall kuchaman city,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:54 AM",Gorkha (BGMI TOURNAMENT)
+Pradhuman Shekhawat,Shekhawatpradhuman0@gmail.com,7691003864,21,,https://drive.google.com/open?id=1AMwAnv7yOGmm9J9RohKA88FYuUHzGhR3,Star City mall kuchaman city,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:54 AM",Gorkha (BGMI TOURNAMENT)
+Harsh Chandeliya,chandeliyaharsh0@gmail.com,6377023466,Male,21,Aadharsh college,Star City mall kuchaman city,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:54 AM",Gorkha (BGMI TOURNAMENT)
+Harshit Sharma,harshitsharma2116@gmail.com,8619911204,,20,Jecrc,5c,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:50 AM",Team Khatola eSports (BGMI TOURNAMENT)
+Armaan Singh,armansingh4239xas@gmail.com,9199530093,,18,Jecrc University,438 gyan vihar,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:39 AM",Iconic White (BGMI TOURNAMENT)
+Lokendera Singh,lokendrasinghrathore374@gmail.com,7737362605,18,,https://drive.google.com/open?id=1ezWuhinN5vTQfFFy1SNUsrrUB7h0p5Jv,438 gyan vihar,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:38 AM",Iconic White (BGMI TOURNAMENT)
+Mayank Chaudhary,chaudharymayank771@gmail.com,9460013220,18,,https://drive.google.com/open?id=1ezWuhinN5vTQfFFy1SNUsrrUB7h0p5Jv,438 gyan vihar,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:38 AM",Iconic White (BGMI TOURNAMENT)
+Manan Verma,manan8003213500@gmail.com,8000182038,Male,18,Jecrc University,438 gyan vihar,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:54:38 AM",Iconic White (BGMI TOURNAMENT)
+Vikram Singh,vikram.warrior@gmail.com,9123456792,Male,22,JK Lakshmipat University,"Jaipur, Rajasthan",participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:51:14 AM",Alpha Warriors (BGMI TOURNAMENT)
+Priya Sharma,priya.alpha@gmail.com,9123456791,Female,19,JK Lakshmipat University,"Jaipur, Rajasthan",participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:51:14 AM",Alpha Warriors (BGMI TOURNAMENT)
+Ravi Kumar,ravi.warrior@gmail.com,9123456790,Male,20,JK Lakshmipat University,"Jaipur, Rajasthan",participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:51:14 AM",Alpha Warriors (BGMI TOURNAMENT)
+Arjun Patel,arjun.alpha@gmail.com,9123456789,Male,21,JK Lakshmipat University,"Jaipur, Rajasthan",participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:51:13 AM",
+Neeraj,neerajsh367@gmail.com,8829805833,male,21,RU,Jaipur,participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 10:46:57 AM",
+Tanmay Joshi,Tanmayjoshinot20@gmail.com,9024720510,male,19,Jklu,7 Main Sector Kashipuri Shastri Nagar,participant,SEAL THE DEAL; BIDDING BEFORE WICKET; DUMB SHOW,No,No,Yes,447.75,"10/10/2025, 10:27:51 AM",
+Navay Verma,navay3918@gmail.com,7727834181,male,23,IIS University,Malviya Nagar Jaipur,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 10:18:31 AM",Kashish Ramrakhani's Team (RAMPWALK - PANACHE)
+Anjali Sharma,anjalisharma211005@gmail.com,9413418249,female,20,IIS University,Jaipur,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 10:18:31 AM",Kashish Ramrakhani's Team (RAMPWALK - PANACHE)
+Aditi Sharma,aditixdsharma2005@gmail.com,8949712274,female,20,IIS University,Jaipur,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 10:18:30 AM",Kashish Ramrakhani's Team (RAMPWALK - PANACHE)
+Diya Gurjar ,diya090704gurjar@gmail.com,8962041907,female,21,IIS University,Jaipur,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 10:18:30 AM",Kashish Ramrakhani's Team (RAMPWALK - PANACHE)
+Harshita deora,harshitadeora51126@gmail.com,6375960137,female,22,IIS  University,Jaipur ,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 10:18:29 AM",Kashish Ramrakhani's Team (RAMPWALK - PANACHE)
+Aditi Koolwal ,aditikoolwal26@gmail.com,8005985537,female,19,IIS  University,Bani Park Jaipur,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 10:18:29 AM",Kashish Ramrakhani's Team (RAMPWALK - PANACHE)
+Kashish Ramrakhani,Kashishramrakhani014@gmail.com,6377223846,female,21,IIS University ,JAIPUR,participant,RAMPWALK - PANACHE,No,Yes,Yes,749.75,"10/10/2025, 10:18:28 AM",
+Ishu kumar ,ishukumar@jklu.edu.in,7014985001,male,19,Jk lakshmipat university jaipur ,JKlu jaipur ,participant,BIDDING BEFORE WICKET; FOCUS; BGMI TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 10:18:11 AM",Nikhilesh Singh Panwar 's Team (BIDDING BEFORE WICKET); Nikhilesh Singh Panwar 's Team (FOCUS); Nikhilesh Singh Panwar 's Team (BGMI TOURNAMENT)
+Gauri Akar ,GAURIAKAR@jklu.edu.in,7878220947,female,20,Jk lakshmipat University ,10 A shree Giriraj vihar jaipur ,participant,VISITOR_PASS,Yes,Yes,Yes,138,"10/10/2025, 9:55:37 AM",
+Daksh Shukla,dakshshukla@jklu.edu.in,8824809316,,,,Mahima panorama,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 9:51:51 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Hardik Sain,hardikkumar20007@gmail.com,8000554092,male,18,JK Lakshmipat University ,"E-129A Prem Nagar, Jhotwara, Jaipur",participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/10/2025, 9:40:44 AM",
+Riya Jain ,riyajain@jklu.edu.in,8619208908,female,20,Jk lakshmipat university ,"195, SOUTH PART DRONPURI, GIRDHARIPURA GAS GODAM GALI, GANDHI PATH WEST, VAISHALI NAGAR JAIPUR",participant,VISITOR_PASS; Demo Payment,Yes,Yes,Yes,138,"10/10/2025, 9:32:53 AM",
+Lakshay khandelwal ,merapersonalmail12@gmail.com,7976413634,male,20,Jk lakshmipat university,8/389 vidhyadhar nagar ,participant,IN CONVERSATION WITH,No,No,No,0,"10/10/2025, 9:22:57 AM",
+q,us@j.com,1231231231,male,21,sdf,we,participant,IN CONVERSATION WITH,No,No,No,0,"10/10/2025, 9:10:42 AM",
+Lucky Badgujar,badgujarlucky67@gmail.com,6375520866,male,19, jay narayan vyas university , roop nagar jalore,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 8:27:42 AM",Rahul kumar's Team (FREE FIRE TOURNAMENT)
+Hitesh Kumar,hiteshsundesha7775@gmail.com,9610090377,male,10, jay narayan vyas university , roop nagar jalore,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 8:27:41 AM",Rahul kumar's Team (FREE FIRE TOURNAMENT)
+Nitesh Kumar,niteshkumarparmar839@gmail.com,9509695223,male,20, jay narayan vyas university ,roop nagar jalore,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 8:27:41 AM",Rahul kumar's Team (FREE FIRE TOURNAMENT)
+Rahul kumar,dilipsonidilip444@gmail.com,9571031960,male,17, jay narayan vyas university , roop nagar jalore,participant,FREE FIRE TOURNAMENT,No,No,Yes,300,"10/10/2025, 8:27:40 AM",
+Dhananjay Sharma,dhananjaysharma@jklu.edu.in,7357904367,male,19,J K Lakshmipat University,Kota Raj.,participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/10/2025, 8:24:10 AM",
+karan Salvi,karansalvi2201@gmail.com,7877818571,male,20,JK LAXMIPAT UNIVERSITY ,Shree aashreya emareld chatarpura ,participant,VISITOR_PASS,Yes,Yes,Yes,103.5,"10/10/2025, 8:14:59 AM",
+Abhishek Yadav ,abhisheky20082008@gmail.com,9257707872,male,17,Vidhyapeeth jaipur,B-70 A Jagdamba Nagar Behind Heerapura Powerhouse Ajmer road Jaipur,participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/10/2025, 7:46:52 AM",
+tanish meena,tanishpvt8764@gmail.com,9783549720,male,23,galgotia college,tejal pg near helmet point gopalpura mode,participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/10/2025, 7:44:23 AM",
+Raghav Khandelwal,raghavkh21@gmail.com,9001649356,male,21,ICAI,"8/395, Vidhyadhar Nagar, jaipur",participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/10/2025, 7:36:58 AM",
+Shivam upadhay ,upadhaymadhvi@gmail.com,8000052870,male,18,Subodh ,Adinath ngar ,participant,VERSEVAAD,No,Yes,Yes,4.99,"10/10/2025, 7:30:54 AM",
+Vaibhav sagar ,vaibhavsagar25121@gmail.com,7909009384,male,23,Indraprastha University ,Aashreya Emerald ,participant,VISITOR_PASS; CLAY MODELLING,Yes,Yes,Yes,337,"10/10/2025, 7:25:44 AM",
+Neeraj Gidwani,neerajgidwani07@gmail.com,9351596163,male,19,SGVU,249 - a sindhi colony jawahar nagar,participant,VERSEVAAD,No,Yes,Yes,4.99,"10/10/2025, 7:25:38 AM",
+Pratibha,pratibha37479@iisuniv.ac.in,7877441297,female,20,IIS (deemed to be) University,"Jhotwara, Jaipur",participant,STEP UP,No,Yes,Yes,374.25,"10/10/2025, 7:18:57 AM",
+Rishita Narnoliya,rishitanarnoliya36682@iisuniv.ac.in,9602956601,female,19,IIS (deemed to be)University,"Vidhyadhar nagar, jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/10/2025, 7:00:37 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Ekta Peswani,ektapeswani35322@iisuniv.ac.in,9783834433,female,20,IIS (deemed to be)University,"Mansarovar,jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/10/2025, 7:00:36 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Vishuddhi Shah,vishuddhishah37030@iisuniv.ac.in,8085702117,female,19,IIS (deemed to be)University,"mansarovar,jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/10/2025, 7:00:36 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Anika Gupta,anikagupta35902@iisuniv.ac.in,8829993566,female,20,IIS (deemed to be)University,"Malviya Nagar,Jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/10/2025, 7:00:35 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Richa Kothari,richakothari38195@iisuniv.ac.in,9928463066,female,20,IIS (deemed to be) University,"Gopalpura,Jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/10/2025, 7:00:35 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Kaashika Sharma,kaashikasharma36728@iisuniv.ac.in,9828146677,female,19,IIS(deemed to be )University,"Vaishali Ngar, Jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/10/2025, 7:00:34 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Kirti Bhardwaj,kirtibhardwaj36785@iisuniv.ac.in,8619735002,female,19,IIS (deemed to be ) University,"Vidhyadhar Nagar, Jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/10/2025, 7:00:34 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Prachi Raj Suthar,prachirajsuthar36854@iisuniv.ac.in,6376912300,female,19,IIS (deemed to be) University,"Jagatpura, Jaipur",participant,DANCE BATTLE; STEP UP,Yes,Yes,Yes,374.25,"10/10/2025, 7:00:33 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Tisha Badlani,tishabadlani36255@iisuniv.ac.in,6350685649,female,20,IIS (deemed to be) University,"malviya nagar, jaipur",participant,DANCE BATTLE; STEP UP,Yes,Yes,Yes,374.25,"10/10/2025, 7:00:33 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Avni Jain,avnijain35376@iisuniv.ac.in,8094539920,female,20,IISU (Deemed to be) University,"SFS Mansarovar, Jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/10/2025, 7:00:32 AM",Akshita Srivastava's Team (DANCE BATTLE)
+Akshita Srivastava,akshitasrivastava37920@iisuniv.ac.in,9602307083,female,20,IIS (deemed to be) University,"Mansarovar, Jaipur",participant,DANCE BATTLE,No,Yes,Yes,1874.25,"10/10/2025, 7:00:31 AM",
+Aadityaa Chakravorty,aadityaachakravorty@jklu.edu.in,9145940056,male,20,Jk Lakshmipat university ,"Sardar Patel Apartment, Mansarovar, Jaipur ",participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/10/2025, 6:58:45 AM",
+Pawani sharma ,pawanisharma2510@gmail.com,8905818323,female,17,Jk Laxmipath university ,Jklu,participant,DUMB SHOW,No,No,Yes,149.25,"10/10/2025, 6:51:22 AM",
+Abhimanyu Singh,askatiyar2007@gmail.com,9257266461,male,18,Jk laxmipath university ,Jklu ,participant,DUMB SHOW,No,No,Yes,149.25,"10/10/2025, 6:46:54 AM",
+Shubhi Jain,jainshubhi2509@gmail.com,9116160224,female,18,Jk Lakshmipat ,"78-A , Devdhara colony",participant,COURTROOM,No,Yes,Yes,199,"10/10/2025, 6:26:23 AM",
+Yashica pareek,yashica.pareek30@gmail.com,6376247694,female,18,Jklu,"C-23 subhashis home naryan vihar , naryan sagar ",participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 6:24:47 AM",
+Vansh gupta,guptavansh1805@gmail.com,8690666045,male,19,Jk lakshmipat university ,"Gayatri sadan near ram nagar metro station, ajmer road, sodala, jaipur",participant,COURTROOM,No,Yes,Yes,199,"10/10/2025, 6:06:59 AM",
+Krishna Kumawat ,krishnakumawat@jklu.edu.in,8290066331,male,19,JK LAKSHMIPATH university ,"House no.11, Ashok Vatika, Khatipura road, Jhotwara ",participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 6:01:47 AM",
+Rohit sharma,rs6587484@gmail.com,8905306787,male,19,Poornima University,"Near Mahatma Gandhi hospital, sitapura Jaipur 302022",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:27 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+Kaustubh Pareek,Kaustubhpareek21@gmail.com,9116615595,male,17,Poornima University,"2082, Nahargarh Road, Chandpole Bazar, Jaipur, Rajasthan",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:27 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+Bhavishya Awasthi,2025bbabhavishya23230@poornima.edu.in,7014237732,male,18,Poornima University,"Aanand prime sector 8, Haldighati, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:26 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+somya arya ,2025bbasomya23492@poorima.edu.in,9462906635,male,19,Poornima University,101 saini colony 1st kartarpura jaipur,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:26 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+Anushka jain,2025bbaanushka20481@gmail.com,7230044475,female,18,Poornima University,5c guru kripa laxmi colony opposite bohra ji ka bagh jaipur,participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:25 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+Aditya bhandari,2025bbaaditya20946@poornima.edu.in,6377404538,male,18,Poornima University,"388,Aditya regency 80ft road gopalpura bypass",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:25 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+Diya Jetwani,2025bbadiya21141@poornima.edu.in,8905753907,female,16,Poornima University,"Radha Nikunj, Mansarovar Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:24 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+Himesh Jetwani,2025bbahimesh21142@poornima.edu,9950042132,male,17,Poornima University,"Radha Nikunj, Mansarovar Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:24 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+TANUSHKA GUPTA,2025bbatanushka24179@poornima.edu.in,7976789810,female,18,Poornima University,"60 , shree ji nagar durgapura tonk road Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/10/2025, 5:57:23 AM",Kavya Tak's Team (RAMPWALK - PANACHE)
+Kavya Tak,2025bbakavya22340@poornima.edu.in,6378931033,female,18,Poornima University,"JKJ Jewellers, 7no.chauraha, Jagatpura, Jaipur",participant,RAMPWALK - PANACHE,No,Yes,Yes,1499.5,"10/10/2025, 5:57:23 AM",
+Kalpana Baghel,kalpanabaghel296@gmail.com,9740459075,female,19,JK Lakshmipat University ,"Jaipur, Rajasthan ",participant,CLAY MODELLING; ART RELAY,No,No,Yes,298.5,"10/10/2025, 5:51:54 AM",
+Yash Mangal,jatintiwari2626@gmail.com,8306755102,male,19,Jk laxmipath university ,Jaipur ,participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/10/2025, 5:49:16 AM",
+Anshika soni,anshikasoni@jklu.edu.in,9251253513,female,18,jklaxmipath university ,Jklu hostel,participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 5:40:55 AM",
+Vaibhav Khandelwal ,vaibhavkhandelwal@jklu.edu.in,6367511127,male,18,JK Lakshmipath University,JK Lakshmipath University Mahapura near mahindra sez,participant,DUMB SHOW,No,No,Yes,149.25,"10/10/2025, 5:34:26 AM",
+Shubham Jain,shubhamjain2023@jklu.edu.in,9829780775,male,21,JKLU,JKLU,participant,SEAL THE DEAL; COURTROOM; Demo Payment,Yes,Yes,Yes,298.5,"10/10/2025, 5:20:40 AM",
+ISHIT AGARWAL,HYPERTERROR2605@GMAIL.COM,9783590261,male,19,JK LAKSHMIPATH UNIVERSITY,JAIPUR,participant,VALORANT TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 5:12:35 AM",VANSH SHARMA's Team (VALORANT TOURNAMENT)
+NIDHISH TRIPATHI,Nidhishtripathi@jklu.edu.in,8764497220,male,18,JK LAKSHMIPATH UNIVERSITY,JAIPUR,participant,VALORANT TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 5:12:35 AM",VANSH SHARMA's Team (VALORANT TOURNAMENT)
+SAMARTH SINGH,Samarthsingh@jklu.edu.in,9413803303,male,18,JK LAKSHMIPATH UNIVERSITY,JAIPUR,participant,VALORANT TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 5:12:34 AM",VANSH SHARMA's Team (VALORANT TOURNAMENT)
+AGAMYA SINGH CHAUHAN,vibhu1352006@gmail.com,9352786715,male,19,jklu,JAIPUR,participant,VALORANT TOURNAMENT,Yes,No,Yes,0,"10/10/2025, 5:12:34 AM",VANSH SHARMA's Team (VALORANT TOURNAMENT)
+Bhavya Jain,bhavyajain2025@jklu.edu.in,9672750183,male,19,Jk Lakshmipat University ,BH -2 ,participant,SEAL THE DEAL,No,Yes,Yes,149.25,"10/10/2025, 5:05:29 AM",
+Karan Nishad,kn907687@gmail.com,9198721362,male,14,jklu,BH-2 JKLU,participant,SEAL THE DEAL,No,Yes,Yes,149.25,"10/10/2025, 5:04:32 AM",
+Himanshu Singh Chouhan ,himanshusc8374@gmail.com,8824475570,male,18,Jk lakshmipat University ,"116/92 , Ram tirth Marg, mansarovar, jaipur ",participant,COURTROOM; Demo Payment,Yes,No,Yes,199,"10/10/2025, 4:38:51 AM",
+Prince soni,radhephotography1609@gmail.com,7230003400,male,21,None,"25B, shyam nagar vistar cajashan - 302012, Jaipur,",participant,VISITOR_PASS,Yes,No,Yes,69,"10/10/2025, 4:01:38 AM",
+Sharanya,sharanyas363@gmail.com,6363451551,female,21,Vidya Bharti School,Bangalore,participant,COURTROOM; VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/9/2025, 9:22:24 PM",Adityavardhan Singh Chauhan's Team (COURTROOM); Adityavardhan Singh Chauhan's Team (VALORANT TOURNAMENT)
+Rahul Jangid,2024bbarahul18417@poornima.edu.in,7568600414,male,19,Poornima University,Sitapura Jaipur,participant,COURTROOM; VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/9/2025, 9:22:23 PM",Adityavardhan Singh Chauhan's Team (COURTROOM); Adityavardhan Singh Chauhan's Team (VALORANT TOURNAMENT)
+Mayank Kumar ,mayankg290706@gmail.com,8745078314,male,20,Delhi University,Delhi,participant,COURTROOM; VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/9/2025, 9:22:23 PM",Adityavardhan Singh Chauhan's Team (COURTROOM); Adityavardhan Singh Chauhan's Team (VALORANT TOURNAMENT)
+Arunil Jain,aruniljain@jklu.edu.in,8890301492,male,17,JK Lakshmipat University,"A-52, Rajdarbar Colony, Bijainagar",participant,COURTROOM,No,No,Yes,149.25,"10/9/2025, 8:10:35 PM",
+Rishabh somani,rishabhsomani@jklu.edu.in,9875200871,male,20,Jklu,1/266 housing board colony,participant,SEAL THE DEAL; BIDDING BEFORE WICKET,No,Yes,Yes,298.5,"10/9/2025, 6:32:56 PM",
+Mehul Lohiya,mehullohiya2@gmail.com,7737457615,male,20,Arya College Of Engineering And It,"34, uttra road, kishangarh",participant,VISITOR_PASS,Yes,No,Yes,69,"10/9/2025, 6:24:02 PM",
+piyush bangar,piyushbangar1012@gmail.com,9799781000,male,20,arya college of engineering and it,kishangarh ,participant,VISITOR_PASS,Yes,No,Yes,69,"10/9/2025, 6:16:26 PM",
+Ronsa,rr796tina@gmail.com,9983516964,male,21,N/A,"704, elegant heights, vaishali nagar jaipur Rajasthan ",participant,BANDJAM,Yes,No,Yes,1124.25,"10/9/2025, 6:10:55 PM",
+SAHIL MITTAL,sahilmittal2023@jklu.edu.in,9785367433,male,23,Jk Lakshmipat University,Samanvay Aasra,participant,FOCUS,No,No,Yes,149.25,"10/9/2025, 6:05:08 PM",
+manan shah ,mannatsukhija175@gmail.com,7789921489,male,19,"swami keshvanand institute of technology, jaipur ",jaipur ,participant,ART RELAY; VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/9/2025, 5:36:48 PM",Muskan Jangid's Team (ART RELAY); Muskan Jangid's Team (VALORANT TOURNAMENT)
+manan jangid ,muskangojo2007@gmail.com,9667766871,male,19,"swami keshvanand institute of technology, jaipur ",jaipur ,participant,ART RELAY; VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/9/2025, 5:36:47 PM",Muskan Jangid's Team (ART RELAY); Muskan Jangid's Team (VALORANT TOURNAMENT)
+pranjal jangid ,pranjaljangid2001@gmail.com,7821993691,male,24,Hi-Tech Medical college and hospital , odisha ,participant,ART RELAY; VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/9/2025, 5:36:47 PM",Muskan Jangid's Team (ART RELAY); Muskan Jangid's Team (VALORANT TOURNAMENT)
+Mannat Sukhija ,mannatsukhija55@gmail.com,7719691267,male,21,amity university ,chandigarh ,participant,ART RELAY; VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/9/2025, 5:36:46 PM",Muskan Jangid's Team (ART RELAY); Muskan Jangid's Team (VALORANT TOURNAMENT)
+Farhan Khan,farhankhan7861458@gmail.com,8890174914,Male,18,Jk Lakshmipat University,"Sanjaynagar D , joshi marg , Jhotwara",participant,VISITOR PASS,Yes,No,No,0,"10/9/2025, 5:33:45 PM",
+Yojit soni,yoxitt25@gmail.com,9024588818,Male,20,JECRC UNIVERSITY,B-21 Tara nagar khirni phatak road jhotwar,participant,STEP UP,Yes,Yes,No,0,"10/9/2025, 5:33:40 PM",
+Satvik Agrawal,satvikagrawal@jklu.edu.in,8272031402,male,18,JK Lakshmipat University,BH - 2 JKLU Jaipur,participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/9/2025, 5:30:44 PM",
+Anmol Anuragi,anmolanuragi@jklu.edu.in,6267625174,male,19,JKLU,Jaipur,participant,CLAY MODELLING,No,No,Yes,149.25,"10/9/2025, 5:24:43 PM",
+Sudarshan Samuel ,irins472@gmail.com,8107063157,male,19,Rajasthan sangeet sansthan ,Sunrise city Niwaru road,participant,ECHOES OF NOOR,No,Yes,Yes,499,"10/9/2025, 5:18:19 PM",
+Vivaan Mishra,vivaanmishra@jklu.edu.in,9336785425,male,19,Jklu,BH-2,participant,BIDDING BEFORE WICKET,No,Yes,Yes,149.25,"10/9/2025, 5:10:46 PM",
+Harshita Sharma ,harshitasharma@jklu.edu.in,9251046854,female,17,Jk lakshmipat University ,"Omaxe city, Jaipur, Rajasthan ",participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/9/2025, 5:03:53 PM",
+tanish soni,iamtanishqsoni29@gmail.com,9799544123,male,3,JECRC University,"pratap nagar , jaipur ",participant,BANDJAM,Yes,Yes,Yes,0,"10/9/2025, 4:38:34 PM",Jatin Singh's Team (BANDJAM)
+Faizan Khalwa,khalwafaizan@gmail.com,9571461626,male,19,JECRC University,"krishna colony, naya khera , vidhyadhar nagar",participant,BANDJAM,Yes,Yes,Yes,0,"10/9/2025, 4:38:34 PM",Jatin Singh's Team (BANDJAM)
+Anvesha Seervi,anveshaseervi@gmail.com,9716034319,female,19,JECRC University,"southendhomes apt, jagatpura , jaipur",participant,BANDJAM,Yes,Yes,Yes,0,"10/9/2025, 4:38:33 PM",Jatin Singh's Team (BANDJAM)
+Antra Dixit,antradixit2144@gmail.com,8955831878,female,21,JECRC University,"Saryu Marg, VT Road,Mansarovar,jaipur",participant,BANDJAM,Yes,Yes,Yes,0,"10/9/2025, 4:38:33 PM",Jatin Singh's Team (BANDJAM)
+Jatin Singh,doomsingh702@gmail.com,9664360761,male,20,JECRC University,Mojika Ultima,participant,BANDJAM,Yes,Yes,Yes,749.5,"10/9/2025, 4:38:32 PM",
+Kristy Sharma ,kristysharma09082007@gmail.com,8905261625,female,18,Jk lakshmipat university ,10 A maa karni kunj near Vidhansabha nager dawas jaipur ,participant,VISITOR_PASS,Yes,No,Yes,138,"10/9/2025, 4:31:41 PM",
+Raghuraj Jangid,raghurajjangid@jklu.edu.in,8306203348,male,18,Jk lakshmipat university ,"Jaipur, Rajasthan ",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 4:24:28 PM",Vibhor Vyas's Team (FREE FIRE TOURNAMENT)
+Bhanu Partap Singh ,bhanupr4566@gmail.com,9799850952,male,19,Jk lakshmipat university ,"42, pt. Fateh lal nagar",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 4:24:28 PM",Vibhor Vyas's Team (FREE FIRE TOURNAMENT)
+Anurag Singh ,anuragsingh707380@gmail.com,9166863747,male,18,Jk lakshmipat university ,"Jodhpur, Rajasthan ",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 4:24:27 PM",Vibhor Vyas's Team (FREE FIRE TOURNAMENT)
+Vibhor Vyas,vibhorvyas2008@gmail.com,8118896386,male,18,Jk lakshmipat university ,"Pali, rajasthan ",participant,FREE FIRE TOURNAMENT,No,No,Yes,450,"10/9/2025, 4:24:27 PM",
+Rishab prakash sheshma,dmjaat537@gmail.com,8302514146,male,20,Jklu,"A183 Mangalam dwarika mahindra sez ,ajmer road",participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/9/2025, 4:21:52 PM",
+Pari Jain,jainpari9157@gmail.com,9950800981,female,17,Jk lakshmipat university ,453A Jagannathpuri Kanta Chauraha Jhotwara Jaipur,participant,VISITOR_PASS,Yes,No,Yes,103.5,"10/9/2025, 4:14:51 PM",
+Kaushal sharma,kaushalsharma5966@gmail.com,9351358695,male,19,Poddar international college,"Choti chaupar, jaipur, raj",participant,CLAY MODELLING,No,Yes,Yes,199,"10/9/2025, 4:03:26 PM",
+Kavya ,kabirrrr777@gmail.com,8003494497,male,22,Subodh college of law ,"704, elegant heights, vaishali nagar jaipur Rajasthan ",participant,BANDJAM,Yes,Yes,Yes,0,"10/9/2025, 4:01:15 PM",Ronsa's Team (BANDJAM)
+Parth Sharma,parthsharma312006@gmail.com,9263204805,male,19,.Poddar international college,"Near parishkar college , pareek boys pg, Jaipur",participant,ECHOES OF NOOR,No,Yes,Yes,249.5,"10/9/2025, 3:58:02 PM",
+Harshvardhan Singh Rathore,bansa7512@gmail.com,7976681235,male,20,Jecrc college ,Pratapnagar jaipur,participant,VISITOR_PASS,Yes,Yes,No,0,"10/9/2025, 2:33:30 PM",
+Gaurav ,Gauravsinghbora@jklu.edu.in,9999999999,male,21,Jklu,Jklu,participant,VISITOR_PASS,Yes,No,No,0,"10/9/2025, 1:48:22 PM",
+Lakshya sharma,lakshyassharma1202@gmail.com,8829000011,male,17,jecrc university ,Kota,participant,DUMB SHOW,No,No,Yes,199,"10/9/2025, 1:45:18 PM",
+Harshit kala,harshitkala@gmail.com,9999999999,other,62,Iit kanpur ,Iit kanpur ,participant,VISITOR_PASS,Yes,No,No,0,"10/9/2025, 1:28:40 PM",
+Mohit Patel ,thebotarmy9@gmail.com,+91 78275 75936,male,20,https://drive.google.com/open?id=1tYJ0qBuDznbgCDKH0BddP-K_sTS_d6LI,UTTAR PRADESH,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 1:14:46 PM",Shivam's Team (BGMI TOURNAMENT); Team MAFIA (BGMI TOURNAMENT)
+Saha aalm,sanu70787210@gmail.com,7417098495,male,23,Bihar Engineering University ,Uttar Pradesh ,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 1:14:46 PM",Shivam's Team (BGMI TOURNAMENT)
+Ruhi das,moondas2k182020@gmail.com,+91 60004 07883,female,21,https://drive.google.com/open?id=1tYJ0qBuDznbgCDKH0BddP-K_sTS_d6LI,UTTAR PRADESH,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 1:14:45 PM",Shivam's Team (BGMI TOURNAMENT); Team MAFIA (BGMI TOURNAMENT)
+Pranav ,pranavtomar444@gmail.com,7078721040,male,24,BIHAR ENGINEERING UNIVERSITY,UTTAR PRADESH,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 1:14:45 PM",Shivam's Team (BGMI TOURNAMENT); Team MAFIA (BGMI TOURNAMENT)
+Shivam,"SHIVAMGMUHCHATTI@GM,AIL.COM",6209831806,male,24,Bihar Engineering University,Bihar,participant,BGMI TOURNAMENT,No,No,No,562.5,"10/9/2025, 1:14:44 PM",
+Mohit Jangid,mohitjangidshahpura@gmail.com,7073788705,male,18,Arya College of Engineering,"Shahpura, jaipur",participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 12:37:37 PM",Lakshya Saini's Team (BGMI TOURNAMENT); The Emperor (BGMI TOURNAMENT)
+krish garg,krishgarg976@gmail.com,79762 21818,male,18,Arya College of Engineering,Jaipur,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 12:37:36 PM",Lakshya Saini's Team (BGMI TOURNAMENT); The Emperor (BGMI TOURNAMENT)
+Lakshya Saini,lakshyasaini139@gmail.com,9672419827,male,20,Arya College Of Engineering,"Shahpura,Jaipur",participant,BGMI TOURNAMENT,Yes,No,Yes,562.5,"10/9/2025, 12:37:36 PM",
+SATYA,paturithripurasatyasai@jklu.edu.in,8639474645,male,19,JK LAKSHMIPAT UNIVERSITY,"JK LAKSHMIPAT UNIVERSITY, JAIPUR ,RAJASTAN",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 12:22:35 PM",SHIVA's Team (FREE FIRE TOURNAMENT)
+REVANTH,nellurirevanthsai@jklu.edu.in,9391690153,male,18,JK LAKSHMIPAT UNIVERSITY,"JK LAKSHMIPAT UNIVERSITY, JAIPUR ,RAJASTAN",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 12:22:34 PM",SHIVA's Team (FREE FIRE TOURNAMENT)
+KUSHAL,dvskushalkumar@jklu.edu.in,8520039944,male,17,JK LAKSHMIPAT UNIVERSITY,"JK LAKSHMIPAT UNIVERSITY, JAIPUR ,RAJASTAN",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 12:22:34 PM",SHIVA's Team (FREE FIRE TOURNAMENT)
+SHIVA,avulashivashankar@jklu.edu.in,9177672381,male,19,JK LAKSHMIPAT UNIVERSITY,"JK LAKSHMIPAT UNIVERSITY, JAIPUR ,RAJASTAN",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,450,"10/9/2025, 12:22:33 PM",
+Aman pratap,amanpratapsingh@jklu.edu.in,9456608637,male,20,dfsgdh,fgdsh,participant,SEAL THE DEAL; FOCUS; BGMI TOURNAMENT,Yes,No,Yes,205,"10/9/2025, 12:19:58 PM",
+Jayash Gahlot,jayashgahlot9@gmail.com,8306274199,male,19,JK Lakshmipat University,Jaipur,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 12:11:16 PM",Ansh Gupta's Team (BGMI TOURNAMENT)
+Ansh Gupta,anshgupta@jklu.edu.in,9166083618,male,19,JK Lakshmipat University,Jaipur,participant,BGMI TOURNAMENT; BIDDING BEFORE WICKET,Yes,Yes,Yes,524.25,"10/9/2025, 12:11:15 PM",
+Nitika rathore,nitikarathore@jklu.edu.in,7073316516,female,18,Jk lakshmipat university ,Jaswant nagar khatipura ,participant,VISITOR_PASS,Yes,No,Yes,138,"10/9/2025, 11:50:49 AM",
+Ananya Singh ,ananya092302@gmail.com,9509946112,female,18,IET/JKLU/JAIPUR,GH-1/JKLU/JAIPUR,participant,DUMB SHOW,Yes,No,Yes,199,"10/9/2025, 11:36:39 AM",
+Chirag Khandelwal,Chiragkhandelwal050807@gmail.com,9929123171,male,18,Manipal Institute,"803 coral tower Somdatt Landmark Hawa Sadak Civil Lines, Jaipur",participant,VISITOR_PASS,Yes,No,Yes,69,"10/9/2025, 11:11:45 AM",
+Raghav dadich,renusharma3526@gamil.com,7023503526,male,20,Global senior secondary ,Jaipur ,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 11:02:02 AM",Ashok choudhary 's Team (FREE FIRE TOURNAMENT)
+Arun Solanki ,mrarunsolanki02@gmail.com,8764211706,male,20,J Narayan Vyas University ,Jaipur ,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"10/9/2025, 11:02:01 AM",Ashok choudhary 's Team (FREE FIRE TOURNAMENT)
+Naveen choudhary ,naveenjat4747@gmail.com,9358391087,male,20,Global senior secondary ,Jaipur ,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 11:02:01 AM",Ashok choudhary 's Team (FREE FIRE TOURNAMENT)
+Ashok choudhary,ashokchoudhary2024@jklu.edu.in,9785886071,male,19,JK Lakshmipat University,Jaipur,participant,FREE FIRE TOURNAMENT; BGMI TOURNAMENT,Yes,No,Yes,450,"10/9/2025, 11:02:00 AM",Ansh Gupta's Team (BGMI TOURNAMENT)
+Yashvarshan singh,yashvardhansingh33970@gmail.com,8769840744,male,19,Skit,Civil lines,participant,BANDJAM,Yes,Yes,Yes,0,"10/9/2025, 10:11:31 AM",Pratham Dubey's Team (BANDJAM)
+Bhavesh khatri,khatribhavesh89@gmail.com,9079056580,male,19,Skit,Mansarovar jaipur,participant,BANDJAM,Yes,Yes,Yes,0,"10/9/2025, 10:11:30 AM",Pratham Dubey's Team (BANDJAM)
+Saumya Arora,saumyaarora145@gmail.com,6376934700,male,19,SKIT,Jagatpura skit,participant,BANDJAM,Yes,Yes,Yes,0,"10/9/2025, 10:11:30 AM",Pratham Dubey's Team (BANDJAM)
+Pratham Dubey,propratham3008@gmail.com,8253018979,male,19,SKIT,"Jagatpura,Jaipur",participant,BANDJAM,Yes,Yes,Yes,749.5,"10/9/2025, 10:11:29 AM",
+Aryan Jain,jeyaryan010@gmail.com,,,,,,participant,DANCE BATTLE,Yes,Yes,No,0,"10/9/2025, 9:50:09 AM",
+Sambhav Johari,sambhavjohari15@gmail.com,8529562231,male,19,IIIM,"Ansal Sushant City-1 kalwar road machwa , Jaipur",participant,STEP UP,Yes,Yes,Yes,499,"10/9/2025, 9:35:53 AM",
+Garima chouhan,chouhangarima10@gmail.com,9588205302,female,18,DAV centenary public school ,"66,ghanshyam vihar ,panchyawala,Sirsi road ,Jaipur ",participant,STEP UP,Yes,Yes,Yes,499,"10/9/2025, 9:18:30 AM",
+Paree Sharma,Pareesharma21@gmail.com,7006564864,female,19,Biyani group of colleges,"L.S. nagar, vidhyadhar nagar, jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:10 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+Jaya Kanwar Chauhan ,kayasinghchauhan90@gmail.com,8005786883,female,22,Biyani group of colleges ," Brahmpuri road ,jorawar singh gate ,jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:10 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+ Palak Gurjar ,palakgurjar94139@gmail.com,9413981645,female,19,Biyani group of colleges ,Rani colony Niwaru Road Jhotwara  Jaipur,participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:09 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+anjali yadav ,anniiyadav111@gmail.com,7738149639,female,19,Biyani group of colleges , karni colony road no 17 vki area,participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:09 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+Avika Sharma ,avikasharma8949@gmail.com,8529625533,female,20,Biyani group of colleges ," 90b shiv vihar colony,  jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:08 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+Kirti Tanwar ,kirtitanwar023@gmail.com,7852813876,female,19,-Biyani group of colleges ," sector-4 vidhyadhar nagar, jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:08 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+ Neer Naruka ,neernaruka@gmail.com,9414030928,female,18,Biyani group of colleges ,"sangeet aashram, Subash colony Jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:07 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+ mansi indoria,mansiindoria734@gmail.com,9119301655,female,19,-Biyani group of colleges ,"55 a govindam green city 20 govindpura, jhotwara, Jaipur rajsthan",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:07 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+Khushi Sharma ,khushirlsharma@gmail.com,8562805100,female,21,Biyani group of colleges ,  kha - 85 bhawani Nagar murlipura sikar road Jaipu,participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:06 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+ Ishika Singh ,ishikasingh42725@gmail.com,7691091345,female,18,Biyani group of colleges ,"Elegant Gaurav, Balaji Vihar,  Harmada, Jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:06 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+Devika shrivastava ,devikashrivastava3@gmail.com,6377620776,female,21,Biyani group of colleges ,sector-04 JP colony vidhyadhar Nagar Jaipur rajsthan,participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:05 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+aleena mansuri,Aleenamansuri721@gmail.com,9001362654,female,19,Biyani group of colleges ,A-1 nehru nagar pani pech jaipur,participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:05 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+Rishika,dalmotrarishika@gmail.com,8899499129,female,18,Biyani group of colleges ,vidyadhar Nagar Jaipur,participant,DANCE BATTLE,Yes,Yes,Yes,0,"10/9/2025, 9:17:04 AM",Geetanjali Gupta's Team (DANCE BATTLE)
+Geetanjali Gupta,guptageetanjali84@gmail.com,8603978635,female,24,Biyani group of colleges ,"vidyadhar nagar, jaipur",participant,DANCE BATTLE,Yes,Yes,Yes,1874.25,"10/9/2025, 9:17:04 AM",
+Abhyuday Singh ,abhyudaysingh@jklu.edu.in,9216203310,male,19,Jk lakshmipat university ,"Murlipura, Jaipur",participant,VISITOR_PASS,Yes,Yes,Yes,138,"10/9/2025, 9:04:10 AM",
+Utkarsh Verma,vermautkarsh1814@gmail.com,7820048033,male,20,Jecrc University ,Sanskar boys hostel Sitapura Industrial Area Sitapura,participant,VERSEVAAD; Demo Payment,Yes,Yes,Yes,124.75,"10/9/2025, 9:01:37 AM",
+Himani Rawat,himani2257rawat@gmail.com,7827605790,female,18,"University Of Delhi, Hansraj College",Dwarka Mor Metro Station,participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:08 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Keerti Rana,ranakeerti29@gmail.com,7618636641,female,17,"University Of Delhi, Hansraj College","Lakhimpur Kheri, Uttar Pradesh",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:08 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Sonia Adhikari,soniaadhikari931@gmail.com,9968563213,female,17,"University Of Delhi, Hansraj College","Palam Colony, New Delhi",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:07 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Shreya Thakur ,shreyathakur6737@gmail.com,9958210334,female,19,"University Of Delhi, Hansraj College","Dc Chok, Rohini",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:07 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Riya Bhan,bhanriya10@gmail.com,9149504937,female,17,"University Of Delhi, Hansraj College","Muthi, J & K",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:06 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Pragya,pragya8f27@gmail.com,9211072403,female,17,"University Of Delhi, Hansraj College","Andrews Ganj, New Delhi",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:06 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Piyush Kumar Yadav,piyushyd41@gmail.com,9319106403,male,17,"University Of Delhi, Hansraj College","Phase 6, New Delhi",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:05 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Nidhi Kapoor,nidhikapoor2323@gmail.com,8929718468,female,19,"University Of Delhi, Hansraj College","Tilak Nagar, West Delhi",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:05 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Manya,siyagu9@gmail.com,8447419122,female,18,"University Of Delhi, Hansraj College","Karampura, new delhi",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:04 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Dhanusha Rana ,dhanurana1801@gmail.com,7876489745,female,18,"University Of Delhi, Hansraj College","Hamirpur, Himachal Pradesh",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:04 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Aryan,aryan88974@gmail.com,9540006963,male,21,"University Of Delhi, Hansraj College","Mandir Marg, New Delhi",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:03 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Arnav Malik,arnavmalikoorja13@gmail.com,9870761787,male,19,"University Of Delhi, Hansraj College",KeshavPuri Muzaffarnagar,participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:02 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Aishwarya Sharma,sharma.aishwarya.1983@gmail.com,9166541563,male,16,"University Of Delhi, Hansraj College",Phase 2 Jhunjhunu,participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:02 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Shreyansh Shukla ,shreyanshroorkee@gmail.com,9997841080,male,20,"University Of Delhi, Hansraj College","Roorkee, Uttrakhand",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:01 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Tamanna Nayak,tamannapn515@gmail.com,6372509038,female,20,"University Of Delhi, Hansraj College",Kamla Nagar Delhi,participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:01 AM",Samaksh Goswami's Team (DANCE BATTLE)
+ Palak Rawat,palak.rawat1306@gmail.com,7011484804,female,19,"University Of Delhi, Hansraj College",Palam Road New Delhi,participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:00 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Aniruddh Yadav,aniruddhyadav1806@gmail.com,6269881632,male,19,"University Of Delhi, Hansraj College",Malviya Nagar Metro Station,participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 8:38:00 AM",Samaksh Goswami's Team (DANCE BATTLE)
+Samaksh Goswami,samakshgoswami8860@gmail.com,8799793103,male,19,"University Of Delhi, Hansraj College","Ramnagar paharganj, New Delhi",participant,DANCE BATTLE,Yes,No,Yes,1874.25,"10/9/2025, 8:37:59 AM",
+Priyanshu Kumar ,Priyanshu333k@gmail.com,9891660352,male,18,Jk lakshmipath university ,H no 18 shiv colony maruti kunj rd Bhondsi gurugram,participant,COURTROOM,No,No,Yes,199,"10/9/2025, 7:20:46 AM",
+Daksh bhandari,bhandaridaksh423@gmail.com,6350614654,male,18,Vivekanada global university ,"435 A,bhavya residency-1,shri ram vihar,jagatpura ,jaipur",participant,FOCUS,Yes,No,Yes,199,"10/9/2025, 7:01:22 AM",
+priyanshi choudhary,priyanshi.kitto@gmail.com,8233997889,female,19,biyani girl's college,18-A R PURAM KHATIPURA JAIPUR,participant,COURTROOM,Yes,No,Yes,149.25,"10/9/2025, 5:34:02 AM",
+Sourabh moolchandani ,sourabhmoolchandani777@gmail.com,6376395181,male,19,Jecrc,Janki devi public school jaipur,participant,FOCUS,Yes,No,Yes,149.25,"10/9/2025, 5:23:22 AM",
+Harshit Soni,harshitsonie@gmail.com,9053581279,male,23,MDU Rohtak,Devi Durga Mandir VPO Jundla,participant,COURTROOM,Yes,No,Yes,199,"10/9/2025, 5:02:11 AM",
+Vishal,kamadoakaza800@gmail.com,9467346191,male,19,Gajodhar College ,Jaipur,participant,COURTROOM,Yes,No,Yes,199,"10/9/2025, 4:45:18 AM",
+Ashutosh Gupta,gupta.ashutosh1011@gmail.com,9509619872,Male,18,JK Lakshmipat university,Jklu campus,participant,BIDDING BEFORE WICKET,Yes,No,No,0,"10/9/2025, 4:38:48 AM",
+Shivika Kesharwani,kesharwanishivika@gmail.com,8737800889,Female,19,Jklu,"KARWI, CHITRAKOOT",participant,CLAY MODELLING,Yes,No,No,0,"10/9/2025, 4:38:48 AM",
+Aditya Singh,adityanayal99@gmail.com,7878558720,Male,19,IET/JKLU/JAIPUR,"A-32 janki vihar , girdharipura , jaipur 302021",participant,DUMB SHOW,Yes,No,No,0,"10/9/2025, 4:38:48 AM",
+shreya suri,surishreya0@gmail.com,8000937787,Female,18,SIU,flat no. 201 jewels island ajmer road dcm near elements mall,participant,Visitor Pass,Yes,Yes,No,0,"10/9/2025, 4:38:48 AM",
+Sanskriti Bansal,ee1230849@iitd.ac.in,7082576610,Female,20,Indian Institute of Technology Delhi,"Kailash Hostel, IIT Delhi",participant,DANCE BATTLE,Yes,No,Yes,0,"10/9/2025, 4:38:48 AM",
+Vansh,doshivansh15@gmail.com,8302159015,Male,18,Jk lakshmipat university,"Jk lakshmipat university,mahapura,ajmer road",participant,DUMB SHOW,Yes,No,No,0,"10/9/2025, 4:38:48 AM",
+Ashish Barwasha,ashishbarwsha@gmail.com,9529426943,Male,24,RU,"171, sanjay nagar ajmer road DCM jaipur",participant,STEP UP,Yes,Yes,No,0,"10/9/2025, 4:38:48 AM",
+Kartikeya jindal,kartikeya192jindal@gmail.com,8824372401,Male,24,JECRC UNIVERSITY,"494, rajni vihar heerapura ajmer road jaipur",participant,SEAL THE DEAL,Yes,No,No,0,"10/9/2025, 4:38:47 AM",
+Aryan kumawat,aryankumawat@jklu.edu.in,7229822866,Male,18,Jklu,Jaipur,participant,COURTROOM,Yes,No,No,0,"10/9/2025, 4:38:47 AM",
+dhurv singh,mrmcgaming02@gmail.com,7742410778,Male,18,jai narain vyas university jodhpur,roop nagar jalore,participant,DUMB SHOW,Yes,Yes,No,0,"10/9/2025, 4:38:47 AM",
+Tisha Garg,tishagarg000@gmail.com,8875610074,Female,18,Jk Lakshmipat,"City Palm-2, Jagdamba Nagar-E Heerapura Ajmer Rd 200ft baipass",participant,IN CONVERSATION WITH,Yes,No,No,0,"10/9/2025, 4:38:47 AM",
+Rishab Gupta,nonug132@gmail.com,9413184742,Male,23,Rajasthan universty,3/888 vdn,participant,BIDDING BEFORE WICKET,Yes,Yes,No,0,"10/9/2025, 4:38:47 AM",
+Pulkit Dosi,pulkitdosi16@gnail.com,9887788899,Male,19,JK lakshmipat university,Anukampa grandeur swej farm circle,participant,BIDDING BEFORE WICKET,Yes,No,No,0,"10/9/2025, 4:38:47 AM",
+Sahil Rojh,sahilrojh29@gmail.com,7427010011,Male,22,Jecrc University,438 gyan vihar,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/9/2025, 4:38:47 AM",
+Rahulgorani,rahulgorani957@gmail.com,6367427790,Male,18,Jk Lakshmipat university,47/86 kiran path mansarovar,participant,IN CONVERSATION WITH,Yes,No,No,0,"10/9/2025, 4:38:46 AM",
+Kushal Sharma,ks834070@gmail.com,9119336225,Male,19,J K Laxmipat University,"Sez Road, Jaipur",participant,IN CONVERSATION WITH,Yes,No,No,0,"10/9/2025, 4:38:46 AM",
+Gaurav Chaturvedi,gauravchaturvedi2204@gmaio.com,9982322299,male,19,JECRC Foundation ,Vashali nagar Jaipur ,participant,VISITOR_PASS; Demo Payment,Yes,Yes,Yes,69,"10/9/2025, 4:37:05 AM",
+Yogesh Bijarniya,yogeshbijarniya9392@gmail.com,9982989088,male,18,Jk laxmipath university ,Choudhary building material suppliers,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/9/2025, 2:07:46 AM",
+Divyansh Thakur,arshveersingh1973@gmail.com,7727086689,male,20,JKLU,JKLU,participant,BGMI TOURNAMENT,Yes,No,Yes,375,"10/8/2025, 10:03:29 PM",Gaurav Singh Bora's Team (BGMI TOURNAMENT)
+Ayush Choudhary,ayushchoudhary@jklu.edu.in,8387072406,male,20,JKLU,JKLU,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 9:33:13 PM",Yugdeep Singh's Team (BGMI TOURNAMENT)
+Rajat Yadav,arshveersinghchauhan@jklu.edu.in,7727086689,male,20,CSA university of agri and tech kanpur,Kannauj UP,participant,BGMI TOURNAMENT,Yes,No,Yes,562.5,"10/8/2025, 9:33:12 PM",Yugdeep Singh's Team (BGMI TOURNAMENT); SHITTER MASTERS VOL.1 (BGMI TOURNAMENT)
+Dhairya,Dhairyaagarwal@jklu.edu.in,+91 90792 63854,male,19,Jk Lakshmipat university ,Jaipur,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 8:42:13 PM",Mayank Gautam's Team (BGMI TOURNAMENT); Sinister (BGMI TOURNAMENT)
+Arnav,arnavrawat@jklu.edu.in,+91 96826 01220,male,18,Jk Lakshmipat university,Jaipur,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 8:42:13 PM",Mayank Gautam's Team (BGMI TOURNAMENT); Sinister (BGMI TOURNAMENT)
+Amartya pareek,amartyapareek@jklu.edu.in,+91 80790 83195,male,21,Jk Lakshmipat university ,Jaipur ,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 8:42:12 PM",Mayank Gautam's Team (BGMI TOURNAMENT); Sinister (BGMI TOURNAMENT)
+Mayank Gautam,mayank@jklu.edu.in,8949349516,male,19,Jk Lakshmipat university ,Jaipur,participant,BGMI TOURNAMENT,Yes,No,Yes,562.5,"10/8/2025, 8:42:12 PM",
+Dalit,yashhh10930@gmail.com,7087689708,female,16,Dalit institute for dalitness,Kamtipura,participant,BANDJAM,Yes,No,Yes,0,"10/8/2025, 8:32:34 PM",
+Yash Mishra,yashmish10930@gmail.com,7007689708,male,19,jklu,18-B/MIG ratanpur panki,participant,VISITOR_PASS; Demo Payment,Yes,No,Yes,4,"10/8/2025, 8:32:34 PM",
+Mohit Suwalka,mohitsuwalka@jklu.edu.in,8005961269,male,19,Jk LAKSHMIPAT UNIVERSITY ,"Gangapur, bhilwara ",participant,SEAL THE DEAL; Demo Payment,Yes,No,Yes,149.25,"10/8/2025, 8:26:31 PM",
+Chirag Kumar,chiragkumar2025@jklu.edu.in,7488645235,male,18,Jk lakshmipat university,Jk lakshmipat university,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/8/2025, 8:08:16 PM",
+Lakshay,luckyy142005@gmail.com,9817856544,male,20,Jk Lakshmipat University ,"House no. 1841, sector 4, Karnal, Haryana",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/8/2025, 8:05:51 PM",
+Pankaj ,pankajsingh5571425@gmail.com,9354158974,male,19,J k laksmipat university ,pankajsingh5571425@gmail.com,participant,ART RELAY,Yes,No,Yes,199,"10/8/2025, 7:02:38 PM",
+Prashant Singh,prashantsingh@jklu.edu.in,8302840321,,,JK Lakshmipat University,,participant,VALORANT TOURNAMENT,Yes,No,No,0,"10/8/2025, 7:02:32 PM",WCP (VALORANT TOURNAMENT)
+Rakshit Khandelwal,rakshitkhandelwal2404@gmail.com,7849999713,,,JK Lakshmipat University,,participant,VALORANT TOURNAMENT,Yes,No,No,0,"10/8/2025, 7:02:32 PM",WCP (VALORANT TOURNAMENT)
+Devam Gupta,devamgupta@jklu.edu.in,7340015201,,,JK Lakshmipat University,,participant,VALORANT TOURNAMENT,Yes,Yes,No,0,"10/8/2025, 7:02:31 PM",WCP (VALORANT TOURNAMENT)
+Sahil Yadav,Thukransahil1@gmail.com,8696861743,male,20,Rajasthan College,"Elite Building, Bajrangdeep Colony, Sitapura, Jaipur, 303905",participant,ECHOES OF NOOR,No,Yes,Yes,374.25,"10/8/2025, 6:22:22 PM",
+Aarav khandelwal ,khandelwallakshay56@gmail.com,7976413634,male,17,Warren Academy,"8/389, Vidhyadhar Nagar, jaipur",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/8/2025, 6:01:20 PM",
+Ankit Kumar Ray,ankitray1905@gmail.com,9801121300,male,19,JECRC University,"Bhuri Niwas PG, Vidhani, Sitapura, Jaipur, 303905",participant,ECHOES OF NOOR,Yes,Yes,Yes,374.25,"10/8/2025, 5:43:56 PM",
+Prabhav Goyal,prabhavgoyal@jklu.edu.in,9971105431,male,18,JK Lakshmipat University,BH-II,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:19 PM",Niharika Gupta's Team (DANCE BATTLE)
+Gauri Singhi,gaurisinghi@jklu.edu.in,8305015800,female,18,JK Lakshmipat University,GH-II,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:19 PM",Niharika Gupta's Team (DANCE BATTLE)
+Aman Aanchaliya,aman@jklu.edu.in,9549696968,male,18,JK Lakshmipat University,BH-II,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:18 PM",Niharika Gupta's Team (DANCE BATTLE)
+Aadrika Roy,aadrikaroy@jklu.edu.in,9423486807,female,18,JK Lakshmipat University,GH-II,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:18 PM",Niharika Gupta's Team (DANCE BATTLE)
+Hemanth harinageshwar vanapalli,hemanthnageshwar@jklu.edu.in,9440262666,male,18,JK Lakshmipat University,BH-II,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:17 PM",Niharika Gupta's Team (DANCE BATTLE)
+Mradul Saxena,mradulsaxena@jklu.edu.in,8767289743,male,19,JK Lakshmipat University,BH-II,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:16 PM",Niharika Gupta's Team (DANCE BATTLE)
+Akshat Bisht,akshatbisht@jklu.edu.in,9509693736,male,18,JK Lakshmipat University,Managalam Aananda,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:16 PM",Niharika Gupta's Team (DANCE BATTLE)
+Ankita Choudhary ,ankitachoudhary@jklu.edu.in,9351246611,female,20,JK Lakshmipat University,GH-I,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:15 PM",Niharika Gupta's Team (DANCE BATTLE)
+Prerna Sharma,prernasharma@jklu.edu.in,8209833992,female,21,JK Lakshmipat University,GH-II,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:15 PM",Niharika Gupta's Team (DANCE BATTLE)
+Yug Mittal,yugmittal@jklu.edu.in,7727082315,male,22,JK Lakshmipat University,Samanvay Aasra,participant,DANCE BATTLE,Yes,No,Yes,0,"10/8/2025, 5:39:14 PM",Niharika Gupta's Team (DANCE BATTLE)
+Niharika Gupta,niharikagupta@jklu.edu.in,9828223577,female,22,JK Lakshmipat University,Samanvay Aasra,participant,DANCE BATTLE,Yes,No,Yes,1874.25,"10/8/2025, 5:39:14 PM",
+Parth Lavti,parthlavti@jklu.edu.in,7340215561,male,19,Jk Lakshmipat university,"Fatehnagar, Udaipur",participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/8/2025, 5:29:00 PM",
+Nutan Deotwal ,kaku93613@gmail.com,8094500150,female,15,St.Anslem pink city,"Block A/ 144, SECTOR 4 , MALVIYA NAGAR , JAIPUR",participant,VISITOR_PASS,Yes,No,Yes,69,"10/8/2025, 5:20:21 PM",
+Himanshu Bansal,himanshubansal@jklu.edu.in,8239458000,male,22,Jk Lakshmipat University ,"Jk Lakshmipat University, ajmer road , jaipur",participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/8/2025, 5:16:02 PM",
+Kakun Deotwal ,kakundeotwal@gmail.com,8619335053,female,17,St.Anslem pink city,Kakundeotwal@gmail.com,participant,VISITOR_PASS,Yes,No,Yes,69,"10/8/2025, 5:12:14 PM",
+Vaibhav sharam,vaibhavshar800@gmail.com,8005909582,male,19,Gyan vihar ,A-126 Keshav Vihar Jagatpura Jaipur ,participant,VISITOR_PASS,Yes,No,Yes,69,"10/8/2025, 4:48:46 PM",
+Harshit Dubey,harshitdubey7042@gmail.com,8306630421,male,21,JECRC University ,485B shanti niketan colony barkat nagar jaipur,participant,VISITOR_PASS; Demo Payment,Yes,No,Yes,69,"10/8/2025, 4:11:38 PM",
+Aryan Deshmukh,deshmukharyan24@gmail.com,8108119988,male,23,CDAC ACTS Pune,"Murbad Road, Kalyan(W)",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/8/2025, 4:06:41 PM",Harshit's Team (VALORANT TOURNAMENT)
+Lavish lekhari ,Lavishlekhari@gmail.com,8890496847,male,21,Mohan Lal Sukhadia University of udaipur,Behind ice factory North Sunderwas,participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/8/2025, 4:06:41 PM",Harshit's Team (VALORANT TOURNAMENT)
+sambhav singh,dredagent@gmail.com,8800623325,male,20,Institue of innovation in technology and management Delhi,jharoda main new delhi ,participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/8/2025, 4:06:40 PM",Harshit's Team (VALORANT TOURNAMENT)
+Angad singh,angadvalorant@gmail.com,9494947580,male,19,Sri Venkateswara college,Kingsway camp new delhi ,participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/8/2025, 4:06:40 PM",Harshit's Team (VALORANT TOURNAMENT)
+Harshit,harshitbhandari@jklu.edu.in,7976358929,male,20,JK Lakshmipat,477 shanti path ,participant,VALORANT TOURNAMENT,Yes,Yes,Yes,562.5,"10/8/2025, 4:06:39 PM",
+Harshwardhan Singh Deora,hvsdeora49@gmail.com,8955769287,male,18,JKLU,"Banas,district-Sirohi,Rajasthan",participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 4:00:26 PM",Rajveer Choudhary's Team (BGMI TOURNAMENT); The Howling Elephants (BGMI TOURNAMENT)
+Arjun Singh Tanwar,arjunsinghtanwar106@gmail.com,9166130402,male,18,JKLU,Ho . No 85 Paltan Bazar Ajmer,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 4:00:26 PM",Rajveer Choudhary's Team (BGMI TOURNAMENT); The Howling Elephants (BGMI TOURNAMENT)
+Lakshya Yadav,lakshyay75@gmail.com,9829006736,male,21,JKLU,"A-86 Dr.rajendra Prasad Nagar, Vardhman nagar,200ft bypass, Jaipur",participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 4:00:25 PM",Rajveer Choudhary's Team (BGMI TOURNAMENT); The Howling Elephants (BGMI TOURNAMENT)
+Rajveer Choudhary,shyochandjat99504@gmail.com,9256788831,male,20,JKLU,"118, Kerali Ki Dhani, Balaji Sagar-15, Beed-Hathod, Jhotwara, Jaipur",participant,BGMI TOURNAMENT,Yes,No,Yes,562.5,"10/8/2025, 4:00:25 PM",
+Rupesh Soyal,officialrupeshsoyal@gmail.com,9610882843,male,20,University Commerce College ,"298, Outside Hida Ki Mori, Shyam Puri",participant,VERSEVAAD; Demo Payment,Yes,Yes,Yes,374.25,"10/8/2025, 3:18:30 PM",
+Chaitanya Sharma,sharmachaitanya980@gmail.com,9119219535,male,20,Jecrc University ,Hello,participant,VISITOR_PASS,Yes,No,No,0,"10/8/2025, 2:48:05 PM",
+Arjun Rajaram,arjun@jklu.edu.in,9310480690,,,,,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,450,"10/8/2025, 2:40:28 PM",
+Lakshay pateriya,lakshaypateriya76@gmail.com,9664381646,,,Jecrc university,,participant,Visitor Pass,Yes,Yes,No,0,"10/8/2025, 1:26:30 PM",
+varra srivalli ,varrasrivalli@jklu.edu.in,9502303519,female,19,Jk lakshmipat university ,Jklu,participant,CLAY MODELLING; IN CONVERSATION WITH,Yes,Yes,Yes,248.25,"10/8/2025, 1:05:06 PM",
+Astha Barnwal ,asthabarnwal@jklu.edu.in,7987019118,female,19,JK Lakshmipat University ,"Jklu , lakshmipat ",participant,BAND JAM,No,No,No,0,"10/8/2025, 1:03:52 PM",
+Bhupathi Likhitha ,bhupathilikhitha@jklu.edu.in,6304774047,female,18,JK Lakshmipati University ,JK Lakshmipati University ,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/8/2025, 1:03:37 PM",
+Jheel jain,jainjheel1406@gmail.com,9929001325,female,19,JK LAKSHMIPAT UNIVERSITY ,"Bhilwara,rajasthan ",participant,BAND JAM,No,No,No,0,"10/8/2025, 1:02:44 PM",
+ADITYA NAYAK,adityanayak@jklu.edu.in,9116727168,male,19,IET,"""SANYAM"" 8/164 Near Girls School Khandu Colony Banswara",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/8/2025, 12:56:23 PM",
+Hemangi sancheti,hemangisancheti@jklu.edu.in,7357956666,female,18,Jk Lakshmipat university ,Jklu,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/8/2025, 12:56:13 PM",
+Mayank Shankar Pathak,pathakmayank522@gmail.com,9131171030,male,20,JK lakshmipat University,JK laxmipat university ,participant,BAND JAM,No,No,No,0,"10/8/2025, 12:54:28 PM",
+Nikhilesh Singh Panwar ,nikhileshsinghpanwar@jklu.edu.in,6377966199,male,20,Jk lakshmipat university jaipur ,Jklu jaipur ,participant,BIDDING BEFORE WICKET; FOCUS; BGMI TOURNAMENT,Yes,Yes,Yes,623.75,"10/8/2025, 12:53:24 PM",
+Alok Yadav,dopamine142005@gmail.com,9265993884,male,20,JECRC FOUNDATION ,"The rise building Haldighati, Pratap Nagar Near Dmart, Jaipur, Rajasthan ",participant,VERSEVAAD,Yes,Yes,Yes,374.25,"10/8/2025, 12:50:55 PM",
+Aryan Pamecha,aryan1210p@gmail.com,7737382308,male,19,Jk Lakshmipat university ,"B-1004,The New Door Apartments, Near Mahindra Sez",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/8/2025, 12:49:20 PM",
+Pratigya ,pratigyabomb@jklu.edu.in,6264667506,female,19,Jk Lakshmipat ,12 golden township ,participant,BAND JAM; BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/8/2025, 12:48:35 PM",
+Chahak Agarwal ,chahakagarwal@jklu.edu.in,6350673074,female,18,JK laxmipath university ,"Near Mahindra Sez, Ajmer Road, Mahapura, Jaipur, Rajasthan, 302026",participant,FOCUS,No,No,No,0,"10/8/2025, 12:47:20 PM",
+Suraj Sasmal,Suraj6560.bbavm24@chitkara.edu.in,9736951934,male,19,Chitkara University , wardno 2 dunga bazar nurpur Himachal pradesh  dist. kangra 176202,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 12:12:41 PM",Rishabh Jain's Team (FREE FIRE TOURNAMENT)
+Daksh Jain,daksh787850@gmail.com,7878503881,male,19,JECRC ,"146/24 DHAN BHAWAN, AJMER, RAJASTHAN-305001",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/8/2025, 12:12:41 PM",Rishabh Jain's Team (FREE FIRE TOURNAMENT)
+Akshit Singhal ,akshitsinghal@jklu.edu.in,8890976061,male,18,Jk lakshmipat University ,Kesarganj ajmer,participant,FREE FIRE TOURNAMENT; BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/8/2025, 12:12:40 PM",Rishabh Jain's Team (FREE FIRE TOURNAMENT)
+Rishabh Jain,jainraghav505@gmail.com,8290256619,male,19,Chitkara University ,48/02 Kaiser Gunj Ajmer,participant,FREE FIRE TOURNAMENT,Yes,No,Yes,450,"10/8/2025, 12:12:39 PM",
+Bhawesh Chandnani ,bhaweshchandnani958@gmail.com,7877775484,male,18,Jk Lakshmipat University ,Mandalgarh dist bhilwara,participant,COURTROOM,Yes,No,Yes,149.25,"10/8/2025, 12:03:16 PM",
+Ayaan Mathur,mathurayaan54321@gmail.com,6378136157,male,19,JK Laxmipath University,"Behind City Dispensary number 2, Sikar",participant,COURTROOM,Yes,No,Yes,149.25,"10/8/2025, 12:02:03 PM",
+akshay kumar ,akshaykumarmeena729@gmail.com,7297985484,male,20,"manipal,jaipur",flat no. 201 jewels island ajmer road dcm near elements mall,participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/8/2025, 11:33:39 AM",
+Bhavishya,bhavishyakathpalia@gmail.com,7988868012,male,18,Jk lakshmipat university ,"Hisar, Haryana ",participant,COURTROOM,Yes,No,Yes,149.25,"10/8/2025, 10:26:22 AM",
+Vikaschoudhary,vikaschoudhary@jklu.edu.in,6376189881,male,20,Jklu,Ajayrajpura jaipur ,participant,BIDDING BEFORE WICKET,Yes,No,No,0,"10/8/2025, 9:17:39 AM",
+Arohi jain,arohijain20005@gmail.com,9413964984,female,20,subodh college ,"vdn, jaipur",participant,VISITOR_PASS,Yes,No,Yes,69,"10/8/2025, 9:08:54 AM",
+Lakshay Yadav,prateek2504yadav@gmail.com,8905186330,male,19,Jecrc university ,"Near Tower-C, Green Meadows, Ajairajpura, Rajasthan 303903",participant,VISITOR_PASS,Yes,No,Yes,69,"10/8/2025, 8:55:07 AM",
+Rimjhim Rajwaniya ,rimjhimrajwaniya@jklu.edu.in,6378038020,female,18,Jk Lakshmipth university ,119/493 agrwal farm mansarover jaipur ,participant,BIDDING BEFORE WICKET,No,Yes,No,0,"10/8/2025, 7:49:31 AM",
+Md. Shahanvaj,neelukumawat05@gmail.com,8252262362,male,19, jay narayan vyas university , roop nagar jalore,participant,VISITOR_PASS; FREE FIRE TOURNAMENT; Demo Payment,Yes,Yes,Yes,69,"10/8/2025, 7:27:23 AM",Rahul kumar's Team (FREE FIRE TOURNAMENT)
+Ayush Sharma,ayushsharma2024@jklu.edu.in,7014968183,male,19,JK Lakshmipat University,Mudita bhawan h.no 862/1 Near robert compound christian ganj,participant,COURTROOM,Yes,No,Yes,149.25,"10/8/2025, 6:53:30 AM",
+Vikas choudhary ,burarikaand@gmail.com,7340163139,male,20,Poddar international college ,Solitaire park house no g2 bagru,participant,VISITOR_PASS,Yes,No,No,0,"10/8/2025, 6:27:55 AM",
+Badrinadh Goru ,badrinadhgoru@gmail.com,7013288812,male,17,JK lakshmipat university ,JKLU hostel,participant,COURTROOM,Yes,No,Yes,149.25,"10/8/2025, 6:13:29 AM",
+VARUN TEJA ,a.varunteja@jklu.edu.in,9573857352,male,17,Jk lakshmipat university ,Jk lakshmipat university ,participant,VISITOR_PASS; Demo Payment,Yes,No,No,155.25,"10/8/2025, 4:36:54 AM",
+Droni Sehgal,dronisehgal4@gmail.com,7737984411,female,17,Jk Lakshmipat University,Jaipur,participant,COURTROOM,Yes,No,Yes,149.25,"10/8/2025, 3:59:28 AM",
+Srishti jain,srishtijain@jklu.edu.in,8619614892,female,19,JK LAKSHMIPAT UNIVERSITY,"Mansarovar, Jaipur ,Rajasthan",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/8/2025, 3:39:30 AM",
+Shreynash Jangir,rishijangir0987@gmail.com,6350047132,male,19,Jklu,A47 vijay bari sikar road jaipur,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/8/2025, 2:38:46 AM",
+ANSH PAUL,anshpaul@jklu.edu.in,9424446681,male,20,Jklu,Jklu,participant,VALORANT TOURNAMENT,Yes,No,Yes,562.5,"10/7/2025, 10:03:12 PM",
+Hardik Lavti ,hardiklavti33@gmail.com,9216388389,male,19,Jk lakshmipat university ,Fatehnagar udaipur ,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/7/2025, 2:40:38 PM",
+JINAL LODHA,jinallodha171@gmail.com,9983658102,female,20,JK Lakshmipat University,"20, Arvind Nagar, Road No. - B",participant,IN CONVERSATION WITH,Yes,No,No,0,"10/7/2025, 12:00:34 PM",
+Sanchi Dhoopia,dhoopiasanchi@gmail.com,9664356901,female,18,JKLU,"galaxy star, central spine, vidhyadhar nagar",participant,CLAY MODELLING,Yes,No,Yes,149.25,"10/7/2025, 9:50:25 AM",
+Komal Chodhary,komalchaudhary@jklu.edu.in,8619373499,,,,,participant,ART RELAY,Yes,No,Yes,149.25,"10/7/2025, 9:33:09 AM",
+Aryan jain ,aryanjain2024@jklu.edu.in,6377317903,male,18,Jk lakshimpat University ,Jyoti colony kekri Ajmer ,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/7/2025, 8:36:39 AM",
+Parth Mundra,mundraparth06@gmail.com,9664098829,male,18,Jk lakshmipath University ,Jk lakshmipath University ,participant,VISITOR_PASS; BIDDING BEFORE WICKET; Demo Payment; COURTROOM,Yes,Yes,Yes,348.25,"10/7/2025, 7:55:08 AM",
+Garvit Raheja,garvitraheja07@gmail.com,7737975858,Male,19,JK Lakshmipat University,40 Mithila Vihar-1 Jagatpura Jaipur,participant,VERSEVAAD; BIDDING BEFORE WICKET,Yes,No,No,0,"10/7/2025, 7:14:28 AM",
+Shaik Areesh,shaikareesh@jklu.edu.in,7095149312,Female,19,Jk laxmipat university,Hyderbad,participant,DUMB SHOW,Yes,No,No,0,"10/7/2025, 7:14:25 AM",
+Tanishq Rathore,tanishqrathore21105@gmail.com,7231990208,Male,19,Jk lakshmipat univwrsity,59 Girdhar Vihar Panchawala,participant,IN CONVERSATION WITH,Yes,Yes,No,0,"10/7/2025, 7:14:21 AM",
+Dev Yadav,devyadav@jklu.edu.in,9509549432,Male,19,Jk Lakshmipat University jaipur,,participant,BIDDING BEFORE WICKET,Yes,No,No,0,"10/7/2025, 7:14:18 AM",
+Tejender Singh Shekhawat,tejendersinghshekhawat@jklu.edu.in,9636667956,Male,19,JK Lakshmipat University,"F-53B, Ram nagar extension, sodala, jaipur, rajasthan",participant,BIDDING BEFORE WICKET,Yes,Yes,No,0,"10/7/2025, 7:14:15 AM",
+Archit Singh,architbtp@gmail.com,8949683986,male,20,https://drive.google.com/open?id=1kCRS1E3KdA1bbNwITAK6vM2jYbLQA9IA,5c,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/7/2025, 6:53:31 AM",Hardik Bhatnagar's Team (BGMI TOURNAMENT); Team Khatola eSports (BGMI TOURNAMENT)
+Namit Verma,namitverma4717@gmail.com,8000621910,male,19,https://drive.google.com/open?id=1kCRS1E3KdA1bbNwITAK6vM2jYbLQA9IA,5c,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/7/2025, 6:53:30 AM",Hardik Bhatnagar's Team (BGMI TOURNAMENT); Team Khatola eSports (BGMI TOURNAMENT)
+Preet Sharma,preetinindia@icloud.com,9610002248,male,21,Jecrc,5c,participant,BGMI TOURNAMENT,Yes,No,Yes,0,"10/7/2025, 6:53:30 AM",Hardik Bhatnagar's Team (BGMI TOURNAMENT); Team Khatola eSports (BGMI TOURNAMENT)
+Hardik Bhatnagar,hardikbhatnagar37@gmail.com,7850076762,male,18,Jecrc,5c,participant,BGMI TOURNAMENT,Yes,No,Yes,562.5,"10/7/2025, 6:53:29 AM",
+Siya Sharma,siyasharma@jklu.edu.in,9119218502,female,19,jklu,47 Jamuna dairy ajmer road sodala jaipur,participant,COURTROOM,Yes,No,No,0,"10/7/2025, 6:37:05 AM",
+ADSFg,amanpratapsinghuy@gmail.com,9456608637,,,,,participant,BAND JAM,Yes,No,No,1,"10/7/2025, 6:10:19 AM",
+Aditi Mishra,Catnoirmish119@gmail.com,8233803023,female,19,S s jain subodh pg college ,Jaipur,participant,ART RELAY,No,No,No,0,"10/7/2025, 5:16:40 AM",
+Lakshit Pareek,lakshitpareek@jklu.edu.in,9216333707,male,19,Jk lakshmipat University ,Nawa city,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,1,"10/6/2025, 9:16:57 PM",
+Vaibhav Sharma ,latestarget37@gmail.com,7014447368,,,,,participant,COURTROOM,Yes,No,Yes,149.25,"10/6/2025, 5:49:00 PM",
+Pulkit Dosi,pulkitdosi16@gmail.com,9887788899,male,19,JK lakshmipat university ,Anukampa grandeur swej farm circle sodala,participant,BIDDING BEFORE WICKET,No,Yes,No,0,"10/6/2025, 4:28:20 PM",
+Priyanshu sharma ,priyanshusharma2025@jklu.edu.in,9636423447,male,18,Jk lakshmipat university ,"H-13, Solitaire Park,Bagru",participant,VISITOR_PASS,Yes,No,Yes,155.25,"10/6/2025, 4:06:38 PM",
+Karan singh ,karan15404Singh@gmail.com,8209891521,male,22,St wilfreds college ,"Kuchaman city, nagaur, rajasthan",participant,VISITOR_PASS,Yes,No,Yes,69,"10/6/2025, 3:57:52 PM",
+Pari Maloo,parimaloo2007@gmail.com,9351313345,female,18,Jk lakshmipath university,"Kuchaman city, nagaur, rajasthan",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/6/2025, 3:54:08 PM",
+Rudra Pratap ,Rp7222485@gmail.com,8233179744,male,18,Tagore International College,"Kuchaman City , Nagour, Rajasthan",participant,VISITOR_PASS,Yes,No,Yes,69,"10/6/2025, 3:46:54 PM",
+Rohan verma,vermarohnan@gmail.com,7665001073,,,,,participant,BGMI TOURNAMENT,Yes,No,Yes,562.5,"10/6/2025, 1:05:36 PM",
+Hardik maloo,divyarajsingh532@gmail.com,7737131410,male,21,Jecrc college ,Haldi ghati jaipur ,participant,VISITOR_PASS; Demo Payment,Yes,Yes,Yes,69,"10/6/2025, 12:44:22 PM",
+Rohit Tak,rohittak@jklu.edu.in,7568098052,male,19,Jk laksmipat university ,"117, PREM NAGAR ,GURJAR KI THADI,N.S. ROAD",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/6/2025, 12:16:13 PM",
+Aditya Sharma ,adityasharma2024@jklu.edu.in,9380623985,male,19,JK Lakshmipat University ,jaipur bagh,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/6/2025, 10:29:50 AM",
+divyansh Choudhary ,divyanshchoudhary@jklu.edu.in,7230869878,male,21,JK Lakshmipat University ,bhankrota jaisinghpura road sunshine properties ,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/6/2025, 10:19:04 AM",
+Jitesh khandelwal ,jiteshbhiwal191@gmail.com,7877516411,male,19,Jk laxmipat university ,Samanvay aasra near JK laxmipat university mahapura jaipur ,participant,IN CONVERSATION WITH; BIDDING BEFORE WICKET; Demo Payment,Yes,No,Yes,149.25,"10/6/2025, 10:09:18 AM",
+Nishtha khandelwal,nishthak89@gmail.com,9352974411,female,20,University Maharani College ,319 devi nagar sodala jaipur,participant,DANCE BATTLE,Yes,No,Yes,0,"10/6/2025, 7:53:32 AM",Dimple sharma's Team (DANCE BATTLE)
+Akshita meena,akshitameena9977@gmail.com,7597695226,female,19,University Maharani College ,13 brij mandal colony jhotwara jaipur,participant,DANCE BATTLE,Yes,No,Yes,0,"10/6/2025, 7:53:32 AM",Dimple sharma's Team (DANCE BATTLE)
+Maithili chhipa,maithilichhipa@gmail.com,9214924158,female,19,University Maharani College ,3283 jat ke kuwe ka rasta chandpole jaipur,participant,DANCE BATTLE,Yes,No,Yes,0,"10/6/2025, 7:53:31 AM",Dimple sharma's Team (DANCE BATTLE)
+Bhoomi verma,bhoomiv725@gmail.com,7877054748,female,20,University Maharani College ,2/354 sector 2 vidhyadhar nagar jaipur,participant,DANCE BATTLE,Yes,No,Yes,0,"10/6/2025, 7:53:31 AM",Dimple sharma's Team (DANCE BATTLE)
+Palak sharma,sharmaplk.3031@gmail.com,9509398394,female,18,University Maharani College ,68/200 tirupati balaji nagar haldighati jaipur,participant,DANCE BATTLE,Yes,No,Yes,0,"10/6/2025, 7:53:30 AM",Dimple sharma's Team (DANCE BATTLE)
+Yazvi,yazvinehra6@gmail.com,8905146275,female,19,University Maharani College ,Kisan girls hostel collectrate circle jaipur,participant,DANCE BATTLE,Yes,No,Yes,0,"10/6/2025, 7:53:30 AM",Dimple sharma's Team (DANCE BATTLE)
+Nidhi sherawat,sherawatnidhi06@gmail.com,7597735972,female,21,University Maharani College ,Marg A7 kumawat colony jhotwara jaipur,participant,DANCE BATTLE,Yes,No,Yes,0,"10/6/2025, 7:53:29 AM",Dimple sharma's Team (DANCE BATTLE)
+Kashish sharma ,ks3956787@gmail.com,8824738664,female,20,University Maharani College ,10 shankar nagar kagdiwada amer road jaipur,participant,DANCE BATTLE,Yes,No,Yes,0,"10/6/2025, 7:53:29 AM",Dimple sharma's Team (DANCE BATTLE)
+Dimple sharma,dimplee26sharma@gmail.com,9352356051,female,19,University maharani college,C 79 indra verma colony shastri nagar jaipur ,participant,DANCE BATTLE,Yes,No,Yes,1874.25,"10/6/2025, 7:53:28 AM",
+Sakshi Pandey,pandeysakshi1978@gmail.com,7615071898,female,18,Jk laxmipath university,43 Krishna vihar vistar,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/6/2025, 7:05:51 AM",
+Adhya Mittal,adhyamittal@jklu.edu.in,9024405295,female,19,JK lakshmipat University ,"C-281, vaishali nagar, behind TPS, jaipur 302021",participant,STEP UP,Yes,No,Yes,374.25,"10/6/2025, 6:42:18 AM",
+Bhavya Raj Singh Sarangdevot ,bhaviraj2005@gmail.com,7300076056,male,19,JK Lakshmipat University,"krishna complex, E 21, Trident Rd, Haridas Ji Ki Magri, Shavri Colony, Udaipur, Rajasthan ",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/6/2025, 5:38:29 AM",
+Yuvraj singh,yuvrajranawat506@gmail.com,9166884991,male,19,Jk lakshmipat university ,"Karauli , rajsthan",participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/6/2025, 5:17:43 AM",
+Riya chauhan ,Riyachauhan@jklu.edu.in,8306769710,female,19,Jk Lakshmipat ,E-421 villa 55 near aasra,participant,BIDDING BEFORE WICKET,No,No,Yes,149.25,"10/6/2025, 4:51:00 AM",
+Garvishtha Asnani ,garvishtha18@gmail.com,7878504220,female,18,Jk lakshmipat university ,"Vaishali nagar, jaipur, rajsthan ",participant,VISITOR_PASS,Yes,No,No,0,"10/6/2025, 4:50:04 AM",
+Priyanshi Agnani ,priyanshiagnani@jklu.edu.in,9772217788,female,19,Jk laxmipat University ,L-1317 vardhman swapnalok niwaru road jhotwara Jaipur ,participant,DUMB SHOW,Yes,No,Yes,149.25,"10/6/2025, 3:43:02 AM",
+Priyanshi Gupta ,priyanshi2275@gmail.com,8114406326,female,20,IIS deemed to be University ,"Gurukul Marg, SFS Manasarovar, Hans Viha",participant,FOCUS; SEAL THE DEAL,Yes,Yes,Yes,298.5,"10/5/2025, 6:49:35 PM",
+Nikunj katta,nikunjkatta727@gmail.com,6375198706,male,19,jk lakshmipat university,"111/346,THADI MARKET MANSAROVAR",participant,COURTROOM,Yes,No,Yes,149.25,"10/5/2025, 6:26:37 PM",
+Nitya Manglani,manglaninitya@gmail.com,7880039399,female,19,Jk lakshmipat university ,Jklu,participant,ART RELAY,Yes,No,Yes,149.25,"10/5/2025, 5:48:27 PM",
+pratiki agarwal ,pratikiagarwal@jklu.edu.in,8000021198,female,18,jk laxmipat university ,"374,surya nagar,gopal pura by pass near bharat oil petrol pump jaipur",participant,VISITOR_PASS,Yes,No,Yes,69,"10/5/2025, 5:14:55 PM",
+Tarun Jangid,tarun.sharma19092005@gmail.com,8949229796,,,,,participant,ECHOES OF NOOR,Yes,Yes,Yes,374.25,"10/5/2025, 4:09:40 PM",
+Priyanshi singhvi ,priyanshisinghvi@jklu.edu.in,9521081674,female,18,Jklu,Jklu,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/5/2025, 3:32:56 PM",
+Devansh Srivastava,devansh.srivastava1818@gmail.com,7050260475,,,,,participant,BAND JAM,Yes,Yes,Yes,149.25,"10/5/2025, 3:13:25 PM",
+Bhavya,bhavyabang172@gmail.com,7023282838,female,18,Jk lakshmipat University ,Path no 7 vijaybari jaipur,participant,DUMB SHOW,Yes,No,Yes,199,"10/5/2025, 3:11:59 PM",
+Harsh Chandeliya ,vijaypratp7475@gmail.com,9024850206,,,Aadharsh college,Star City mall kuchaman city,participant,BGMI; BGMI TOURNAMENT,Yes,No,Yes,562.5,"10/5/2025, 3:05:30 PM",
+Hritvika Vashistha ,hvashistha04@gmail.com,9024514062,female,18,JK LAKSHMIPAT UNIVERSITY ,"25, Kailash nagar, Jhotwara,  Jaipur, Rajasthan",participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/5/2025, 2:35:13 PM",
+Krishna Agarwal,krishnaagarwal2024@jklu.edu.in,8279263509,male,19,JKLU,jklu,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/5/2025, 2:34:17 PM",
+Kartik Phulwari,kartikphulwari@jklu.edu.in,7877080919,male,19,JK Lakshmipat University,Jaipur,participant,COURTROOM; BGMI TOURNAMENT,Yes,No,Yes,149.25,"10/5/2025, 2:05:54 PM",Ansh Gupta's Team (BGMI TOURNAMENT)
+Mrinal khandal ,mrinal07khandal@gmail.com,8875903661,male,18,Jk lakshmipat University ,"new mandi road , dausa",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/5/2025, 2:03:06 PM",
+Shivam Lakshkar,Shivamlakshkar@jklu.edu.in,7296849561,male,20,JK Lakshmipat University,jaipur,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/5/2025, 12:37:58 PM",
+Aditya Vyas,aditya.csebgn@gmail.com,8955637102,male,18,JKLU,JKLU,participant,VERSEVAAD,Yes,No,Yes,374.25,"10/5/2025, 12:32:16 PM",
+Divya malik,divyamalik@jklu.edu.in,7017160230,female,19,Jk laxmipat university ,Jk laxmipat university ,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/5/2025, 11:17:34 AM",
+Iya Nagwani,iyanagwani@jklj.edu.in,8103554877,female,19,JK Laksmipat University ,Sindhi colony Bina,participant,VISITOR_PASS,Yes,No,Yes,155.25,"10/5/2025, 11:08:47 AM",
+Paavani Sahu,paavanisahu@jklu.edu.in,7758944354,female,19,JK Lakshmipat University ,Hostel JK Lakshmipat University ,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/5/2025, 10:57:22 AM",
+Utkarsh Sharma,utkarsh.229301134@muj.manipal.edu,,,,Manipal University Jaipur,,participant,BAND JAM,No,No,Yes,0,"10/5/2025, 7:56:26 AM",
+Suryansh Panda,suryanshpanda2005@gmail.com,9650200479,,,Manipal University Jaipur,,participant,BAND JAM,Yes,No,Yes,0,"10/5/2025, 7:56:25 AM",200ft. (BANDJAM)
+Aditya Ranjan,adityaranjanmuj@gmail.com,8171935576,,,Manipal University Jaipur,,participant,BAND JAM,Yes,No,Yes,0,"10/5/2025, 7:56:24 AM",200ft. (BANDJAM)
+Vedant Patil,vedantmusic485@gmail.com,9370763682,,,Manipal University Jaipur,,participant,BAND JAM,Yes,No,Yes,0,"10/5/2025, 7:56:24 AM",200ft. (BANDJAM)
+Aryaveer Ralhan,aryaveer6805@gmail.com,8368173222,,,Manipal University Jaipur,,participant,BAND JAM,Yes,No,Yes,0,"10/5/2025, 7:56:23 AM",200ft. (BANDJAM)
+Ayush Shashi,ayush.229309230@muj.manipal.edu,9470305486,,,Manipal University Jaipur,,participant,BAND JAM,Yes,No,Yes,0,"10/5/2025, 7:56:22 AM",200ft. (BANDJAM)
+Saarang Agarwal,saarang.23fe10cse00093@muj.manipal.edu,8824808981,,,Manipal University Jaipur,,participant,,Yes,No,Yes,0,"10/5/2025, 7:56:21 AM",
+Rohitansh Srivastava,rohitansh.23fe10cii00083@muj.manipal.edu,8169877659,,,Manipal University Jaipur,,participant,BAND JAM,Yes,No,Yes,0,"10/5/2025, 7:56:21 AM",200ft. (BANDJAM)
+Yagyavalkya sharma,yagyavalkyasharma2@gmail.com,9829587737,male,19,Subodh,1915 chaura rasta  film colony colony jaipur,participant,VERSEVAAD,Yes,Yes,Yes,374.25,"10/5/2025, 6:50:17 AM",
+VISHVA RAJ SINGH,anshpratapsingh652@gmail.com,9929264025,male,20,PARUL UNIVERSITY,"BOYS HOSTEL, PARUL UNIVERSITY, Waghodia Dist. , Vadodara, Gujrat, pincode: 391760",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/5/2025, 5:50:34 AM",VISHAL SHARMA's Team (FREE FIRE TOURNAMENT)
+LAKSHAY MAURYA,Lakshaymau2006@gmail.com,8279259229,male,19,GMC WASHIM,"Boys Hostel , GMC WASHIM, near PO , washim, Maharashtra, pincode: 444505",participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"10/5/2025, 5:50:33 AM",VISHAL SHARMA's Team (FREE FIRE TOURNAMENT)
+ARYAN KATARIYA,aryankatariya71@gmail.com,9530237497,male,18,ARYA COLLEGE OF ENGINEERING & IT,"28, Ganesh Vihar Vistar, Nadi ka Phatak, Murlipura, jaipur",participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"10/5/2025, 5:50:33 AM",VISHAL SHARMA's Team (FREE FIRE TOURNAMENT)
+VISHAL SHARMA,vishal7719sharma@gmail.com,8306426711,male,19,JK LAKSHMIPAT UNIVERSITY,"29A Ganesh Nagar, Murlipura Scheme, jaipur",participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,450,"10/5/2025, 5:50:32 AM",
+Saumya Agarwal,saumyaagarwal@jklu.edu.in,9897110960,female,18,Jklu,Jklu,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/5/2025, 5:36:31 AM",
+Chhavi Kansal,tikkiwalc@gmail.com,9079002122,female,17,JECRC UNIVERSITY ,"D-308, dhawas road, jagdamba nagar, heerapura Rajasthan-302021",participant,VISITOR_PASS,Yes,Yes,Yes,69,"10/5/2025, 5:30:34 AM",
+Shubh Dixit,shubhdix2006@gmail.com,9166750197,,,,,participant,,Yes,No,Yes,99,"10/5/2025, 3:52:32 AM",
+Pradhuman Thanvi ,pragyanthanvi@gmail.com,6375455266,male,17,JK Lakshmipat University ,"Laxmipura, Phalodi ",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/5/2025, 3:02:50 AM",
+Muskan Jangid,muskangojo2006@gmail.com,7878712625,female,19,jk lakshmipat university ,jk lakshmipat university ,participant,ART RELAY; VALORANT TOURNAMENT,Yes,Yes,Yes,711.75,"10/4/2025, 7:52:07 PM",
+Chirag Negi,chiragnegi14@gmail.com,9829633388,male,19,JKLU,BH-2,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/4/2025, 7:47:47 PM",
+Rashi,rashikatiyar@jklu.edu.in,9456608637,male,20,afSgdb,fzdbgf,participant,DUMB SHOW,Yes,No,Yes,149.25,"10/4/2025, 7:04:27 PM",
+Sangeeth Adeepalli,sangeeth.addepalli@gmail.com,8977868159,,,,,participant,,Yes,No,Yes,450,"10/4/2025, 6:51:51 PM",
+Mallareddi Charan,charanmallareddi@gmail.com,9692912166,male,18,Jk Lakshmipat university ,"Jk Lakshmipat university, mahapura road ",participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/4/2025, 6:28:10 PM",
+Madhav Garg,madhavgarg@jklu.edu.in,7017198900,male,20,JK Lakshmipat University ,"Mahapura Rd, near Mahindra SEZ, Mahapura, Rajasthan 302026",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/4/2025, 6:20:25 PM",
+Samridhi Singh,samridhiiiiii2007@gmail.com,8851168424,female,18,JK LAKSHMIPAT UNIVERSITY ,Jk lakshmipat university ,participant,VISITOR_PASS,Yes,No,Yes,207,"10/4/2025, 5:32:35 PM",
+Arshey Rai,arsheyrai@jklu.edu.in,6391326252,male,19,JKLU,Jklu  Bh2 ,participant,ART RELAY,Yes,No,Yes,149.25,"10/4/2025, 5:27:41 PM",
+Darshita Jain,darshitajain787@gmail.com,6378803495,female,18,JK Lakshmipat University,"C-229, Gokul Path, Vaishali Nagar, Jaipur",participant,COURTROOM,Yes,No,Yes,149.25,"10/4/2025, 5:14:09 PM",
+Naina Dayaramani ,nainadayaramani@gmail.com,8982800788,female,18,Jklu,"GH1, jk lakshmipat university, mahapura, jaipur ",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/4/2025, 5:06:33 PM",
+Nandini Shah ,nandinishah272007@gmail.com,9358369605,female,17,Jk lakshmipath ,6/65 Vidhyadhar Nagar,participant,COURTROOM,Yes,No,Yes,149.25,"10/4/2025, 4:56:52 PM",
+Akshara Kumawat,aksharakumarat@jklu.edu.in,8268333336,female,19,JKLU,jklu ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/4/2025, 4:20:18 PM",
+Prateek Saxena,pksaxena6453@gmail.com,8302553346,male,19,JK Lakshmipat University,"132, Maa Anchal, Suraj Nagar, Karni Palace Road, Panchyawala, Jaipur",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/4/2025, 4:02:41 PM",
+Arihant Jain,arihantjain17052007@gmail.com,6367045695,male,18,JK Lakshmipat University,59 Kalyan  Kunj Colony Kanta Chauraha Jhotwara Jaipur,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/4/2025, 2:13:19 PM",
+Krrish Shrivastava ,krrishshrivashtva28@gmqil.com,9660393499,male,21,JECRC University ,Mansarovar ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:06 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Badal Sharma,joshinavya1607@gmail.com,7976488380,male,20,Ju,Sitapura ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:05 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Priyanshu Sharma ,priyanshusharma3707@gmail.com,8949109875,male,19,JECRC University ,Vaishali nagar ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:05 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Shreyansh Jain ,shreyanshonwork@gmail.com,7014145986,male,21,JECRC University ,Jagatpura ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:04 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Vidhi jain,vidhij1217@gmail.com,8962727554,female,21,JECRC University ,Jagatpura ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:03 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Ashmita Das ,ashmitadasliza@gmail.com,8134940140,female,18,JECRC University ,Jagatpura ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:03 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Anushka Sharma ,anushkasharma@gmail.com,8439680822,female,19,JECRC University ,Jagatpura ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:02 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Lavisha nebhnani,lavishanebhnani@gmail.com,7878308026,female,20,JECRC University ,Kanwar nagar,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:02 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Kunal Sharma ,kunal.vashishtha2006@gmail.com,6378596679,male,18,JECRC University ,Lal kothi,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:01 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Rishita Singh,rishitasingh832007@gmail.com,9258261420,female,18,JECRC University ,Jagatpura ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:00 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Edha Gatne,umikag06@gmail.com,8928483260,female,18,Ju,Oasisi hostel ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:56:00 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Palak sharma,palaksharma2216@gmail.com,6377528919,female,20,JECRC University ,Mansarovar ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:55:59 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Gagan Pradhan ,pradhangagan885@gmail.com,8619094775,male,20,JECRC University ,Jagatpura ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:55:59 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Yashashvi Mathur ,yashashvimathu15@gmail.com,7339988258,female,20,JECRC University ,Mansarovar ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:55:58 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Aryan Jain ,jeyarany010@gmail.com,8209774032,male,20,JECRC University ,Shree Vinayak homes 3 mansarovar jaipur,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:55:58 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Gunjan khichi,gunjankhichi257@gmail.com,8078698513,female,19,JECRC University ,Jagatpura,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:55:57 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Gunjan Lalwani,lalwani30gunjan@gmail.com,6367450821,female,19,JECRC University ,Jagatpura,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:55:57 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Manan lalwani,mananlalwani699@gmail.com,9530484821,male,19,JECRC University ,Jagatpura ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:55:56 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Chelsi Shrimal ,chelsi.sh.05@gmail.com,6350413549,female,19,JECRC University ,Malviya Nagar ,participant,DANCE BATTLE,Yes,Yes,No,0,"10/4/2025, 1:55:56 PM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Madhu swami,madhuswa44@.gmail,7374063177,female,17,Jk lakshmipat university ,Jklu hostel ,participant,IN CONVERSATION WITH,Yes,No,No,99,"10/4/2025, 1:51:29 PM",
+Bhumika Daharwal ,bhumi24205@gmail.com,7974986528,female,19,JK lakshmipat university ,"Jk lakshmipat university, Mahapura rd,near Mahindra SEZ, mahapura, rajasthan 302026",participant,COURTROOM,Yes,No,Yes,149.25,"10/4/2025, 1:32:48 PM",
+anuj singh,anujsinghsekhawat123@gmail.com,7073831107,male,20,jklu,jaipur,participant,CLAY MODELLING,Yes,Yes,Yes,149.25,"10/4/2025, 1:05:22 PM",
+Dishika sharma ,Dishikasharma@jklu.edu.in,8949133702,female,18,Jk lakshmipat university jaipur,1 B 25 talwandi kota,participant,DUMB SHOW; BAND JAM,No,No,No,0,"10/4/2025, 1:03:53 PM",
+Chanchal karanani ,EARLYBIRD,7297066050,male,19,J k lakshmipat university ,tarunkarnani2@gmail.com,participant,IN CONVERSATION WITH,Yes,No,No,99,"10/4/2025, 12:38:42 PM",
+himani menghani ,himanimenghani@jklu.edu.in,9509221101,female,18,jk lakshmipat university ,jk lakshmipat university ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/4/2025, 12:29:51 PM",
+TARUN KUMAR,tarunkumar2025@jklu.edu.in,8764191998,male,19,JK LAKSHMIPAT UNIVERSITY,"Chahar bhawan (H.no C37),Parivahan Nagar, Khatipura,Jaipur(302012)",participant,COURTROOM,Yes,No,Yes,149.25,"10/4/2025, 12:28:51 PM",
+Siddhi khandelwal ,siddhikhandelwal@jklu.edu.in,8852824149,female,19,Jk lakshmipat university ,A35 shankar vihar murlipura jaipur ,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/4/2025, 12:05:48 PM",
+Naina singh rao ,nainasinghrao@jklu.edu.in,9460681507,female,19,Jklu,"Vaishali nagar, near global heart hospital ",participant,COURTROOM,Yes,No,Yes,149.25,"10/4/2025, 11:55:22 AM",
+Himanshu ,himanshu@jklu.edu.in,9251015254,male,17,Jk lakshmipat university ,"Plot no.72 Tilak vihar-A Gokulpura, kalwar road Jhotwara, jaipur ",participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/4/2025, 11:40:51 AM",
+Kartik Sharma ,kartiksharma2024@jklu.edu.in,8769329369,male,19,JK Lakshmipat University,"34/249,Sector-3,Pratap Nagar,Jaipur,Sanganer-302033",participant,COURTROOM,Yes,No,Yes,149.25,"10/4/2025, 11:36:47 AM",
+khanak jain,khanakjain@jklu.edu.in,8104805555,female,17,jk lakshmipat university ,586 bees dukan adarsh nagar jaipur,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/4/2025, 11:31:58 AM",
+Suryansh Khandelwal ,suryanshkhandelwal@jklu.edu.in,8955347599,male,20,Jk lakshmipath university ,3/85 Vidhyadhar Nagar Jaipur ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/4/2025, 11:30:31 AM",
+Sakshi Jain ,sakshijain2025@jklu.edu.in,9352343451,female,18,Jk Lakshmipat University ,T-1 KBC-21 Near Rangoli Greens Mitra Vihar Vaishali Nagar Jaipur ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/4/2025, 10:47:28 AM",
+Navya joshi,navya.23bcon1308@jecrcu.edu.in,9399177183,female,18,JECRC University ,Malviya Nagar ,participant,DANCE BATTLE; STEP UP,Yes,Yes,Yes,374.25,"10/4/2025, 10:40:12 AM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+Gurseerat Kaur,kaurgurseerat30@gmail.com,7678252871,female,20,JK Lakshmipat University,G73 South City 1,participant,COURTROOM,Yes,No,Yes,149.25,"10/4/2025, 9:41:13 AM",
+sahil,sahil@jklu.edu.in,8708110218,male,20,jklu,"vaishali,jaipur",participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/4/2025, 9:38:25 AM",
+Ashlesha Sharma,ashleshasharma@jklu.edu.in,7850816065,female,20,Jk Lakshmipat University,Girls Hostel 1 JKLU Jaipur,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/4/2025, 9:07:22 AM",
+Samriddhi Singh,samriddhisingh@jklu.edu.in,7974779477,female,18,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:52 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Kartik Singh,kartiksingh@jklu.edu.in,9997727827,male,19,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:51 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Chetesh Sharma,cheteshsharma@jklu.edu.in,9694071479,male,20,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:51 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Shruti Patel,shrutipatel@jklu.edu.in,8629901618,female,20,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:50 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Purvi Jain,purvijain@jklu.edu.in,7877082586,female,18,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:50 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Swadha Saxena,swadhasaxena@jklu.edu.in,9079707725,female,19,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:49 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Anshumann Dhaka,anshumanndhaka@jklu.edu.in,9571234678,male,19,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:49 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Nupur Kantiya,nupurkantiya@jklu.edu.in,8824202427,female,19,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:48 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Nancy Sain,nancysain@jklu.edu.in,9351949903,female,18,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:48 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Tanisha Bhatnagar,tanishabhatnagar@jklu.edu.in,9399280516,female,19,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:47 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Divyam Saini,divyamsaini@jklu.edu.in,7014112565,male,19,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:47 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Stuti Tiwari,stutitiwari@jklu.edu.in,7828654856,female,18,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:46 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Nikita Kumawat,nikitakumawat@jklu.edu.in,9983678640,female,21,JK Lakshmipat University,"JK Lakshmipat University, Jaipur",participant,RAMPWALK - PANACHE,Yes,Yes,Yes,0,"10/4/2025, 7:35:46 AM",Gourang Tak's Team (RAMPWALK - PANACHE)
+Gourang tak,gaurang@jklu.edu.in,8058477540,male,19,Jk lakshmipat university jaipur ,JKLU jaipur ,participant,RAMPWALK - PANACHE; COURTROOM; VALORANT TOURNAMENT; BIDDING BEFORE WICKET; FOCUS; BGMI TOURNAMENT,Yes,Yes,Yes,2249.25,"10/4/2025, 7:35:45 AM",Adityavardhan Singh Chauhan's Team (COURTROOM); Adityavardhan Singh Chauhan's Team (VALORANT TOURNAMENT); Nikhilesh Singh Panwar 's Team (BIDDING BEFORE WICKET); Nikhilesh Singh Panwar 's Team (FOCUS); Nikhilesh Singh Panwar 's Team (BGMI TOURNAMENT)
+Katyayani rathore ,katyayanirathore@jklu.edu.in,9479870270,female,18,Jk Lakshmipath ,"Sushant city -1 ,kalwar road, jaipur, rajasthan ",participant,VISITOR_PASS,Yes,No,Yes,155.25,"10/4/2025, 6:18:37 AM",
+Lakshya Agarwal ,lakshyaagarwal2025@jklu.edu.in,8619116653,male,17,Jk lakshmipat university ,10/81 nadi ka mohalla bagru ,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/4/2025, 6:04:50 AM",
+Agreema gauttam ,agreemagauttam@jklu.edu.in,9116882065,female,18,Jk Lakshmipath ,"208 b2 jagdamba nagar ajmer road , jaipur rajasthan",participant,VISITOR_PASS,Yes,No,Yes,155.25,"10/4/2025, 6:04:34 AM",
+Krish Khandelwal,khandelwalkrish1511@gmail.com,9784810558,male,19,Jk laxmipat university ,41-b Shyam nagar Jhotwara Jaipur 302012,participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"10/4/2025, 5:30:14 AM",
+Manya ,malhotramanya81@gmail.com,7696318951,female,18,Shaheed Bhagat Singh College,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:49 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Vaani Patni,Vaanipatni3129@gmail.com,8920202969,female,18,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:48 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Tushar,agrawaltushar255@gmail.com,7819896097,male,18,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:47 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Yashasvi ,yashasvibhasker@gmail.com,7987910025,female,18,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:47 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Dev ,debudevsingh@gmail.com,7303939001,male,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:46 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Rounak,rounak2705@gmail.com,8826522418,male,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:46 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Nitin ,nitinbamaniya231@gmail.com,9671766776,male,19,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:45 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Ananta ,sharmasisters27@gmail.com,9289716996,female,20,Shaheed Bhagat Singh College,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:45 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Divya Jain,dj824072@gmail.com,9352955597,female,19,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:44 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Pritpal kaur,Tanmeetmettla@gmail.com,9914997809,female,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:44 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Lakshya Tirthani ,lakshyatirthani56@gmail.com,7060514912,male,19,Shaheed Bhagat Singh College ,"Saket,  New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:43 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Sailaja Raj Nandini,withsailaja2006@gmail.com,9348307082,female,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:43 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Sumit Sinha,sumitsinha8511@gmail.com,9798904554,male,19,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:42 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Samay Kanojia ,kanojiasamay@gmail.com,7835877622,male,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:42 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Shyam Nayak,shyamnayak981132@gmail.com,9643509274,male,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:41 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Mohd Ahmed Raza,mkmannan489@gmail.com,8178420995,male,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:41 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Ankur Kumar ,ankur33345@gmail.com,9311474201,male,19,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:40 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Anushree,anu.chakraborty20051@gmail.com,8810434064,female,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:40 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Ankita Gogoi ,ankugogoi754@gmail.com,9864500733,female,20,Shaheed Bhagat Singh College ,"Saket, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:39 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Varun Iyer,varun.spardha@gmail.com,8287522397,male,20,Shaheed Bhagat Singh College ,"AIIMS, New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,0,"10/3/2025, 7:51:38 PM",Jhanjhar Jindal 's Team (DANCE BATTLE)
+Jhanjhar Jindal ,jhanjharjindal13@gmail.com,8630605262,female,19,Shaheed Bhagat Singh College ,"Saket,New Delhi ",participant,DANCE BATTLE,Yes,No,Yes,1,"10/3/2025, 7:51:38 PM",
+Arshiyaa yadav,arshiyaa9103@gmail.com,7976616005,female,19,JKLU,"16A, Krishna Nagar, Officers Enclave, Kalwar Road, Jhotwara",participant,VISITOR_PASS,Yes,No,No,0,"10/3/2025, 7:13:37 PM",
+vansh mittal ,vm*39260058@gmail.com,7300435459,male,18,manipal university jaipur,119/512 mansarover jaipur,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 7:11:52 PM",Shorya SInghal 's Team (FREE FIRE TOURNAMENT)
+Shorya SInghal ,singhalshorya20@gmail.com,9622546032,male,18,st. xaviers colllege,c1/511 vashistha marg vaishali nagar jaipur,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,450,"10/3/2025, 7:11:51 PM",
+Ashiii,ashutoshyadavv510@gmail.com,9259068512,male,19,Dps,Aagayeaap,participant,VISITOR_PASS,Yes,No,No,0,"10/3/2025, 7:07:37 PM",
+Aditi sharma,aditisharma@jklu.edu.in,9928456059,female,17,Jk lakshmipath ,Bhankrota jaipur ,participant,VISITOR_PASS,Yes,No,Yes,103.5,"10/3/2025, 5:49:37 PM",
+Garv Sharma,garvsharma@jklu.edu.in,7852865011,male,19,Jk Lakshmipat University,"jk lakshmipat university, jaipur",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/3/2025, 4:26:39 PM",
+Tilak Singh,ts545099@gmail.com,8829805833,male,20,Rajasthan University,"Chai Ghar , vidhyadhar nagar jaipur",participant,VISITOR_PASS,Yes,No,Yes,138,"10/3/2025, 4:24:44 PM",
+Khushhal Gupta,khushhalgupta2303@gmail.com,8058059623,male,20,Jaipuria Institute of Management,"3/76, SFS, Agarwal Farm, mansarovar, jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 4:05:01 PM",Himanshu Garg's Team (VALORANT TOURNAMENT)
+Mayank Joshi,mayankjoshi@jklu.edu.in,6377221623,male,21,JK lakshmipath University ,"40-Bhagwati Nagar II, Kartarpura,Jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 4:05:00 PM",Himanshu Garg's Team (VALORANT TOURNAMENT)
+Jalaj Nigam,nigam.jalaj08@gmail.com,7414032474,male,21,Jaipuria Institute of Management,"4/39, sfs, mansarovar, jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 4:05:00 PM",Himanshu Garg's Team (VALORANT TOURNAMENT)
+Yashvardhan Ahuja,yashahuja2004@gmail.com,9829610155,male,21,Dayananda sagar academy of technology and management ,"3rd floor, 132/03, Nagegowdanapalya road, near pill poont , above Bachpan school, silk institute, Bangalore, Karnataka,560109",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 4:04:59 PM",Himanshu Garg's Team (VALORANT TOURNAMENT)
+Himanshu Garg,himanshugarg102005@gmail.com,7852008635,male,20,JK Lakshmipat University,"186/20, Sector-8, Near Haldighati Marg, Pratap Nagar, Jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,562.5,"10/3/2025, 4:04:59 PM",
+Garvit Agrawal ,garvitagrawal@jklu.edu.in,9024079027,male,16,JKLU,Jaipur,participant,CLAY MODELLING; VALORANT TOURNAMENT,Yes,Yes,Yes,149.25,"10/3/2025, 3:46:54 PM",WCP (VALORANT TOURNAMENT)
+Lakshya Gupta,lakshyagupta1549@gmail.com,7597370438,male,19,JK Lakshmipat University,26-A Narsingh Nagar Nangal Jaisa Bohra Niwaru Road Jhotwara Jaipur,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/3/2025, 3:21:18 PM",
+Vansh Sharma,vansh@jklu.edu.in,8306499913,male,19,Jklu,"97, hastinapur colony, karni palace road, panchyawala, jaipur",participant,COURTROOM; VALORANT TOURNAMENT,Yes,No,Yes,149.25,"10/3/2025, 3:06:59 PM",
+Samarth Singh,samartsingh2994@gmail.com,9413803303,male,18,JK lakshmipath university,"K-217, Narayan Vihar , Mansarovar, Jaipur, India",participant,COURTROOM,Yes,No,Yes,149.25,"10/3/2025, 2:44:59 PM",
+Angel garg,mgpsangel181013@gmail.com,9352960330,female,18,GCEC GLOBAL FOUNDATION,8/140 near gyan jyoti school vidyadhar nagar jaipur,participant,COURTROOM; CLAY MODELLING,Yes,Yes,Yes,398,"10/3/2025, 2:39:48 PM",
+Drashya Jain ,drashyajain4@gmail.com,9079142712,male,18,JK lakshmipat university ,"F-01, Sharda Apartment, Mahesh Nagar, 80ft Road, Jaipur ",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/3/2025, 2:31:27 PM",
+AKSHAT MURARKA,Akshatmurarka@jklu.edu.in,9153498719,male,18,Jklu,Jk Lakshmipat university ,participant,COURTROOM,Yes,No,Yes,149.25,"10/3/2025, 1:56:48 PM",
+Vansh Bhardwaj,vanshbhardwaj1018@gmail.com,6367787396,male,20,JK Lakshmipat University,"Address: 173/19, Sec-17, near NRI Circle, Pratap Nagar, Jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 1:46:25 PM",Kartik Sharma's Team (VALORANT TOURNAMENT)
+Ved Sanadhya,ved.sanadhya@gmail.com,6284487838,male,20,JK Lakshmipat University ,"305, Boy's Hostel 1, JK Lakshmipat University, Jaipur, Rajasthan",participant,VALORANT TOURNAMENT; ECHOES OF NOOR,Yes,Yes,Yes,374.25,"10/3/2025, 1:46:25 PM",Kartik Sharma's Team (VALORANT TOURNAMENT)
+Nikhil Khatri,00000000000nic@gmail.com,9079655811,male,18,Open School,"ddcl residency ,61 krishna sarovar mansarovar jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 1:46:24 PM",Kartik Sharma's Team (VALORANT TOURNAMENT)
+Jai Khatri,jaikhatri0661@gmail.com,8441882282,male,22,Rajasthan University,"ddcl residency ,61 krishna sarovar mansarovar jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 1:46:24 PM",Kartik Sharma's Team (VALORANT TOURNAMENT)
+Kartik Sharma,kartik1507sharma@gmail.com,7976015270,male,21,JK Lakshmipat University,5/171 SFS,participant,VALORANT TOURNAMENT,Yes,Yes,Yes,562.5,"10/3/2025, 1:46:23 PM",
+Deepanshu Singh Shekhawat ,deepanshu.shekhawat2007@gmail.com,7340188047,male,19,Jk Lakshmipat University ,B-23 Shilpa Colony jhotwara jaipur,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"10/3/2025, 11:28:41 AM",
+Jigeesha Agarawal,jigeeeshaaa@gmail.com,7007282212,female,21,Jk Lakshmipat University,"Jk Lakshmipat University, Bhankrota, near Mahindra SEZ, Jaipur",participant,CLAY MODELLING,Yes,No,Yes,199,"10/3/2025, 9:28:16 AM",
+Riddhi Sharma,riddhiis1805@gmail.com,7014857867,female,18,JK Lakshmipat University,house no 1537 opp rk maths academy subhash nagar ajmer,participant,VISITOR_PASS,Yes,No,Yes,155.25,"10/3/2025, 9:02:33 AM",
+Nakkalapally Omruthik,nomruthik@gmail.com,9014857921,male,18,J.K lakshmipat university,"4-7-25/8, Tejaswini Nagar colony, attapur,Rangareddy,telangana,500048",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/3/2025, 8:52:16 AM",
+Hardik yadav ,hardikyadav@jklu.edu.in,7891640047,male,20,Jk Lakshmipat university ,Govind pura ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/3/2025, 8:40:49 AM",
+Prashant sharma,prashantsharma@jklu.edu.in,8949022638,male,20,Jk Lakshmipat university ,Suncity,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,450,"10/3/2025, 8:27:18 AM",
+Satya Narayan kumawat ,satyanarayankumawat@jklu.edu.in,8003985341,male,19,Jk Lakshmipat university ,Boraj ,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"10/3/2025, 8:07:32 AM",Prashant Sharma 's Team (FREE FIRE TOURNAMENT); Prashant sharma's Team (FREE FIRE TOURNAMENT)
+Divyansh Pratap Singh ,DIVYANSHPRATAPSINGH@jklu.edu.in,7494927871,female,20,Jk lakshmipat university ,Khatipura jaipur ,participant,FREE FIRE TOURNAMENT,Yes,No,No,0,"10/3/2025, 8:07:32 AM",Prashant Sharma 's Team (FREE FIRE TOURNAMENT)
+Shivansh sharma,SHIVANSHSHARMA2023@jklu.edu.in,8000649601,male,20,Jk lakshmipat university ,Vaishali nagar jaipur ,participant,FREE FIRE TOURNAMENT,Yes,No,No,0,"10/3/2025, 8:07:31 AM",Prashant Sharma 's Team (FREE FIRE TOURNAMENT)
+Nandani Rajawat ,nrajawat032@gmail.com,9828252683,female,17,JK lakshmipath university ,JK lakshmipath university ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/3/2025, 3:52:20 AM",
+Anoushka Singh ,anoushkasingh@jklu.edu.in,8949038616,female,20,Jk laxmipat University ,"79, green park k-5 scheme, jharkhand mod, vaishali nagar ",participant,VISITOR_PASS,Yes,Yes,Yes,99,"10/3/2025, 3:28:58 AM",
+Ritik Sharma,ritiksharma@jklu.edu.in,8306936227,male,19,JKLU,"H.no 63 Atwali Nagar , Kota ",participant,VISITOR_PASS,Yes,No,Yes,155.25,"10/3/2025, 3:27:27 AM",
+Deepak Saini,sainideepakv9828@gmail.com,8955191915,male,19,Manipal university ,Jaipur ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/3/2025, 3:09:02 AM",
+Anushka Godika,Shambhavijain05@gmail.com,9828395003,female,21,IIS DEEMED TO BE UNIVERSITY ,Tonk road Jaipur ,participant,SEAL THE DEAL; CLAY MODELLING; DUMB SHOW,No,Yes,Yes,298.5,"10/2/2025, 3:11:04 PM",
+Atharv Mandal ,MandalAtharv30@gmail.com,7728959804,male,17,Jk lakshmipat university ,403 park view rajat city balaji market shrinathpuram kota rajasthan,participant,BIDDING BEFORE WICKET; STEP UP,Yes,Yes,Yes,523.5,"10/2/2025, 3:03:10 PM",
+Tarun sharma ,tarunsharma05122001@gmail.com,8426818970,male,24,Rajathan university ,A-123 poonam market jaipur,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/2/2025, 2:32:05 PM",
+Megh Kedia ,meghkedia@jklu.edu.in,9829076464,male,19,Jk Lakshmipat university ,"52, prem nagar , purani chungi Ajmer road Jaipur ",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/2/2025, 11:11:39 AM",
+harshul agarwal,harshulagarwal2207@gmail.com,7742991906,male,18,jk lakshmipat university ,bhrampuri jaipur,participant,IN CONVERSATION WITH; FREE FIRE TOURNAMENT,Yes,Yes,No,0,"10/2/2025, 9:17:20 AM",Shorya SInghal 's Team (FREE FIRE TOURNAMENT)
+Anushri Falor,anushrifalor@gmail.com,9314267009,female,19,JK Lakshmipat universitry,"36, SONI KA BAGH, BEHIND ALKA CINEMA, SIKAR ROAD, JAIPUR",participant,CLAY MODELLING,Yes,Yes,Yes,149.25,"10/2/2025, 8:15:44 AM",
+BHAVISHA SABNANI,bhavishasabnani@gmail.com,7878530529,female,18,jk lakshmipat university,A-45 gauri nagar friends colony Vaishali Nagar,participant,COURTROOM,Yes,No,Yes,149.25,"10/2/2025, 7:55:52 AM",
+Tanishka Sharma ,tanishkasharma825@gmail.com,7014577702,female,20,JECRC University ,Vidhyadhar nagar,participant,STEP UP; DANCE BATTLE,Yes,Yes,No,0,"10/2/2025, 7:37:07 AM",Quintessence Dance crew (QDC) (DANCE BATTLE)
+mansi,mansi2024@jklu.edu.in,9351921082,female,20,jk lakshmipat university,"jk lakshmipat university ,mahapura ,jaipur",participant,COURTROOM,Yes,No,Yes,149.25,"10/2/2025, 6:57:43 AM",
+Shabd Srivastava ,Shabdsrivastava@jklu.edu.in,7011114613,male,18,Jklu,"C 3 block 274 , Janakpuri ",participant,COURTROOM,Yes,No,Yes,149.25,"10/2/2025, 5:41:08 AM",
+Adityavardhan Singh Chauhan ,adityavardhansinghchauhan@jklu.edu.in,8955738808,male,20,Jk lakshmipat university jaipur ,Jk lakshmipat university jaipur ,participant,COURTROOM; VALORANT TOURNAMENT; BIDDING BEFORE WICKET; FOCUS; BGMI TOURNAMENT,Yes,Yes,Yes,524.25,"10/1/2025, 6:50:35 PM",Nikhilesh Singh Panwar 's Team (BIDDING BEFORE WICKET); Nikhilesh Singh Panwar 's Team (FOCUS); Nikhilesh Singh Panwar 's Team (BGMI TOURNAMENT)
+aman kumawat,kumawataman59@gmail.com,9509120066,male,18,jklu,jk laxmipat university bh-2,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"10/1/2025, 5:33:41 PM",
+Daksh Shukla ,dakshshukla2709@gmail.com,8824809316,male,18,Jk lakshmipath university ,"Mahima panorama,near srn school ",participant,COURTROOM,Yes,No,Yes,149.25,"10/1/2025, 5:32:14 PM",
+Pranjal Jain,pranjaljain2909@gmail.com,7976743758,male,18,jk lakshmipat university,117/365 Thadi Market Mansarover,participant,IN CONVERSATION WITH; FREE FIRE TOURNAMENT,Yes,Yes,Yes,99,"10/1/2025, 4:28:45 PM",Shorya SInghal 's Team (FREE FIRE TOURNAMENT)
+Bhanu upadhyay,bhanuupadhyay@jklu.edu.in,8769070887,male,19,jk lakshmipat university,plot num 22 shiv mahima nagar first sirsi,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"10/1/2025, 4:02:24 PM",
+Komal verma ,kv13072007@gmail.com,8209421348,female,18,Jk lakshmipat university ,240 Shyam enclave sirsi road panchywala jaipur rajasthan ,participant,CLAY MODELLING,Yes,Yes,Yes,149.25,"10/1/2025, 2:05:05 PM",
+vidhaan p shah,vidhaanpshah@gmail.com,7357252112,male,19,JK Lakshmipat University,"1169-A RANI SATI NAGAR, JAIPUR",participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"10/1/2025, 1:48:08 PM",
+anurag,anuragsharma2025@jklu.edu.in,8817652758,male,18,JK Lakshmipath university,"JK Lakshmipat University (JKLU), Near Mahindra SEZ",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/1/2025, 6:20:41 AM",Deepak 's Team (FREE FIRE TOURNAMENT)
+sahil yadav,sahil2025@jklu.edu.in,9053480115,male,18,JK Lakshmipath university,"JK Lakshmipat University (JKLU), Near Mahindra SEZ",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,0,"10/1/2025, 6:20:40 AM",Deepak 's Team (FREE FIRE TOURNAMENT)
+Naveen Tholiya,naveentholiya@jklu.edu.in,7023506758,male,18,JK lakshmipath University ,"JK Lakshmipat University (JKLU), Near Mahindra SEZ",participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"10/1/2025, 6:20:40 AM",Deepak 's Team (FREE FIRE TOURNAMENT)
+Deepak ,Deepakchoudhary@jklu.edu.in,8854904497,male,18,Jk lakshmipath university,"JK Lakshmipat University (JKLU), Near Mahindra SEZ",participant,FREE FIRE TOURNAMENT,Yes,No,Yes,450,"10/1/2025, 6:20:39 AM",
+Manishyadav,manishyadavv6350049057,6350049057,male,18,Manipal university ,Manishyadavv63500@gmail.com,participant,COURTROOM,Yes,No,No,149.25,"10/1/2025, 4:54:04 AM",
+Vinita singh,Voxstudio786@gmail.com,8112266334,female,13,Brightland Girls Senior Secondary School,A 30 acharya Vinoba Bhave Nagar Near Nursery Circle Vashali Nagar,participant,STEP UP,Yes,Yes,Yes,374.25,"9/30/2025, 2:07:41 PM",
+Udit Mishra,uditmishra@jklu.edu.in,9509908119,male,17,Jk lakshmipat university ,Jk lakshmipat university jaipur mahapura,participant,COURTROOM,Yes,No,Yes,149.25,"9/30/2025, 1:21:45 PM",
+AAYUSHI KAUSHIK,aayushikaushik@jklu.edu.in,9251130800,female,18,JK lakshmipat university ,Jk lakshmipat university,participant,COURTROOM,Yes,No,Yes,149.25,"9/30/2025, 1:04:20 PM",
+Aryanmehrishi,aryanmehrishi8@gmail.com,8000844614,male,18,Bit mesra,683 Barkat nagar Mehrishi residency jaipur,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/30/2025, 7:24:09 AM",
+Raghav Sharma ,raghavsharma2025@jklu.edu.in,7849902293,male,18,JK LAKSHMIPAT UNIVERSITY ,Udaipuriya Chomu Jaipur,participant,DUMB SHOW,No,No,No,0,"9/30/2025, 4:13:27 AM",
+Anurika A,anurikaa@jklu.edu.in,8921646419,female,20,Jk Lakshmipath University ,"JK Lakshmipat University, Mahapura Rd, near Mahindra SEZ, Mahapura, Rajasthan 302026",participant,CLAY MODELLING,Yes,No,Yes,149.25,"9/29/2025, 7:40:59 PM",
+Vagisha singh kapasia,vagishasinghkapasia@jklu.edu.in,7877918081,female,20,Jk lakshmipat university ,C108 anukampa Residency Shanti Nagar durgapura ,participant,COURTROOM,Yes,No,Yes,149.25,"9/29/2025, 5:17:03 PM",
+LAKSH SHARMA,lkshsharma25@gmail.com,8094110057,male,19,JK Lakshmipat University ,"A-236, Nehru Nagar, panipech, jaipur ",participant,IN CONVERSATION WITH,Yes,No,Yes,24.5,"9/29/2025, 5:11:32 PM",
+Anandi K,anandikolapkar29@gmail.con,7219879565,female,19,Jk lakshmipat university ,"Jk lakshmipat university, Mahapura",participant,IN CONVERSATION WITH,Yes,No,No,99,"9/29/2025, 4:44:47 PM",
+Nandini Mittal,nandinimittal@jklu.edu.in,8078606805,female,18,Jk Lakshmipat University ,"Saras Kripa, C3, near ICICI BANK, Patrakar colony, jaipur",participant,STEP UP,Yes,No,Yes,499,"9/29/2025, 4:21:38 PM",
+Priah,priyasahu072005@gmail.com,9142652574,female,6,Gjj,BANK COLONY ROAD NO1 BOREYA ROAD RANCHI,participant,VISITOR_PASS,Yes,Yes,Yes,149.25,"9/29/2025, 4:17:24 PM",
+Pranjal Jangid ,pranjaljangid@jklu.edu.in,9828188830,female,19,Jk lakshmipath university ,J42 sharma colony bais godam sodala Jaipur ,participant,CLAY MODELLING,Yes,Yes,Yes,149.25,"9/29/2025, 4:15:54 PM",
+Abhishek ,abhishek62mishra90@gmail.com,9235245386,male,17,Jk lakshmipat university jaipur ,Gonda Uttar Pradesh ,participant,SEAL THE DEAL,Yes,Yes,Yes,149.25,"9/29/2025, 4:05:52 PM",
+Rishika Singh,rishikasingh2024@jklu.edu.in,7300118679,female,18,Jk Lakshmipat University,Ashiana Umang,participant,IN CONVERSATION WITH,Yes,No,Yes,49.25,"9/29/2025, 3:37:49 PM",
+Anirudh Choudhary,anirudhchoudhary@jklu.edu.in,8690943532,male,18,Jk Lakshmipat University ,"342,Sirsi Road , jaipur",participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/29/2025, 3:22:52 PM",
+SAUMYA PURI,saumyapuri@jklu.edu.in,9458982055,female,19,jk lakshmipat university,jaipur,participant,COURTROOM,Yes,No,Yes,149.25,"9/29/2025, 3:17:46 PM",
+Yuvraj Singh Rathore,yuvrajsingh0192rathore@gmail.com,9351912044,male,19,JK Lakshmipath University,39 Uma Path Ram Nagar Sodala,participant,COURTROOM,Yes,No,Yes,149.25,"9/29/2025, 2:45:21 PM",
+Yogant Gupta ,Kinshugupta2007@gmail.com,7690004525,male,18,Jklu,336 vidhut nagar a vijay path jaipur ajmer Road ,participant,VISITOR_PASS; FOCUS,Yes,Yes,No,304.5,"9/29/2025, 2:41:55 PM",
+Dhananjay Sharma,1107dhananjaysharma@gmail.com,7357904367,male,19,JK lakshmipat university,"JK Lakshmipat University, Mahapura Rd, near Mahindra SEZ, Jaipur, Rajasthan 302026",participant,COURTROOM,Yes,No,Yes,149.25,"9/29/2025, 1:20:54 PM",
+yug jain,yugjain@jklu.edu.in,9358210803,male,20,"jk lakshmipat university, jaipur","Manak chowk sarafa bazar, dungarpur,rajasthan",participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/29/2025, 1:13:22 PM",
+Ruchi ,ruchichoudhary@jklu.edu.in,8905185761,female,18,Jk lakshmipat university jaipur ,Sadri Ranakpur pali district ,participant,BIDDING BEFORE WICKET,Yes,No,No,149.25,"9/29/2025, 12:16:58 PM",
+Ayush Jaiswal ,ayushjaiswal.28622@gmail.com,9473326155,male,19,JK LAXMIPAT UNIVERSITY ,"JK Laxmipat University Near Mahindra Sez, Mahapura, Ajmer Road, Jaipur - 302026, Rajasthan, India",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"9/29/2025, 11:41:56 AM",
+Ozair Shah,mohammedozairshah@jklu.edu.in,8829852070,male,19,JK Lakshmipat University,Jaipur,participant,VISITOR_PASS; BGMI TOURNAMENT,Yes,No,Yes,155.25,"9/29/2025, 10:46:31 AM",Ansh Gupta's Team (BGMI TOURNAMENT)
+Aditi Rathore,aditirathore876@gmail.com,7878185469,female,20,IIS deemed to be university ,"Sirsi road, jaipur",participant,FOCUS; CLAY MODELLING,Yes,Yes,Yes,298.5,"9/29/2025, 9:40:47 AM",
+Riya Sharma ,riya.alw07@gmail.com,7976236023,female,18,JK Lakshmipat University ,"114,Kanak vihar ,Ajmer Road",participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"9/29/2025, 9:36:57 AM",
+Anvi Vashist,anvivashist@jklu.edu.in,8875513050,female,18,jk lakshmipat,91/46 patel marg mansarovar jaipur,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/29/2025, 9:34:13 AM",
+Aditi Agarwal ,aditiagarwal2025@jklu.edu.in,8955987037,female,18,Jk lakshmipat university ,"9, hari marg mansingh pura tonk road",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/29/2025, 8:23:49 AM",
+Amandeep Singh Rathore ,amandeepsinghrathore@jklu.edu.in,7877315993,male,18,Jk Lakshmipat University ,"Ext 5 jai bhawani nagar , khatipura, jhotwara, jaipur ",participant,COURTROOM,Yes,No,No,149.25,"9/29/2025, 8:14:19 AM",
+ANVI VASHIST ,vashistanvi@gmail.com,8875513050,female,18,jk lakshmipath university ,91/46 patel marg mansarovar jaipur ,participant,IN CONVERSATION WITH,No,No,No,0,"9/29/2025, 8:05:47 AM",
+Avnika Vyas ,avnikavyas@jklu.edu.in,8949820056,female,18,Jk lakshmipat university ,"Shastri Nagar, bhilwara ",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/29/2025, 7:58:08 AM",
+Aaditya Rawat ,Aadityarawat911@gamil.com,7742780088,male,17,Dav,2116 Gangori bazar Jaipur ,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"9/29/2025, 7:05:58 AM",
+Ashmi Sharma ,ashmisharma@jklu.edu.in,8003740493,female,19,JKLU,JAIPUR,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"9/29/2025, 6:49:41 AM",
+Atashi Kashyap,atashikashyap1629@gmail.com,7425954853,female,19,Jk Lakshmipat university ,Bhartendu nagar khatipura jaipur  ,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"9/29/2025, 6:47:39 AM",
+Dishika Pancholi ,dishikapancholi00@gmail.com,9588934442,female,18,JK Lakshmipat University ,Jaipur ,participant,IN CONVERSATION WITH,Yes,No,No,99,"9/29/2025, 6:22:18 AM",
+Aaditya rawat,adityarawat9362@gamil.com,7742780088,male,17,Dab ,2116 Gangori bazar Jaipur ,participant,IN CONVERSATION WITH,No,No,No,0,"9/29/2025, 6:20:38 AM",
+Ridham Somani,ridhamsomani18@gmail.com,9119189429,male,20,"Commerce College, University of Rajasthan","A-81, 3rd floor, LS Nagar, Vidhyadhar Nagar, Jaipur",participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/29/2025, 5:25:51 AM",
+Harshita Kanwar,harshita@jklu.edu.in,7976455145,female,19,JK Lakshmipat University,"House no. B-20, Mangalam Anantara the villas, near Hotel the Sawai, opposite Pink Pearl",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/29/2025, 5:18:20 AM",
+Ashish Sharma,ashishsharma@jklu.edu.in,6375973380,male,24,"JK Lakshmipat University, jaipur","JK Lakshmipat University, jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"9/29/2025, 4:46:50 AM",Sharma Lokesh's Team (VALORANT TOURNAMENT)
+Arnav Rawat,arnavrawat3274@gmail.com,9682601220,male,18,"JK Lakshmipat University, jaipur","JK Lakshmipat University, jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"9/29/2025, 4:46:50 AM",Sharma Lokesh's Team (VALORANT TOURNAMENT)
+Harsh Bindal,harshbindal@jklu.edu.in,7597713625,male,20,"JK Lakshmipat University, jaipur","JK Lakshmipat University, jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"9/29/2025, 4:46:49 AM",Sharma Lokesh's Team (VALORANT TOURNAMENT)
+Manvi Gurjar,manvigurjar@jklu.edu.in,9001979310,female,19,JK Lakshmipat University,"JK Lakshmipat University, jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,0,"9/29/2025, 4:46:49 AM",Sharma Lokesh's Team (VALORANT TOURNAMENT)
+Sharma Lokesh,sharmalokesh@jklu.edu.in,9898230461,male,18,JK Lakshmipat University,"JK Lakshmipat University, jaipur",participant,VALORANT TOURNAMENT,Yes,Yes,Yes,562.5,"9/29/2025, 4:46:48 AM",
+Anubha Sharma,anubhasharma@jklu.edu.in,9829820425,female,18,JK Lakshmipat University,Ketwa Nagar,participant,DANCE BATTLE,Yes,Yes,Yes,374.25,"9/29/2025, 4:35:49 AM",Niharika Gupta's Team (DANCE BATTLE)
+Kunal Kasliwal ,kunalkasliwal@jklu.edu.in,6377987396,male,20,Jk Lakshmipat University ,Mansarovar Jaipur,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/29/2025, 4:21:22 AM",
+Nawya dusad,nawyadusad2007@gmail.com,8279220922,,,,,participant,VISITOR_PASS,Yes,No,No,149.25,"9/29/2025, 4:06:55 AM",
+Divyansh,divyanshchopra65@gmail.com,8000825994,male,18,Jk Lakshmipat unit,118 plot no 200 ft by pass panchawala Ganga sagar schem jaipur,participant,BIDDING BEFORE WICKET,Yes,No,No,0,"9/29/2025, 4:02:37 AM",
+Ashmit sharma ,asmitsharma7878@gmail.com,8209945432,male,20,Jk lakshmipat university ,"B-114, Vidhyadhar nagar, sector 3 ",participant,ART RELAY,Yes,No,Yes,149.25,"9/29/2025, 3:15:10 AM",
+Tanmay Sharma,tanmaysharma2025@jklu.edu.in,6367830722,male,18,JKLU,House no 173 sangam vihar,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/28/2025, 8:50:47 PM",
+Pratistha chechani ,pratisthachechani@jklu.edu.in,6376856248,female,18,Jk lakshmipat university ,Paroli Bhilwara Rajasthan ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 7:57:29 PM",
+Shikha Sharma,shikhasharma@jklu.edu.in,6261561942,female,18,JK Lakshmipat University ,New Delhi India,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 7:36:56 PM",
+Ghyan Chechani,ghyanchechani@jklu.edu.com,8824600720,male,19,Jk laxmipat university ,Tilak Nagar sector -8 bhilwara rajasthan,participant,IN CONVERSATION WITH,Yes,No,No,99,"9/28/2025, 7:13:02 PM",
+Shubhangi bhanawat ,shubhangibhanawat@jklu.edu.in,9829015671,female,19,JK laxmipat university ,"B-103 Archi Peace Park , New Vidhya Nagar ,Sector-4 Hiran Magri ,Udaipur",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 7:09:41 PM",
+Monika ,monikabishnoi2006@gmail.com,8690546147,female,19,Jk lakshmipat university ,"Bikaner, Rajasthan ",participant,IN CONVERSATION WITH,Yes,Yes,No,99,"9/28/2025, 6:57:50 PM",
+Bhavya Doshi,bhavyadoshi@jklu.edu.in,7014763106,male,18,JKLU,Aanadam society nagaur raj ,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/28/2025, 6:47:43 PM",
+Heramb Sharma ,herambsharma@jklu.edu.in,6377827962,male,18,JK Lakshmipat University ,106 BH2 JK Lakshmipat University ,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/28/2025, 6:34:22 PM",
+Purvee,purveedudheria@jklu.edu.in,9352221827,female,17,Jk lakshmipat university ,Jklu mahindra sez jaipur,participant,COURTROOM; IN CONVERSATION WITH,Yes,Yes,Yes,99,"9/28/2025, 5:45:52 PM",
+Prince soni,princesoni5678mwe@gmail.com,9887646103,male,19,Jk lakshmipat university ,Jhotwara Jaipur chitrakoot colony,participant,DUMB SHOW,Yes,No,Yes,149.25,"9/28/2025, 5:22:40 PM",
+Rashi Lunawat,rashilunawat@jklu.edu.in,8104204489,female,18,JK lakshmipat university ,Jk lakshmipat university ,participant,ART RELAY,Yes,Yes,No,149.25,"9/28/2025, 5:22:38 PM",
+Akshara Saini,aksharasaini@jklu.edu.in,9929084866,female,19,Jk lakshmipat ,802-B shivaji nagar civil lines jaipur ,participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"9/28/2025, 5:22:14 PM",
+Yash Gill,yashgill@jklu.edu.in,9521734317,male,17,JK lakshmipat University ,"Gillon ki dhani , lakh bhar bhorki , jhunjhunu ",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 4:59:36 PM",
+Vansh Vaibhav Singh,vanshvaibhavsingh@jklu.edu.in,7852862130,male,18,JK laxmipath university ,"75-N, Garden Residency, Govindpura, Kalwar road, Jaipur, Rajasthan, 302012",participant,COURTROOM,Yes,No,Yes,149.25,"9/28/2025, 4:41:14 PM",
+Dharam Singh Choudhary ,sherawatdharamsingh911@gmail.com,9119125584,male,18,JK Lakshmipat University ,Patarkar colony Mansarovar ,participant,BIDDING BEFORE WICKET,Yes,Yes,No,149.25,"9/28/2025, 4:04:05 PM",
+Yatharth Chaturvedi ,yatharthchaturvedi16@gmail.com,8529958544,male,18,Jk Lakshmipat Singhania University ,80 PRATAP NAGAR DADABARI KOTA ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"9/28/2025, 3:59:02 PM",
+Koushal JAngir ,Koushaljangir@jklu.edu.in,9509489793,male,17,jklu,jklu,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 3:58:58 PM",
+Niharika Chauhan,niharikachauhan2607@gmail.com,9660622428,female,18,JK Lakshmipat University,"E-421 Pinkwall Villa , Mahapura ,Jaipur , Rajasthan",participant,FOCUS,Yes,Yes,Yes,149.25,"9/28/2025, 3:15:25 PM",
+Ridhwik Tailor ,ridhwiktailor@gmail.com,8824343789,male,18,J.K. Lakshmi college ,"2 Vardman colony, Bhilwara ",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 2:52:11 PM",
+Vaibhav Charan,vaibhavcharan@jklu.edu.in,6376373583,male,18,jk lakshmipat university,"F-1 Sneha Residency -1 , Maa hinghlaj Nagar lalarpura gandhi path west vaishali nagar jaipur ",participant,COURTROOM,Yes,No,Yes,149.25,"9/28/2025, 2:50:25 PM",
+Bhavya Gupta ,bhavyagupta406@gmail.com,8302914430,male,18,JK Lakshmipath University ,71 Barkat Nagar Tonk Phatak ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"9/28/2025, 1:51:33 PM",
+Prekshya Sharma,prekshasharma277@gmail.com,7850984940,female,18,Jk lakshmipat University,New Colony lalsot (Dausa),participant,COURTROOM,Yes,No,Yes,149.25,"9/28/2025, 1:34:58 PM",
+Khushi Sharma,khvshi06@gmail.com,8949969152,female,18,JK Lakshmipat University,"C-450, Nirman Nagar , Near Ajmer Road, Jaipur",participant,COURTROOM,Yes,Yes,Yes,149.25,"9/28/2025, 1:28:42 PM",
+Shambhavi Singh ,shambhaviaa28@gmail.com,9452588089,female,19,JK Lakshmipat University ,"4/526 -S , Vasant Khand , Gomti Nagar Extension, Lucknow, UP.",participant,VISITOR_PASS,Yes,No,Yes,155.25,"9/28/2025, 1:16:28 PM",
+Tanishq Daiya,tanishqdaiya@jklu.edu.in,7611964099,male,18,JK Lakshmipat University,"Boys Hostel, JK Lakshmipat University, Jaipur",participant,COURTROOM,Yes,No,Yes,149.25,"9/28/2025, 12:38:54 PM",
+Prakhar Jain,jain.prakharjaipur@gmail.com,8448583701,male,18,Jk Laxmipat University ,262-A Mansarovar Colony Kalwar Road Jhotwara Jaipur ,participant,BIDDING BEFORE WICKET,Yes,No,No,149.25,"9/28/2025, 12:24:47 PM",
+Padmini Singh Tanwar ,padminisinghtanwar@jklu.edu.in,8107011698,female,18,JK Laxmipat University ,Buhana Mansion 85 A Jagdamba Nagar Ajmer Road Jaipur,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 11:50:58 AM",
+Aman Choudhary,amanjat0080@gmail.com,6375830028,male,20,Jklu,"Mahapura, Jaipur",participant,"IN CONVERSATION WITH; BIDDING BEFORE WICKET; COURTROOM; FOCUS ,",Yes,Yes,Yes,372.75,"9/28/2025, 11:37:41 AM",
+Aman Choudhary ,amanchoudhary@jklu.edu.in,6375830028,male,20,Jklu,Mahapura Jaipur ,participant,IN CONVERSATION WITH; BIDDING BEFORE WICKET; COURTROOM,No,No,No,0,"9/28/2025, 11:32:46 AM",
+Vikas Saran,vikassaran9974@gmail.com,8306119974,male,19,Jk Lakshmipat University Jaipur ,Sarano ka bass pal jodhpur ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 11:04:21 AM",
+Kriti Gupta ,anju05121977@gmail.com,8619695311,female,19,Jk Lakshmipat University ,"111/255, Ram tirth marg, Jhalana chhod, Mansarovar ",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 11:03:15 AM",
+Rudrapal Singh Shekhawat ,rudrapalsinghshekhawat@jklu.edu.in,7737472264,male,18,Jk Lakshmipat University ,VPO POSANI SIKAR RAJ 332031,participant,IN CONVERSATION WITH,Yes,No,No,0,"9/28/2025, 11:01:30 AM",
+Tarun Saran,tarunsaran9974@gmail.com,8905119974,male,18,Jk lakshmipat university (Jaipur ),Sarano ka bas pal village Jodhpur ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 10:57:33 AM",
+SHREYANSH MISHRA,shreyanshmishra15@gmail.com,8094259011,male,18,J.K LAKSHMIPAT UNIVERSITY,Villa No 362 E- Block Prime Ville Mahapura,participant,VISITOR_PASS,Yes,No,Yes,69,"9/28/2025, 10:34:14 AM",
+Ayush Gadwal ,ayushgadwal18@gmail.com,9828631820,male,18,Jk Laxmipat university ,Ramchandpura ajmer road ,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/28/2025, 10:05:06 AM",
+Daksh Kumar,dakshkumar@jklu.edu.in,8949291337,male,19,JK Lakshmipat University,"Mohan Colony, Swej Farm, Sodala, Jaipur",participant,VISITOR_PASS,Yes,No,Yes,155.25,"9/28/2025, 9:46:37 AM",
+Rishabh Choudhary ,rishabhchoudhary492@gmail.com,8949880117,male,19,JK Lakshmipat University,Ramchandpura ajmer road jaipur,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/28/2025, 9:32:20 AM",
+Garima maheshwari,garimamaheshwari@jklu.edu.in,8967258958,female,18,Jk lakshmipath university ,West bengal siliguri ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"9/28/2025, 9:25:45 AM",
+Anshika Pandey ,anshikapandey@jklu.edu.in,6367633904,female,17,Jk Lakshmipat University ,"Plot no. 1300, 2nd phase, Omaxe city, Ajmer Road, Jaipur ",participant,IN CONVERSATION WITH,Yes,Yes,Yes,99,"9/28/2025, 9:16:47 AM",
+Manan Sharma,manansharma1035@gmail.com,7372913432,male,18,JKLU,32 Phase 1 RR HOMES Kanakpura sirsi road jaipur,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 9:05:16 AM",
+Divit Chaturvedi ,divit3011@gmail.com,9602138785,male,18,Jk lakshmipat university ,"JK Lakshmipat University, Mahapura Rd, near Mahindra SEZ, Mahapura, Rajasthan 302026",participant,FOCUS,Yes,No,Yes,149.25,"9/28/2025, 9:03:18 AM",
+Yashsvi Bothra,yashsvibothra@jklu.edu.in,9875765696,female,18,J. K. Lakshmipath University,"Rajeev Bothra, Bhura chowk, Nokha, Bikaner ",participant,BIDDING BEFORE WICKET,Yes,No,No,149.25,"9/28/2025, 8:45:52 AM",
+Krish Bhola,krishbhola@jklu.edu.in,7073517788,male,18,Jk Lakshmipat university ,Agrasen Bazar Road,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 8:44:41 AM",
+Abigail Abraham ,abigailabraham2107@gmail.com,7016338365,female,18,JK Lakshmipat University ,"B-12, M848, Ashiana Umang phase 1, Mahindra SEZ, jhai, Rajasthan ",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 8:41:10 AM",
+naresh roj,nareshroj@jklu.edu.in,9509879995,male,18,jklu,d 605 aasra apartments bhankrota,participant,SEAL THE DEAL; BIDDING BEFORE WICKET; COURTROOM; DUMB SHOW,Yes,Yes,Yes,597,"9/28/2025, 8:35:43 AM",
+Anukriti Choudhary ,anukritichoudhary1508@gmail.com,7424841969,female,19,J.k lakshmipat university ,"Shivdham-3,kgn bagh,ashok nagar, near delhi-ajmer expressway ",participant,VISITOR_PASS,Yes,No,Yes,155.25,"9/28/2025, 8:34:17 AM",
+Vishal Choudhary ,memonusharma7800@gmail.com,7737336736,male,20,Jk Lakshmipat university ,Bagru ajmer road jaipur ,participant,VISITOR_PASS,Yes,No,Yes,287.25,"9/28/2025, 8:19:39 AM",
+Hardik kumawat ,hardikkumawat@jklu.edu.in,9001023997,male,17,Jk lakshmipat university ,"Near new post office, Vikas bhavan road, Kuchaman City,Rajasthan, 341508",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 8:06:07 AM",
+Avneesh Kumar Dubey ,avneeshkumardubey@jklu.edu.in,8448172686,male,18,JK lakshmipat university ,"B-1609 , 16th Floor, B-Block , Gaur Siddhartham, siddharth vihar, ghaziabad, uttar pradesh,201009",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 8:05:50 AM",
+Shouryaveer Bishnoi ,shouryaveerbishnoi@jklu.edu.in,9828692129,male,18,Jk lakshmipat university ,"1081, Homeland, sriganganagar, Rajasthan",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 7:57:46 AM",
+Jitendra ,js7149448@gmail.com,9653840559,male,16,Jk lakshmipat university ,"154 , near DRS kids school, Shekhawat marg, kalwar road, Harnathpura, Jhotwara, Jaipur",participant,DUMB SHOW,Yes,No,Yes,199,"9/28/2025, 7:51:48 AM",
+Akarsh Pareek,akarshpareek003@gmail.com,6350062365,male,18,JKLU,301 Jc heights ,participant,VISITOR_PASS,Yes,No,Yes,103.5,"9/28/2025, 7:46:41 AM",
+Harshveer Singh Rathore,harshveersinghrathore@jklu.edu.in,7851807052,male,19,Jklu,A/337,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/28/2025, 7:18:13 AM",
+Tarushi Agarwal ,agarwaltarushi918@gmail.com,7877320323,female,18,Jklu,B 43 VIKAS NAGAR MURLIPURA SCHEME,participant,ART RELAY,Yes,No,No,199,"9/28/2025, 7:14:17 AM",
+Keshav Singh Shekhawat ,keshavsingh7773@gmail.com,7023730893,male,18,JK LAKSHMIPAT UNIVERSITY ,"Bagar, Jhunjhunu, Rajasthan ",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 7:09:03 AM",
+Parul swami ,Parulswami@jklu.edu.in,6375050886,female,19,Jk lakshmipat university ,Ccd5 lalarpura jaipur ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/28/2025, 6:49:57 AM",
+Sagar sharma,2234sagarsharma@gmail.com,6376911647,male,20,Swami keshvanand institute of technology,chainpura jaipur rajasthan,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"9/28/2025, 6:47:52 AM",
+Tanish sharma,tanishsharma8239@gmail.com,9351057234,male,17,Swami keshvanand institute of technology,near kalyan ji k mandir bassi rajasthan,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"9/28/2025, 6:47:51 AM",
+Rohan Yadav,rohanyadav102006@gmail.com,7300118955,male,19,Swami keshavanand institute of technology,keriya wala mohalla alwar rajasthan,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,0,"9/28/2025, 6:47:50 AM",
+VANSH PRATAP SINGH,vanshpratapsinghshekhawat2020@gmail.com,9588243450,male,20,JK lakshmipat university,Goner road dantli jaipur,participant,FREE FIRE TOURNAMENT,Yes,Yes,Yes,450,"9/28/2025, 6:47:50 AM",
+Parihaan kabra ,parihaankabra980@gmail.com,9057123555,female,18,Jk laxmipat university ,"D-13 Elegant Rangoli,mohan Marg ,vivek vihar",participant,CLAY MODELLING,Yes,No,Yes,149.25,"9/28/2025, 6:21:33 AM",
+Aditya Somani,aditya.somani2006@gmail.com,8233116585,male,19,JK Lakshmipat University ,"mahindra sez, mahapura",participant,FOCUS,Yes,No,No,149.25,"9/28/2025, 5:07:00 AM",
+Pratham ,pratham2k07@gmail.com,7232857451,male,18,JK Lakshmipat University,"281-A Narayan sagar,Narayan vihar ,jaipur ",participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"9/28/2025, 4:08:26 AM",
+Risha Saini ,rishasaini@jklu.edu.in,7296947096,female,19,JK Laxmipat University ,"94, Shiva colony near tonk phatak Jaipur ",participant,VISITOR_PASS; IN CONVERSATION WITH,Yes,No,Yes,254.25,"9/27/2025, 5:59:27 PM",
+Aalap Goswami ,goswamiaalap@gmail.com,9783081486,male,19,Jk Laxmipath University ,49-B Mahatma Gandhi Nagar dcm Ajmer Road Jaipur ,participant,FOCUS,Yes,No,No,149.25,"9/27/2025, 5:17:04 PM",
+Vansh Bhatia ,vanshbhatia@jklu.edu.in,9413833334,male,18,Jk lakshmipat university ,Flat no 502 crown plaza residency near amrapali circle vaishali nagar jaipur ,participant,DUMB SHOW,Yes,No,Yes,149.25,"9/27/2025, 4:45:31 PM",
+Kavya Gupta,kavyagupta1635@gmail.com,6263137120,female,18,JK Lakshmipat University Jaipur ,110 Karmveer Nagar BHEL Bhopal ,participant,DUMB SHOW,Yes,No,Yes,149.25,"9/27/2025, 4:11:57 PM",
+Asmi Jain,asmijain9t@gmail.com,7014445633,female,20,IIS (deemed to be university) ,"Jawahar Nagar, Jaipur",participant,FOCUS; CLAY MODELLING; ART RELAY,Yes,Yes,Yes,447.75,"9/27/2025, 4:08:47 PM",
+Arshiyaa Yadav,arshiyaayadav@jklu.edu.in,7976616005,female,19,JK Lakshmipat University,"16A, Krishna Nagar, Officers Enclave, Kalwar Road, Jhotwara",participant,ART RELAY; DUMB SHOW,Yes,No,Yes,348.25,"9/27/2025, 2:44:11 PM",
+Dhanyashree Sen,dhanyashreeesen@gmail.com,6378092919,female,19,Jk Lakshmipat University ,Jk Lakshmipat University ,participant,VISITOR_PASS,Yes,No,Yes,155.25,"9/27/2025, 2:32:27 PM",
+Lakshita Tanwar,lakshitatanwar@jklu.edu.in,9251016998,female,18,JK Lakshmipat University,2AB dk nagar satya nagar jhotwara jaipur rajasthan,participant,VISITOR_PASS,Yes,No,Yes,155.25,"9/27/2025, 1:06:17 PM",
+Navyaa Sharma ,navyaatainguria@gmail.com,9630277562,female,19,Jklu jaipur,Jklu jaipur,participant,VISITOR_PASS; FOCUS,Yes,No,Yes,304.5,"9/27/2025, 11:52:42 AM",
+Ankush Panda ,Ankushpanda@jklu.edu.in,8240832834,male,19,Jk Lakshmipath university ,"Monisudha apt , 3d , central road , barrackpore , kolkata 700122",participant,CLAY MODELLING,Yes,No,Yes,199,"9/27/2025, 11:02:58 AM",
+Aditi,Aditipunia@jklu.edu.in,9680096100,female,19,Jklu,Jk Lakshmipat University ,participant,VISITOR_PASS; FOCUS,Yes,No,Yes,304.5,"9/27/2025, 9:27:38 AM",
+Akshali Srivastava ,akshalisrivastava@jklu.edu.in,9509981026,female,19,J K Lakshmipat University ,Arcadia Greens,participant,CLAY MODELLING,Yes,No,No,149.25,"9/27/2025, 8:52:32 AM",
+Navy bhatra ,Navybhatra@jklu.edu.in,7425970443,male,19,Jk lakshmipath university ,"Flat 804, upasana park west, main queens road, vaishali nagar,jaipur 302021",participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/27/2025, 8:42:00 AM",
+Shivia Rawat,rwtshivia@gmail.com,7849833123,female,18,jk lakshmipat University ,"Rajputana residency, maharaja kishan singh nagar, patrakar colony, mansarovar jaipur",participant,VISITOR_PASS,Yes,No,Yes,155.25,"9/27/2025, 8:01:59 AM",
+Nayana Tripathi ,nayana.tripathi007@gmail.com,6362385123,female,18,JK lakshmipat university,"JK Lakshmipat University, Mahapura Rd, near Mahindra SEZ, Mahapura, Rajasthan 302026",participant,CLAY MODELLING,Yes,Yes,Yes,149.25,"9/27/2025, 7:10:41 AM",
+Nehal khandelwal ,nehalkhandelwal@jklu.edu.in,8949429104,female,18,Jk lakshmipat university ,Badaya bhawan near of gas agency baswa road Bandikui ,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/27/2025, 7:01:21 AM",
+Chailsi jain,chailsijain@jklu.edu.in,7737572065,female,19,Jk lakshmipat university ,Todaraisingh ,participant,BIDDING BEFORE WICKET,Yes,Yes,No,149.25,"9/27/2025, 7:00:59 AM",
+Rishika sharma,rishikasharma@jklu.edu.in,9929175875,female,19,Jk Lakshmipat university ,127 Ravindra nagar Jagatpura Jaipur ,participant,DUMB SHOW,Yes,No,Yes,149.25,"9/27/2025, 7:00:17 AM",
+Mrudula ,mrudulachinke@gmail.com,8007715833,female,18,JK Lakshmipat University ,"GH1, JKLU, Jaipur ",participant,CLAY MODELLING,Yes,No,Yes,149.25,"9/27/2025, 6:59:52 AM",
+Prabal agrawal,PRABALAGRAWAL@jklu.edu.in,9098631828,male,20,Jk lakshmipat university ,"102B, JK lakshmipat university boys hostel-2 near mahindra sez Ajmer road jaipur",participant,SEAL THE DEAL,Yes,No,Yes,149.25,"9/27/2025, 6:58:00 AM",
+Gauri Singhi,057gaurisinghi@gmail.com,8305015800,female,19,JK Lakshmipat University ,"JK Lakshmipat University, Mahapura Rd, near Mahindra SEZ, Mahapura, Rajasthan 302026",participant,STEP UP,Yes,No,Yes,374.25,"9/27/2025, 6:55:06 AM",
+Chestha kulshrestha ,Chesthakulshrestha@jklu.edu.in,9928883938,female,19,Jk laxmipat University ,106 Jaipur ,participant,COURTROOM,Yes,No,Yes,149.25,"9/27/2025, 6:54:03 AM",
+Avni gupta ,avnigupta319@gmail.com,8529560599,female,19,Jo lakshmipat university jaipur ,Jagatpura ,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/27/2025, 6:53:34 AM",
+Palak Gautam ,palakgau31@gmail.com,8529931140,female,18,Kanoria PG Mahila Mahavidyalaya ,"Path no.1, plot no210, Vijay bari, Dher ke Balaji, Sikar road, Jaipur ",participant,VISITOR_PASS,Yes,Yes,Yes,155.25,"9/27/2025, 6:49:57 AM",
+Nikita bhatia,nikitabhatia2020@gmail.com,7742314923,female,17,Jk lakshmipat university ,69/147 vt road Mansarovar Jaipur ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/27/2025, 6:49:51 AM",
+Avika soni ,avikasonijain@gmail.com,9828239900,female,17,Jk lakshmipat university ,103 b mohan marg goverdhan colony near Vivek vihar metro station ,participant,DUMB SHOW,Yes,No,Yes,149.25,"9/27/2025, 6:47:31 AM",
+Aadipoojya Mehra ,aadipoojyamehra@jklu.edu.in,7375023015,male,17,Jk lakshmipat university ,G1 215 swami vihar nirman nagar jaipur ,participant,IN CONVERSATION WITH,Yes,No,Yes,99,"9/27/2025, 6:42:14 AM",
+Roshan jangir,roshanjangir2005@gmail.com,7877552810,male,20,Jk lakshmipat university ,Raigarh ,participant,FOCUS,Yes,Yes,Yes,149.25,"9/27/2025, 6:36:38 AM",
+Garima Sharma,1234garima4321@gmail.com,8306688879,female,19,JK Lakshmipat University ,"S1, Shivya Residency, Jagdamba Nagar, Jaipur..",participant,CLAY MODELLING,Yes,No,Yes,149.25,"9/27/2025, 6:19:48 AM",
+Arshey rai,arhsey@gmail.com,5454445454,male,19,frfrf,frfrf,participant,VISITOR_PASS,Yes,No,No,0,"9/26/2025, 7:19:48 PM",
+Krishna khandelwal ,Krishnakhandelwal177@gmail.com,6375378260,male,20,Subodh,69-A james colony sector-3 vidhyadhar nagar,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/26/2025, 7:15:22 PM",
+Tanik Gupta ,tanikGupta@jklu.edu.in,9929396663,male,20,Jk lakshmipat University ,7 A govindpuri ram nagar sodala Jaipur,participant,BIDDING BEFORE WICKET,Yes,Yes,Yes,149.25,"9/26/2025, 6:14:06 PM",
+Anuj Pratap Singh ,2024eb01160@online.bits-pilani.ac.in,7520088703,male,18,"Birla institute of technology and sciences,Pilani","In front of Awadh Garden Marriage home Etah Road Basai Marg, Tundla",participant,VISITOR_PASS,Yes,Yes,Yes,229.5,"9/26/2025, 4:18:02 PM",
+admin,admin@gmail.com,,,,,,admin,,No,No,No,0,"9/26/2025, 6:27:23 AM",
+Admin MKC,admin@mkc.com,,,,,,admin,,Yes,No,No,0,"9/26/2025, 5:07:25 AM",
+Gaurav Sharma,sharmagaurav94140@gmail.com,9351054737,male,18,JK LAKSHMIPAT UNIVERSITY,"55/163,Rajat Path, Mansarovar, Jaipur",participant,COURTROOM,Yes,No,Yes,149.25,"9/25/2025, 4:33:30 PM",
+Gaurav Sharma,gauravsharma2025@jklu.edu.in,9351054737,male,18,JK LAKSHMIPAT UNIVERSITY,"55/163,Rajat Path, Mansarovar, Jaipur",participant,COURTROOM,No,No,No,0,"9/25/2025, 4:32:38 PM",
+Smile chhabra ,chhabrasmile155@gmail.com,9571839843,female,19,Jk lakshmipat university ,Gandhi path west jaipur ,participant,CLAY MODELLING,Yes,No,No,149.25,"9/25/2025, 1:00:06 PM",
+Hardik dusad,hardikdusad229@gmail.com,7023787267,male,16,Warren acadmey,"Sector-1,242 vdn",participant,VISITOR_PASS,Yes,Yes,Yes,103.5,"9/24/2025, 9:16:23 AM",
+Purvi Naruka ,narukapurvi07@gmail.com,6378375420,female,18,Jk lakshmipath university ,"A-276, mahesh nagar ,80 feet road, jaipur ",participant,BIDDING BEFORE WICKET; CLAY MODELLING,Yes,No,Yes,149.25,"9/24/2025, 4:12:33 AM",
+Sanskriti Gehlot,Sankritigehlot410@gmail.com,8824500776,female,18,Jk Lakshmipath university,6A kabir kunj shivaji nagar civil lines jaipur ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"9/24/2025, 4:10:10 AM",
+Aditya Somani,adityasomani@jklu.edu.in,8233116585,male,19,JK Lakshmipat University,"mahindra sez, mahapura",participant,FOCUS,No,No,No,0,"9/23/2025, 2:47:47 PM",
+Anuj Swarnkar,anujswarnkar@jklu.edu.in,7568776359,male,18,JK lakshmipath University,"House no 93 ,  shastri nagar , Bhilwara ",participant,VISITOR_PASS,Yes,No,Yes,155.25,"9/23/2025, 6:45:44 AM",
+Tanvi Gupta,tanvigupta@jklu.edu.in,8302847403,female,18,Jk lakshmipat university,E1/109 chitrakoot vaishali nagar jaipur ,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"9/22/2025, 3:42:53 PM",
+Pari Nahata,jpari7166@gmail.com,8209095137,female,18,Jk Lakshmipath University,Golden times apartment vidhyadhar nagar,participant,BIDDING BEFORE WICKET,Yes,No,Yes,149.25,"9/22/2025, 3:28:06 PM",
+Harshwardhan,harshwardhanjakhar18@gmail.com,9460652938,male,18,JK Laxmipath university,Jk Laxmi path university ,participant,BIDDING BEFORE WICKET,Yes,No,No,149.25,"9/22/2025, 3:08:22 PM",

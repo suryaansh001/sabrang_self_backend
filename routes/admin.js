@@ -1,5 +1,5 @@
 const express = require("express");
-const { User, Event, CheckoutOffer, PromoCode, Purchase, TeamComposition } = require("../models/models");
+const { User, Event, CheckoutOffer, PromoCode, Purchase, TeamComposition, UpdatedUser } = require("../models/models");
 const { verifyAdmin } = require("../middleware/auth");
 const { sendRegistrationEmail } = require("../utils/emailService");
 const { analyzeCommitteeReferrals } = require("../analyze-committee-referrals");
@@ -108,8 +108,45 @@ router.get("/verify/:id", verifyAdmin, async (req, res) => {
     let person = await User.findById(id);
     let isTeamMember = false;
     let teamInfo = null;
+    let wasMovedFromUpdatedUser = false;
+    
+    // If not found in User collection, check UpdatedUser collection
+    if (!person) {
+      console.log(`🔍 User not found in main collection, checking UpdatedUser collection for ID: ${id}`);
+      
+      const updatedUser = await UpdatedUser.findById(id);
+      if (updatedUser) {
+        console.log(`✅ Found user in UpdatedUser collection: ${updatedUser.name} (${updatedUser.email})`);
+        
+        // Move user back to User collection with updated status
+        const userData = {
+          ...updatedUser.toObject(),
+          hasEntered: true, // Update status to allow entry
+          entryTime: new Date(), // Set entry time
+          isvalidated: true, // Validate the user
+          updatedAt: new Date()
+        };
+        
+        // Remove UpdatedUser specific fields
+        delete userData._id; // Let MongoDB generate new ID
+        delete userData.originalUserId;
+        delete userData.movedAt;
+        delete userData.moveReason;
+        
+        // Create new user in main collection
+        person = new User(userData);
+        await person.save();
+        
+        // Remove from UpdatedUser collection
+        await UpdatedUser.findByIdAndDelete(id);
+        
+        wasMovedFromUpdatedUser = true;
+        console.log(`🔄 User ${updatedUser.name} moved from UpdatedUser to User collection with entry allowed`);
+      }
+    }
     
     if (!person) {
+      console.log(`❌ QR verification failed - Person not found in either collection: ${id}`);
       return res.status(404).json({
         success: false,
         message: 'Person not found'
@@ -168,6 +205,11 @@ router.get("/verify/:id", verifyAdmin, async (req, res) => {
       finalPrice: person.finalPrice || 0,
       // Team information
       teamInfo: teamInfo,
+      // Migration information
+      wasMovedFromUpdatedUser: wasMovedFromUpdatedUser,
+      ...(wasMovedFromUpdatedUser && {
+        migrationMessage: "User was found in inactive collection and has been reactivated with entry permission"
+      }),
       // If it's a team member, include main person reference
       ...(isTeamMember && {
         mainPersonId: person.mainPersonId
@@ -194,12 +236,48 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
   try {
     const id = req.params.id;
     
-    // Try to find the user
+    // Try to find the user in main collection
     let user = await User.findById(id);
     let isTeamMember = false;
+    let wasMovedFromUpdatedUser = false;
+    
+    // If not found in main collection, check UpdatedUser collection
+    if (!user) {
+      console.log(`🔍 User not found in main collection for entry, checking UpdatedUser collection: ${id}`);
+      
+      const updatedUser = await UpdatedUser.findById(id);
+      if (updatedUser) {
+        console.log(`✅ Found user in UpdatedUser collection for entry: ${updatedUser.name} (${updatedUser.email})`);
+        
+        // Move user back to User collection with entry allowed
+        const userData = {
+          ...updatedUser.toObject(),
+          hasEntered: true,
+          entryTime: new Date(),
+          isvalidated: true,
+          updatedAt: new Date()
+        };
+        
+        // Remove UpdatedUser specific fields
+        delete userData._id;
+        delete userData.originalUserId;
+        delete userData.movedAt;
+        delete userData.moveReason;
+        
+        // Create new user in main collection
+        user = new User(userData);
+        await user.save();
+        
+        // Remove from UpdatedUser collection
+        await UpdatedUser.findByIdAndDelete(id);
+        
+        wasMovedFromUpdatedUser = true;
+        console.log(`🔄 User ${updatedUser.name} moved from UpdatedUser to User collection for entry`);
+      }
+    }
     
     if (!user) {
-      console.log(`❌ Allow entry failed - User not found: ${id}`);
+      console.log(`❌ Allow entry failed - User not found in either collection: ${id}`);
       return res.status(404).json({ 
         success: false,
         message: 'User not found',
@@ -225,20 +303,29 @@ router.post("/allow-entry/:id", verifyAdmin, async (req, res) => {
 
     // Note: All validation checks removed - allowing entry regardless of previous status or validation
 
-    // Update user entry status
-    const entryTime = new Date();
-    user.hasEntered = true;
-    user.entryTime = entryTime;
-    await user.save();
+    // Update user entry status (only if not already set by migration)
+    let entryTime = user.entryTime;
+    if (!wasMovedFromUpdatedUser) {
+      entryTime = new Date();
+      user.hasEntered = true;
+      user.entryTime = entryTime;
+      await user.save();
+    } else {
+      // User was already updated during migration, just get the entry time
+      entryTime = user.entryTime;
+    }
 
     console.log(`✅ Entry allowed - ${user.name} successfully entered at ${entryTime}`);
 
     res.json({
       success: true,
-      message: 'Entry allowed successfully',
+      message: wasMovedFromUpdatedUser ? 
+        'User reactivated from inactive collection and entry allowed' : 
+        'Entry allowed successfully',
       playBuzzer: false,
       entryTime: entryTime,
-      isTeamMember: isTeamMember
+      isTeamMember: isTeamMember,
+      wasMovedFromUpdatedUser: wasMovedFromUpdatedUser
     });
 
   } catch (error) {

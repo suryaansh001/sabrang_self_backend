@@ -1,0 +1,62 @@
+{
+  "campaign": "Sabrang 2025 Instructions Email - Resume from Batch 10",
+  "timestamp": "2025-10-09T23:50:56.261Z",
+  "resumePoint": {
+    "startBatch": 10,
+    "emailsAlreadyProcessed": 90,
+    "emailsRemaining": 330
+  },
+  "results": {
+    "total": 330,
+    "sent": 230,
+    "failed": 10,
+    "errors": [
+      {
+        "email": "asmitsharma7878@gmail.com",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "atashikashyap1629@gmail.com",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "avikasonijain@gmail.com",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "ayushsharma2440@gmail.com",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "shaikareesh@jklu.edu.in",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "sherawatdharamsingh911@gmail.com",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "shreshthasharma@jklu.edu.in",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "vermautkarsh1814@gmail.com",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "vijaypratp7475@gmail.com",
+        "error": "Request failed with status code 429"
+      },
+      {
+        "email": "Aringupta444@gmail.com",
+        "error": "Request failed with status code 429"
+      }
+    ]
+  },
+  "duration": "146.52",
+  "configuration": {
+    "totalEmails": 420,
+    "batchSize": 10,
+    "fromEmail": "sabrang@jklu.edu.in"
+  }
+}

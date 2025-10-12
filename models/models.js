@@ -518,12 +518,170 @@ promoCodeSchema.index({ code: 1 });
 promoCodeSchema.index({ isActive: 1, validFrom: 1, validUntil: 1 });
 promoCodeSchema.index({ allowedEmailDomains: 1 });
 
+// UpdatedUser schema - same as User schema but for moved users
+const updatedUserSchema = new mongoose.Schema({
+  name: String,
+  email: { 
+    type: String, 
+    unique: true, // Ensure global uniqueness - one user per email
+    required: true 
+  },
+  password: String,
+  events: [String], // All events this user is registered for (can accumulate)
+  qrPath: String,
+  qrCodeBase64: String, // Single QR code for all events
+  
+  // Individual tracking
+  isvalidated: {
+    type: Boolean,
+    default: false
+  },
+  hasEntered: {
+    type: Boolean,
+    default: false
+  },
+  entryTime: {
+    type: Date,
+    default: null
+  },
+  
+  // User profile
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  profileImage: {
+    type: String,
+    default: ""
+  },
+  universityIdCard: {
+    type: String,
+    default: ""
+  },
+  
+  // User details captured from checkout form
+  contactNo: {
+    type: String,
+    default: ""
+  },
+  gender: {
+    type: String,
+    default: ""
+  },
+  age: {
+    type: Number,
+    default: null
+  },
+  universityName: {
+    type: String,
+    default: ""
+  },
+  address: {
+    type: String,
+    default: ""
+  },
+    // Referral code for user
+    referralCode: {
+      type: String,
+      default: ""
+    },
+  
+  // Support staff fields
+  userType: {
+    type: String,
+    enum: ['participant', 'support_staff', 'flagship_visitor', 'flagship_solo_visitor'],
+    default: 'participant'
+  },
+  supportRole: {
+    type: String, // 'makeup', 'stylist', 'manager', etc.
+    default: ""
+  },
+  governmentId: {
+    type: String, // For support staff - government ID instead of university ID
+    default: ""
+  },
+  idType: {
+    type: String, // 'aadhar', 'passport', 'driving', 'other'
+    default: ""
+  },
+  visitorPassDays: {
+    type: Number,
+    default: 0
+  },
+  
+  // Team relationship tracking - stores all team participations
+  teamRegistrations: [{
+    eventName: String, // Which event this team registration is for
+    teamLeaderId: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'User',
+      default: null 
+    },
+    isTeamLeader: { type: Boolean, default: false },
+    teamName: String,
+    teamCompositionId: { // Link to team composition
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'TeamComposition',
+      default: null
+    },
+    registeredAt: { type: Date, default: Date.now }
+  }],
+  
+  // Registration history - track all purchases this user was part of
+  registrationHistory: [{
+    purchaseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Purchase' },
+    registrationType: { type: String, enum: ['individual', 'team-leader', 'team-member'] },
+    eventsRegistered: [String],
+    registeredAt: { type: Date, default: Date.now }
+  }],
+  
+  // Email tracking fields
+  emailSent: {
+    type: Boolean,
+    default: false
+  },
+  emailSentAt: {
+    type: Date,
+    default: null
+  },
+  emailSentBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
+  
+  // Migration metadata
+  originalUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  movedAt: {
+    type: Date,
+    default: Date.now
+  },
+  moveReason: {
+    type: String,
+    default: "Payment status not successful"
+  },
+  
+  // Timestamps
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
 const User = mongoose.model("User", userSchema);
 const Event = mongoose.model("Event", eventSchema);
 const TeamComposition = mongoose.model("TeamComposition", teamCompositionSchema);
 const CheckoutOffer = mongoose.model("CheckoutOffer", checkoutOfferSchema);
 const PromoCode = mongoose.model("PromoCode", promoCodeSchema);
 const Purchase = mongoose.model("Purchase", purchaseSchema);
+const UpdatedUser = mongoose.model("UpdatedUser", updatedUserSchema);
 
 module.exports = { 
   User, 
@@ -531,5 +689,6 @@ module.exports = {
   TeamComposition,
   CheckoutOffer, 
   PromoCode, 
-  Purchase
+  Purchase,
+  UpdatedUser
 };

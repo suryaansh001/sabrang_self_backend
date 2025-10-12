@@ -1,0 +1,6 @@
+Metric,Count
+Total CSV Records,662
+Records with Amount > 2 INR,550
+Found in Database,498
+Not Found in Database,52
+Database Match Rate,90.55%

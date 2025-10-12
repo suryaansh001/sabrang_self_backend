@@ -1,0 +1,71 @@
+{
+  "campaign": "Team Registration Email Campaign",
+  "timestamp": "2025-10-10T00:02:51.688Z",
+  "team": {
+    "teamId": "68e7e50b1c86ecaf68205e76",
+    "teamName": "Jatin Singh's Team",
+    "eventName": "BANDJAM",
+    "totalMembers": 5
+  },
+  "results": {
+    "total": 5,
+    "sent": 5,
+    "failed": 0,
+    "errors": [],
+    "details": [
+      {
+        "name": "Jatin Singh",
+        "email": "doomsingh702@gmail.com",
+        "role": "leader",
+        "status": "success",
+        "hasQR": true,
+        "events": [
+          "BANDJAM"
+        ]
+      },
+      {
+        "name": "Antra Dixit",
+        "email": "antradixit2144@gmail.com",
+        "role": "member",
+        "status": "success",
+        "hasQR": true,
+        "events": [
+          "BANDJAM"
+        ]
+      },
+      {
+        "name": "Anvesha Seervi",
+        "email": "anveshaseervi@gmail.com",
+        "role": "member",
+        "status": "success",
+        "hasQR": true,
+        "events": [
+          "BANDJAM"
+        ]
+      },
+      {
+        "name": "Faizan Khalwa",
+        "email": "khalwafaizan@gmail.com",
+        "role": "member",
+        "status": "success",
+        "hasQR": true,
+        "events": [
+          "BANDJAM"
+        ]
+      },
+      {
+        "name": "tanish soni",
+        "email": "iamtanishqsoni29@gmail.com",
+        "role": "member",
+        "status": "success",
+        "hasQR": true,
+        "events": [
+          "BANDJAM"
+        ]
+      }
+    ]
+  },
+  "configuration": {
+    "fromEmail": "sabrang@jklu.edu.in"
+  }
+}

@@ -27,7 +27,9 @@ class MicrosoftOAuthMailer {
             const response = await axios.post(tokenUrl, params, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                },
+                // Force IPv4 to avoid IPv6 connectivity issues
+                family: 4
             });
 
             this.accessToken = response.data.access_token;
@@ -78,7 +80,9 @@ class MicrosoftOAuthMailer {
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                // Force IPv4 to avoid IPv6 connectivity issues
+                family: 4
             });
 
             console.log('✅ Email sent successfully via Graph API');

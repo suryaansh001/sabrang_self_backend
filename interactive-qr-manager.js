@@ -3,8 +3,23 @@
 /**
  * Interactive QR Generator and Event Manager
  * 
- * This script allows you to:
- * 1. Enter user ObjectId or email
+ * This script al        const availableEvents = [
+            'BGMI TOURNAMENT',
+            'VALORANT TOURNAMENT', 
+            'FREE FIRE TOURNAMENT',
+            'COURTROOM',
+            'RAMPWALK - PANACHE',
+            'DANCE BATTLE',
+            'BANDJAM',
+            'STEP UP',
+            'ECHOES OF NOOR',
+            'VERSEVAAD',
+            'ART RELAY',
+            'CLAY MODELLING',
+            'DUMB SHOW',
+            'BIDDING BEFORE WICKET',
+            'VISITOR_PASS'
+        ];1. Enter user ObjectId or email
  * 2. View/add events to user's events array
  * 3. Generate QR code for the user
  * 4. Send registration email with QR code
@@ -104,7 +119,9 @@ async function addEventToUser(user) {
             'ART RELAY',
             'CLAY MODELLING',
             'DUMB SHOW',
-            'VISITOR_PASS'
+            'VISITOR_PASS',
+            'BIDDING BEFORE WICKET'
+
         ];
         
         availableEvents.forEach((event, index) => {

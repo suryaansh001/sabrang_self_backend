@@ -1,0 +1,412 @@
+email,userName,userExists,currentlyValidated,hasCompletedPayment,hasQR,completedPurchasesCount,events,shouldUpdate,reason
+057gaurisinghi@gmail.com,Gauri Singhi,true,true,true,true,1,STEP UP,false,VALIDATED_WITH_PAYMENT
+1107dhananjaysharma@gmail.com,Dhananjay Sharma,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+1234garima4321@gmail.com,Garima Sharma,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+2024eb01160@online.bits-pilani.ac.in,Anuj Pratap Singh ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+aadityarawat911@gamil.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+aditipunia@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+akshatmurarka@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+ankushpanda@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+chesthakulshrestha@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+chiragkhandelwal050807@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+deepakchoudhary@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+dishikasharma@jklu.edu.in,Dishika sharma ,true,true,false,true,0,BAND JAM,true,VALIDATED_WITHOUT_PAYMENT
+kinshugupta2007@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+koushaljangir@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+krishnakhandelwal177@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+mandalatharv30@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+navybhatra@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+prabalagrawal@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+parulswami@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+priyanshu333k@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+riyachauhan@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+rp7222485@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+sankritigehlot410@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+shabdsrivastava@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+shambhavijain05@gmail.com,Shambhavi Jain ,true,false,true,true,1,SEAL THE DEAL; CLAY MODELLING; DUMB SHOW,false,UNVALIDATED_WITH_PAYMENT
+shivamlakshkar@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+thukransahil1@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+voxstudio786@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+a.varunteja@jklu.edu.in,VARUN TEJA ,true,true,false,true,0,VISITOR_PASS,true,VALIDATED_WITHOUT_PAYMENT
+aadipoojyamehra@jklu.edu.in,Aadipoojya Mehra ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+aayushikaushik@jklu.edu.in,AAYUSHI KAUSHIK,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+abhiramsreyas2821@gmail.com,ABHIRAM SREYAS,true,true,false,true,0,ART RELAY,true,VALIDATED_WITHOUT_PAYMENT
+abhishek62mishra90@gmail.com,Abhishek ,true,true,true,true,1,SEAL THE DEAL,false,VALIDATED_WITH_PAYMENT
+abhyudaysingh@jklu.edu.in,Abhyuday Singh ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+abigailabraham2107@gmail.com,Abigail Abraham ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+adhyamittal@jklu.edu.in,Adhya Mittal,true,false,true,true,1,STEP UP,false,UNVALIDATED_WITH_PAYMENT
+aditiagarwal2025@jklu.edu.in,Aditi Agarwal ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+aditirathore876@gmail.com,Aditi Rathore,true,true,true,true,1,FOCUS; CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+aditisharma@jklu.edu.in,Aditi sharma,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+aditya.csebgn@gmail.com,Aditya Vyas,true,true,true,true,1,VERSEVAAD,false,VALIDATED_WITH_PAYMENT
+aditya.somani2006@gmail.com,Aditya Somani,true,true,true,true,1,FOCUS,false,VALIDATED_WITH_PAYMENT
+adityanayak@jklu.edu.in,ADITYA NAYAK,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+adityanayal99@gmail.com,Aditya Singh,true,true,false,true,0,DUMB SHOW,true,VALIDATED_WITHOUT_PAYMENT
+adityasharma2024@jklu.edu.in,Aditya Sharma ,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+adityavardhansinghchauhan@jklu.edu.in,Adityavardhan Singh Chauhan,true,true,true,true,2,COURTROOM; VALORANT TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+agamyasinghchauhan@gmail.com,Stuti Kanwar Shekhawat ,true,true,true,true,1,COURTROOM; FOCUS; SEAL THE DEAL,false,VALIDATED_WITH_PAYMENT
+agarwaltarushi918@gmail.com,Tarushi Agarwal ,true,true,true,true,1,ART RELAY,false,VALIDATED_WITH_PAYMENT
+agreemagauttam@jklu.edu.in,Agreema gauttam ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+akarshpareek003@gmail.com,Akarsh Pareek,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+akshalisrivastava@jklu.edu.in,Akshali Srivastava ,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+aksharakumarat@jklu.edu.in,Akshara Kumawat,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+aksharasaini@jklu.edu.in,Akshara Saini,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+akshaykumarmeena729@gmail.com,akshay kumar ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+akshitsinghal@jklu.edu.in,Akshit Singhal ,true,true,true,true,1,FREE FIRE TOURNAMENT; BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+akshragupta@jklu.edu.in,Akshra Gupta ,true,true,false,true,0,BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+alt.ayushsharma2440@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+amandeepsinghrathore@jklu.edu.in,Amandeep Singh Rathore ,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+amangupta2024@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+amanjat0080@gmail.com,Aman Choudhary,true,true,true,true,1,"IN CONVERSATION WITH; BIDDING BEFORE WICKET; COURTROOM; FOCUS ,",false,VALIDATED_WITH_PAYMENT
+amanpratapsingh@jklu.edu.in,Aman pratap,true,false,true,true,7,SEAL THE DEAL; FOCUS,false,UNVALIDATED_WITH_PAYMENT
+amanpratapsinghuy67032@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+amanpratapsinghuy@gmail.com,ADSFg,true,true,true,true,1,BAND JAM,false,VALIDATED_WITH_PAYMENT
+anandikolapkar29@gmail.con,Anandi K,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+ananya092302@gmail.com,Ananya Singh ,true,false,true,true,1,DUMB SHOW,false,UNVALIDATED_WITH_PAYMENT
+anirudhchoudhary@jklu.edu.in,Anirudh Choudhary,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+anju05121977@gmail.com,Kriti Gupta ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+ankitray1905@gmail.com,Ankit Kumar Ray,true,false,true,true,1,ECHOES OF NOOR,false,UNVALIDATED_WITH_PAYMENT
+anoushkasingh@jklu.edu.in,Anoushka Singh ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+anshgupta@jklu.edu.in,Ansh Gupta,true,false,true,true,2,BGMI TOURNAMENT; BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+anshikapandey@jklu.edu.in,Anshika Pandey ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+anshpaul@jklu.edu.in,ANSH PAUL,true,true,true,true,1,VALORANT TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+anubhasharma@jklu.edu.in,Anubha Sharma,true,true,true,true,1,DANCE BATTLE,false,VALIDATED_WITH_PAYMENT
+anujsinghsekhawat123@gmail.com,anuj singh,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+anujswarnkar@jklu.edu.in,Anuj Swarnkar,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+anukritichoudhary1508@gmail.com,Anukriti Choudhary ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+anurikaa@jklu.edu.in,Anurika A,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+anushrifalor@gmail.com,Anushri Falor,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+anvivashist@jklu.edu.in,Anvi Vashist,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+arhambothra76@gmail.com,Arham Kumar Bothra,true,false,false,true,0,BIDDING BEFORE WICKET,false,ALREADY_UNVALIDATED
+arihantjain17052007@gmail.com,Arihant Jain,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+arjun@jklu.edu.in,Arjun Rajaram,true,true,true,true,1,FREE FIRE TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+arnavsharma@jklu.edu.in,Arnav sharma,true,true,false,true,0,BAND JAM,true,VALIDATED_WITHOUT_PAYMENT
+arohijain20005@gmail.com,Arohi jain,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+arsheyrai@jklu.edu.in,Arshey Rai,true,true,true,true,1,ART RELAY,false,VALIDATED_WITH_PAYMENT
+arshiyaayadav@jklu.edu.in,Arshiyaa Yadav,true,true,true,true,2,ART RELAY; DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+arshveersingh1973@gmail.com,Divyansh Thakur,true,true,true,true,1,BGMI TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+arshveersinghchauhan@jklu.edu.in,Rajat Yadav,true,true,true,true,1,BGMI TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+aryan1210p@gmail.com,Aryan Pamecha,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+aryanjain2024@jklu.edu.in,Aryan jain ,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+aryankumawat@jklu.edu.in,Aryan kumawat,true,true,false,true,0,COURTROOM,true,VALIDATED_WITHOUT_PAYMENT
+aryanmehrishi8@gmail.com,Aryanmehrishi,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+ashishbarwsha@gmail.com,Ashish Barwasha,true,true,false,true,0,STEP UP,true,VALIDATED_WITHOUT_PAYMENT
+ashleshasharma@jklu.edu.in,Ashlesha Sharma,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+ashmisharma@jklu.edu.in,Ashmi Sharma ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+ashokchoudhary2024@jklu.edu.in,Ashok choudhary,true,true,true,true,1,FREE FIRE TOURNAMENT; BGMI TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+asmijain9t@gmail.com,Asmi Jain,true,true,true,true,1,FOCUS; CLAY MODELLING; ART RELAY,false,VALIDATED_WITH_PAYMENT
+asmitsharma7878@gmail.com,Ashmit sharma ,true,true,true,true,1,ART RELAY,false,VALIDATED_WITH_PAYMENT
+atashikashyap1629@gmail.com,Atashi Kashyap,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+avikasonijain@gmail.com,Avika soni ,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+avneeshkumardubey@jklu.edu.in,Avneesh Kumar Dubey ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+avnigupta319@gmail.com,Avni gupta ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+avnikavyas@jklu.edu.in,Avnika Vyas ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+avulashivashankar@jklu.edu.in,SHIVA,true,false,true,true,1,FREE FIRE TOURNAMENT,false,UNVALIDATED_WITH_PAYMENT
+ayushgadwal18@gmail.com,Ayush Gadwal ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+ayushjaiswal.28622@gmail.com,Ayush Jaiswal ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+ayushsharma2024@jklu.edu.in,Ayush Sharma,true,false,true,true,1,COURTROOM,false,UNVALIDATED_WITH_PAYMENT
+ayushsharma2440@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+badrinadhgoru@gmail.com,Badrinadh Goru ,true,false,true,true,1,COURTROOM,false,UNVALIDATED_WITH_PAYMENT
+bhandaridaksh423@gmail.com,Daksh bhandari,true,false,true,true,1,FOCUS,false,UNVALIDATED_WITH_PAYMENT
+bhanuupadhyay@jklu.edu.in,Bhanu upadhyay,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+bhaviraj2005@gmail.com,Bhavya Raj Singh Sarangdevot ,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+bhavishasabnani@gmail.com,BHAVISHA SABNANI,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+bhavishyakathpalia@gmail.com,Bhavishya,true,false,true,true,1,COURTROOM,false,UNVALIDATED_WITH_PAYMENT
+bhavyabang172@gmail.com,Bhavya,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+bhavyadoshi@jklu.edu.in,Bhavya Doshi,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+bhavyagupta406@gmail.com,Bhavya Gupta ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+bhaweshchandnani958@gmail.com,Bhawesh Chandnani ,true,false,false,true,0,COURTROOM,false,ALREADY_UNVALIDATED
+bhumi24205@gmail.com,Bhumika Daharwal ,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+bhupathilikhitha@jklu.edu.in,Bhupathi Likhitha ,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+bijenaba@denipl.net,,false,false,false,false,0,,false,USER_NOT_FOUND
+chailsijain@jklu.edu.in,Chailsi jain,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+chaitanyasawansukhajain@jklu.edu.in,Chaitanya sawansukha jain ,true,false,false,true,0,FOCUS,false,ALREADY_UNVALIDATED
+charanmallareddi@gmail.com,Mallareddi Charan,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+charvisharma@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+chhabrasmile155@gmail.com,Smile chhabra ,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+chiragkumar2025@jklu.edu.in,Chirag Kumar,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+chiragnegi14@gmail.com,Chirag Negi,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+chouhangarima10@gmail.com,Garima chouhan,true,false,true,true,1,STEP UP,false,UNVALIDATED_WITH_PAYMENT
+dakshkumar@jklu.edu.in,Daksh Kumar,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+dakshshukla2709@gmail.com,Daksh Shukla ,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+darshitajain787@gmail.com,Darshita Jain,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+deepanshu.shekhawat2007@gmail.com,Deepanshu Singh Shekhawat ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+devamg759@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+devansh.srivastava1818@gmail.com,Devansh Srivastava,true,true,true,true,1,BAND JAM,false,VALIDATED_WITH_PAYMENT
+devyadav@jklu.edu.in,Dev Yadav,true,true,false,true,0,BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+dhanyashreeesen@gmail.com,Dhanyashree Sen,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+dhoopiasanchi@gmail.com,Sanchi Dhoopia,true,false,false,true,0,CLAY MODELLING,false,ALREADY_UNVALIDATED
+dimplee26sharma@gmail.com,Dimple sharma,true,false,true,true,1,DANCE BATTLE,false,UNVALIDATED_WITH_PAYMENT
+dishikapancholi00@gmail.com,Dishika Pancholi ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+divit3011@gmail.com,Divit Chaturvedi ,true,true,true,true,1,FOCUS,false,VALIDATED_WITH_PAYMENT
+divyamalik@jklu.edu.in,Divya malik,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+divyanshchopra65@gmail.com,Divyansh,true,false,false,true,0,BIDDING BEFORE WICKET,false,ALREADY_UNVALIDATED
+divyanshchoudhary@jklu.edu.in,divyansh Choudhary ,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+divyarajsingh532@gmail.com,Hardik maloo,true,true,false,true,0,VISITOR_PASS,true,VALIDATED_WITHOUT_PAYMENT
+dopamine142005@gmail.com,Alok Yadav,true,false,true,true,1,VERSEVAAD,false,UNVALIDATED_WITH_PAYMENT
+doshivansh15@gmail.com,Vansh,true,true,false,true,0,DUMB SHOW,true,VALIDATED_WITHOUT_PAYMENT
+drashyajain4@gmail.com,Drashya Jain ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+dronisehgal4@gmail.com,Droni Sehgal,true,false,true,true,1,COURTROOM,false,UNVALIDATED_WITH_PAYMENT
+ee1230849@iitd.ac.in,Sanskriti Bansal,true,true,false,true,0,DANCE BATTLE,true,VALIDATED_WITHOUT_PAYMENT
+fecebol854@artvara.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+garimamaheshwari@jklu.edu.in,Garima maheshwari,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+garvitagrawal@jklu.edu.in,Garvit Agrawal ,true,true,true,true,1,CLAY MODELLING; VALORANT TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+garvitraheja07@gmail.com,Garvit Raheja,true,true,false,true,0,VERSEVAAD; BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+garvsharma@jklu.edu.in,Garv Sharma,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+gaurang@jklu.edu.in,Gourang Tak,true,true,true,true,1,RAMPWALK - PANACHE; COURTROOM; VALORANT TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+gauravchaturvedi2204@gmaio.com,Gaurav Chaturvedi,true,true,false,true,0,VISITOR_PASS,true,VALIDATED_WITHOUT_PAYMENT
+ghyanchechani@jklu.edu.com,Ghyan Chechani,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+goswamiaalap@gmail.com,Aalap Goswami ,true,true,true,true,1,FOCUS,false,VALIDATED_WITH_PAYMENT
+gottimukkalavishwaroopachary@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+gouranshi007@gmail.com,Gouranshi Sharma ,true,true,false,true,0,CLAY MODELLING,true,VALIDATED_WITHOUT_PAYMENT
+gupta.ashutosh1011@gmail.com,Ashutosh Gupta,true,true,false,true,0,BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+guptageetanjali84@gmail.com,Geetanjali Gupta,true,false,true,true,1,DANCE BATTLE,false,UNVALIDATED_WITH_PAYMENT
+hansikaagarwal@jklu.edu.in,Hansika Agarwal,true,true,false,true,0,DUMB SHOW,true,VALIDATED_WITHOUT_PAYMENT
+harchandaniharshita48@gmail.com,Harshita Harchandani,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+hardikbhatnagar37@gmail.com,Hardik Bhatnagar,true,false,true,true,1,BGMI TOURNAMENT,false,UNVALIDATED_WITH_PAYMENT
+hardikdusad229@gmail.com,Hardik dusad,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+hardikkumawat@jklu.edu.in,Hardik kumawat ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+hardiklavti33@gmail.com,Hardik Lavti ,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+hardikyadav@jklu.edu.in,Hardik yadav ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+harshita@jklu.edu.in,Harshita Kanwar,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+harshitbhandari@jklu.edu.in,Harshit,true,false,true,true,1,VALORANT TOURNAMENT,false,UNVALIDATED_WITH_PAYMENT
+harshitdubey7042@gmail.com,Harshit Dubey,true,true,false,true,0,VISITOR_PASS,true,VALIDATED_WITHOUT_PAYMENT
+harshitsonie@gmail.com,Harshit Soni,true,false,true,true,1,COURTROOM,false,UNVALIDATED_WITH_PAYMENT
+harshulagarwal2207@gmail.com,harshul agarwal,true,true,false,true,0,IN CONVERSATION WITH; FREE FIRE TOURNAMENT,true,VALIDATED_WITHOUT_PAYMENT
+harshveersinghrathore@jklu.edu.in,Harshveer Singh Rathore,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+harshwardhanjakhar18@gmail.com,Harshwardhan,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+hemangisancheti@jklu.edu.in,Hemangi sancheti,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+herambsharma@jklu.edu.in,Heramb Sharma ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+himanimenghani@jklu.edu.in,himani menghani ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+himanisaraf7@gmail.com,Himani Saraf,true,true,false,true,0,COURTROOM,true,VALIDATED_WITHOUT_PAYMENT
+himanshu@jklu.edu.in,Himanshu ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+himanshubansal@jklu.edu.in,Himanshu Bansal,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+himanshugarg102005@gmail.com,Himanshu Garg,true,true,true,true,1,VALORANT TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+hvashistha04@gmail.com,Hritvika Vashistha ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+iyanagwani@jklj.edu.in,Iya Nagwani,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+jain.prakharjaipur@gmail.com,Prakhar Jain,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+jainamjain@jklu.edu.in,Jainam Jain,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+jainraghav505@gmail.com,Rishabh Jain,true,false,true,true,1,FREE FIRE TOURNAMENT,false,UNVALIDATED_WITH_PAYMENT
+jangidrishi168282@gmail.com,Rishi Jangid,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+jasoriaraj733@gmail.com,Raj Jasoria ,true,false,false,true,0,FOCUS,false,ALREADY_UNVALIDATED
+jhanjharjindal13@gmail.com,Jhanjhar Jindal ,true,true,true,true,1,DANCE BATTLE,false,VALIDATED_WITH_PAYMENT
+jigeeeshaaa@gmail.com,Jigeesha Agarawal,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+jinallodha171@gmail.com,JINAL LODHA,true,false,false,true,0,IN CONVERSATION WITH,false,ALREADY_UNVALIDATED
+jiyadhanwani370@gmail.com,Jiya Dhanwani ,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+jpari7166@gmail.com,Pari Nahata,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+js7149448@gmail.com,Jitendra ,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+kaku93613@gmail.com,Nutan Deotwal ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+kakundeotwal@gmail.com,Kakun Deotwal ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+kamadoakaza800@gmail.com,Vishal,true,false,true,true,1,COURTROOM,false,UNVALIDATED_WITH_PAYMENT
+karan15404singh@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+kartik1507sharma@gmail.com,Kartik Sharma,true,true,true,true,1,VALORANT TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+kartikeya192jindal@gmail.com,Kartikeya jindal,true,true,false,true,0,SEAL THE DEAL,true,VALIDATED_WITHOUT_PAYMENT
+kartikphulwari@jklu.edu.in,Kartik Phulwari,true,true,true,true,1,COURTROOM; BGMI TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+kartiksharma2024@jklu.edu.in,Kartik Sharma ,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+katyayanirathore@jklu.edu.in,Katyayani rathore ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+kaurgurseerat30@gmail.com,Gurseerat Kaur,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+kaushalmalvi@jklu.edu.in,Kaushal Malvi,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+kavyagupta1635@gmail.com,Kavya Gupta,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+kesharwanishivika@gmail.com,Shivika Kesharwani,true,true,false,true,0,CLAY MODELLING,true,VALIDATED_WITHOUT_PAYMENT
+keshavsingh7773@gmail.com,Keshav Singh Shekhawat ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+khanakjain@jklu.edu.in,khanak jain,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+khandelwalkrish1511@gmail.com,Krish Khandelwal,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+khandelwallakshay56@gmail.com,Aarav khandelwal ,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+khvshi06@gmail.com,Khushi Sharma,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+komalchaudhary@jklu.edu.in,Komal Chodhary,true,true,true,true,1,ART RELAY,false,VALIDATED_WITH_PAYMENT
+krishbhola@jklu.edu.in,Krish Bhola,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+krishnaagarwal2024@jklu.edu.in,Krishna Agarwal,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+ks834070@gmail.com,Kushal Sharma,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+kumawataman59@gmail.com,aman kumawat,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+kunalkasliwal@jklu.edu.in,Kunal Kasliwal ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+kv13072007@gmail.com,Komal verma ,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+lakshaypateriya76@gmail.com,Lakshay pateriya,true,false,false,true,0,Visitor Pass,false,ALREADY_UNVALIDATED
+lakshitatanwar@jklu.edu.in,Lakshita Tanwar,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+lakshitpareek0@jklu.edu.in,Lakshit Pareek,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+lakshitpareek@jklu.edu.in,Lakshit Pareek,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+lakshyaagarwal2025@jklu.edu.in,Lakshya Agarwal ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+lakshyagupta1549@gmail.com,Lakshya Gupta,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+lakshyasaini139@gmail.com,Lakshya Saini,true,false,true,true,1,BGMI TOURNAMENT,false,UNVALIDATED_WITH_PAYMENT
+latestarget37@gmail.com,Vaibhav Sharma ,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+lkshsharma25@gmail.com,LAKSH SHARMA,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+logozezy@fxzig.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+luckyy142005@gmail.com,Lakshay,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+madhavgarg@jklu.edu.in,Madhav Garg,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+mahitripathi1206@gmail.com,Mahi Tripathi ,true,true,false,true,0,ART RELAY,true,VALIDATED_WITHOUT_PAYMENT
+manansharma1035@gmail.com,Manan Sharma,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+manglaninitya@gmail.com,Nitya Manglani,true,true,true,true,1,ART RELAY,false,VALIDATED_WITH_PAYMENT
+mansi2024@jklu.edu.in,mansi,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+mathurayaan54321@gmail.com,Ayaan Mathur,true,false,true,true,1,COURTROOM,false,UNVALIDATED_WITH_PAYMENT
+mayank@jklu.edu.in,Mayank Gautam,true,false,true,true,1,BGMI TOURNAMENT,false,UNVALIDATED_WITH_PAYMENT
+meghkedia@jklu.edu.in,Megh Kedia ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+memonusharma7800@gmail.com,Monu Sharma ,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+mgpsangel181013@gamil.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+mohammedozairshah@jklu.edu.in,Ozair Shah,true,true,true,true,1,VISITOR_PASS; BGMI TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+mohitsuwalka@jklu.edu.in,Mohit Suwalka,true,false,false,true,0,SEAL THE DEAL,false,ALREADY_UNVALIDATED
+monikabishnoi2006@gmail.com,Monika ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+mrinal07khandal@gmail.com,Mrinal khandal ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+mrmcgaming02@gmail.com,dhurv singh,true,true,false,true,0,DUMB SHOW,true,VALIDATED_WITHOUT_PAYMENT
+mrudulachinke@gmail.com,Mrudula ,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+mundraparth06@gmail.com,Parth Mundra,true,true,false,true,0,VISITOR_PASS; BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+muskangojo2006@gmail.com,Muskan Jangid,true,true,true,true,2,ART RELAY; VALORANT TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+nainadayaramani@gmail.com,Naina Dayaramani ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+nainasinghrao@jklu.edu.in,Naina singh rao ,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+nandinimittal@jklu.edu.in,Nandini Mittal,true,true,true,true,1,STEP UP,false,VALIDATED_WITH_PAYMENT
+nandinishah272007@gmail.com,Nandini Shah ,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+nareshroj@jklu.edu.in,naresh roj,true,true,true,true,1,SEAL THE DEAL; BIDDING BEFORE WICKET; COURTROOM; DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+narukapurvi07@gmail.com,Purvi Naruka ,true,true,true,true,1,BIDDING BEFORE WICKET; CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+navya.23bcon1308@jecrcu.edu.in,Navya joshi,true,true,true,true,1,DANCE BATTLE; STEP UP,false,VALIDATED_WITH_PAYMENT
+navyaatainguria@gmail.com,Navyaa Sharma ,true,true,true,true,2,VISITOR_PASS; FOCUS,false,VALIDATED_WITH_PAYMENT
+nawyadusad2007@gmail.com,Nawya dusad,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+nayana.tripathi007@gmail.com,Nayana Tripathi ,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+neelukumawat05@gmail.com,Neelu kumawat  ,true,true,false,true,0,VISITOR_PASS,true,VALIDATED_WITHOUT_PAYMENT
+nehalkhandelwal@jklu.edu.in,Nehal khandelwal ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+nidhishtripathi11@gmail.com,Nidhish tripathi ,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+niharikachauhan2607@gmail.com,Niharika Chauhan,true,true,true,true,1,FOCUS,false,VALIDATED_WITH_PAYMENT
+niharikagupta@jklu.edu.in,Niharika Gupta,true,false,true,true,1,DANCE BATTLE,false,UNVALIDATED_WITH_PAYMENT
+nikhileshsinghpanwar@jklu.edu.in,Nikhilesh Singh Panwar ,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+nikitabhatia2020@gmail.con,,false,false,false,false,0,,false,USER_NOT_FOUND
+nikunjkatta727@gmail.com,Nikunj katta,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+niredep571@auslank.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+nitikarathore@jklu.edu.in,Nitika rathore,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+nomruthik@gmail.com,Nakkalapally Omruthik,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+nonug132@gmail.com,Rishab Gupta,true,true,false,true,0,BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+nrajawat032@gmail.com,Nandani Rajawat ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+officialrupeshsoyal@gmail.com,Rupesh Soyal,true,false,false,true,0,VERSEVAAD,false,ALREADY_UNVALIDATED
+paavanisahu@jklu.edu.in,Paavani Sahu,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+padminisinghtanwar@jklu.edu.in,Padmini Singh Tanwar ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+palakgau31@gmail.com,Palak Gautam ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+pandeysakshi1978@gmail.com,Sakshi Pandey,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+pankajsingh5571425@gmail.com,Pankaj ,true,false,true,true,1,ART RELAY,false,UNVALIDATED_WITH_PAYMENT
+parihaankabra980@gmail.com,Parihaan kabra ,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+parimaloo2007@gmail.com,Pari Maloo,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+parthlavti@jklu.edu.in,Parth Lavti,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+pksaxena6453@gmail.com,Prateek Saxena,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+pragyanthanvi@gmail.com,Pradhuman Thanvi ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+pranjaljain2909@gmail.com,Pranjal Jain,true,true,true,true,1,IN CONVERSATION WITH; FREE FIRE TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+pranjaljangid@jklu.edu.in,Pranjal Jangid ,true,true,true,true,1,CLAY MODELLING,false,VALIDATED_WITH_PAYMENT
+prashantsharma@jklu.edu.in,Prashant sharma,true,true,true,true,1,FREE FIRE TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+prateek2504yadav@gmail.com,Lakshay Yadav,true,true,true,true,2,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+pratham2k07@gmail.com,Pratham ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+pratigyabomb@jklu.edu.in,Pratigya ,true,false,false,true,0,BAND JAM,false,ALREADY_UNVALIDATED
+pratikiagarwal@jklu.edu.in,pratiki agarwal ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+pratisthachechani@jklu.edu.in,Pratistha chechani ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+prekshasharma277@gmail.com,Prekshya Sharma,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+princesoni5678mwe@gmail.com,Prince soni,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+priyanshi.kitto@gmail.com,priyanshi choudhary,true,false,true,true,1,COURTROOM,false,UNVALIDATED_WITH_PAYMENT
+priyanshi2275@gmail.com,Priyanshi Gupta ,true,true,true,true,1,FOCUS; SEAL THE DEAL,false,VALIDATED_WITH_PAYMENT
+priyanshiagnani@jklu.edu.in,Priyanshi Agnani ,true,false,true,true,1,DUMB SHOW,false,UNVALIDATED_WITH_PAYMENT
+priyanshisinghvi@jklu.edu.in,Priyanshi singhvi ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+priyanshmathur9@gmail.com,Priyansh Mathur,true,true,false,true,0,STEP UP,true,VALIDATED_WITHOUT_PAYMENT
+priyanshusharma2025@jklu.edu.in,Priyanshu sharma ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+priyasahu072005@gmail.com,Priya Sahu,true,true,true,true,1,ART RELAY,false,VALIDATED_WITH_PAYMENT
+propratham3008@gmail.com,Pratham Dubey,true,false,true,true,1,BANDJAM,false,UNVALIDATED_WITH_PAYMENT
+pulkitdosi16@gnail.com,Pulkit Dosi,true,true,false,true,0,BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+purveedudheria@jklu.edu.in,Purvee,true,true,true,true,1,COURTROOM; IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+qyqyke@forexzig.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+raghasharma2025@jklu.edu.in,Raghav Sharma ,true,true,false,true,0,BAND JAM,true,VALIDATED_WITHOUT_PAYMENT
+rahulgorani957@gmail.com,Rahulgorani,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+rajputhariom7773@gmail.com,Harshvardhan singh,true,true,true,true,1,BIDDING BEFORE WICKET; DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+rashikatiyar@jklu.edu.in,Rashi,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+rashilunawat@jklu.edu.in,Rashi Lunawat,true,true,true,true,1,ART RELAY,false,VALIDATED_WITH_PAYMENT
+riddhiis1805@gmail.com,Riddhi Sharma,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+ridhamsomani18@gmail.com,Ridham Somani,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+ridhwiktailor@gmail.com,Ridhwik Tailor ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+rishabhchoudhary492@gmail.com,Rishabh Choudhary ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+rishasaini@jklu.edu.in,Risha Saini ,true,true,true,true,1,VISITOR_PASS; IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+rishijangir0987@gmail.com,Shreynash Jangir,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+rishikasharma@jklu.edu.in,Rishika sharma,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+rishikasingh2024@jklu.edu.in,Rishika Singh,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+ritiksharma@jklu.edu.in,Ritik Sharma,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+riya.alw07@gmail.com,Riya Sharma ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+rohittak@jklu.edu.in,Rohit Tak,true,false,true,true,1,BIDDING BEFORE WICKET,false,UNVALIDATED_WITH_PAYMENT
+roshanjangir2005@gmail.com,Roshan jangir,true,true,true,true,1,FOCUS,false,VALIDATED_WITH_PAYMENT
+ruchichoudhary@jklu.edu.in,Ruchi ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+rudrapalsinghshekhawat@jklu.edu.in,Rudrapal Singh Shekhawat ,true,false,false,true,0,IN CONVERSATION WITH,false,ALREADY_UNVALIDATED
+rufemice@forexzig.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+rwtshivia@gmail.com,Shivia Rawat,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+saanchi.vjv@gmail.com,Saanchi Vijayvergia ,true,true,false,true,0,DUMB SHOW,true,VALIDATED_WITHOUT_PAYMENT
+sahil@jklu.edu.in,sahil,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+sahilrojh29@gmail.com,Sahil Rojh,true,true,false,true,0,BGMI TOURNAMENT,true,VALIDATED_WITHOUT_PAYMENT
+sainideepakv9828@gmail.com,Deepak Saini,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+sakshijain2025@jklu.edu.in,Sakshi Jain ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+samakshgoswami8860@gmail.com,Samaksh Goswami,true,false,true,true,1,DANCE BATTLE,false,UNVALIDATED_WITH_PAYMENT
+samartsingh2994@gmail.com,Samarth Singh,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+sambhavjohari15@gmail.com,Sambhav Johari,true,false,true,true,1,STEP UP,false,UNVALIDATED_WITH_PAYMENT
+samridhiiiiii2007@gmail.com,Samridhi Singh,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+sangeeth.addepalli@gmail.com,Sangeeth Adeepalli,true,true,true,true,1,,false,VALIDATED_WITH_PAYMENT
+saumyaagarwal@jklu.edu.in,Saumya Agarwal,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+saumyapuri@jklu.edu.in,SAUMYA PURI,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+sdfdsfs@nullsto.edu.pl,,false,false,false,false,0,,false,USER_NOT_FOUND
+shahdiyaankitbhai@jklu.edu.in,Diya Shah,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+shaikareesh@jklu.edu.in,Shaik Areesh,true,true,false,true,0,DUMB SHOW,true,VALIDATED_WITHOUT_PAYMENT
+shambhaviaa28@gmail.com,Shambhavi Singh ,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+sharmagaurav94140@gmail.com,Gaurav Sharma,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+sharmalokesh@jklu.edu.in,Sharma Lokesh,true,true,true,true,1,VALORANT TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+sherawatdharamsingh911@gmail.com,Dharam Singh Choudhary ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+shikhasharma@jklu.edu.in,Shikha Sharma,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+shoryaprajapat@jklu.edu.in,Shorya Prajapat,true,true,false,true,0,VISITOR_PASS,true,VALIDATED_WITHOUT_PAYMENT
+shouryaveerbishnoi@jklu.edu.in,Shouryaveer Bishnoi ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+shreshthasharma@jklu.edu.in,Shreshtha sharma ,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+shreyanshmishra15@gmail.com,SHREYANSH MISHRA,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+shubhangibhanawat@jklu.edu.in,Shubhangi bhanawat ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+shubhdix2006@gmail.com,Shubh Dixit,true,true,true,true,1,,false,VALIDATED_WITH_PAYMENT
+shyochandjat99504@gmail.com,Rajveer Choudhary,true,false,true,true,1,BGMI TOURNAMENT,false,UNVALIDATED_WITH_PAYMENT
+siddhikhandelwal@jklu.edu.in,Siddhi khandelwal ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+simrankodwani@jklu.edu.in,Simran Kodwani,true,true,false,true,0,ART RELAY,true,VALIDATED_WITHOUT_PAYMENT
+singhalshorya20@gmail.com,Shorya SInghal ,true,true,true,true,1,FREE FIRE TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+singhyashvardhan900@gmail.com,Yashvardhan singh,true,true,false,true,0,BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+siyasharma@jklu.edu.in,Siya Sharma,true,false,false,true,0,COURTROOM,false,ALREADY_UNVALIDATED
+solomaze67032@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+sourabhmoolchandani777@gmail.com,Sourabh moolchandani ,true,false,true,true,1,FOCUS,false,UNVALIDATED_WITH_PAYMENT
+srishtijain@jklu.edu.in,Srishti jain,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+sunaykundalwal@jklu.edu.in,sunay kundalwal,true,true,false,true,0,FOCUS,true,VALIDATED_WITHOUT_PAYMENT
+surishreya0@gmail.com,shreya suri,true,true,false,true,0,Visitor Pass,true,VALIDATED_WITHOUT_PAYMENT
+suryaansh958@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+suryaanshsharma@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+suryanshkhandelwal@jklu.edu.in,Suryansh Khandelwal ,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+tanikgupta@jklu.edu.in,,false,false,false,false,0,,false,USER_NOT_FOUND
+tanishkasharma825@gmail.com,Tanishka Sharma ,true,true,false,true,0,STEP UP; DANCE BATTLE,true,VALIDATED_WITHOUT_PAYMENT
+tanishqdaiya@jklu.edu.in,Tanishq Daiya,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+tanishqrathore21105@gmail.com,Tanishq Rathore,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+tanmaysharma@jklu.edu.in,Tanmay Sharma,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+tanvigupta@jklu.edu.in,Tanvi Gupta,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+tarun.sharma19092005@gmail.com,Tarun Jangid,true,true,true,true,1,ECHOES OF NOOR,false,VALIDATED_WITH_PAYMENT
+tarunkumar2025@jklu.edu.in,TARUN KUMAR,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+tarunsaran9974@gmail.com,Tarun Saran,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+tarunsharma05122001@gmail.com,Tarun sharma ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+tejendersinghshekhawat@jklu.edu.in,Tejender Singh Shekhawat,true,true,false,true,0,BIDDING BEFORE WICKET,true,VALIDATED_WITHOUT_PAYMENT
+tikkiwalc@gmail.com,Chhavi Kansal,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+tishagarg000@gmail.com,Tisha Garg,true,true,false,true,0,IN CONVERSATION WITH,true,VALIDATED_WITHOUT_PAYMENT
+uditmishra@jklu.edu.in,Udit Mishra,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+vagishasinghkapasia@jklu.edu.in,Vagisha singh kapasia,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+vaibhavcharan@jklu.edu.in,Vaibhav Charan,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+vaibhavshar800@gmail.com,Vaibhav sharam,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+vaishaliagarwal@jklu.edu.in,Vaishali agarwal ,true,true,false,true,0,DUMB SHOW,true,VALIDATED_WITHOUT_PAYMENT
+vansh@jklu.edu.in,Vansh Sharma,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+vanshbhatia@jklu.edu.in,Vansh Bhatia ,true,true,true,true,1,DUMB SHOW,false,VALIDATED_WITH_PAYMENT
+vanshpratapsinghshekhawat2020@gmail.com,VANSH PRATAP SINGH,true,true,true,true,1,FREE FIRE TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+vanshvaibhavsingh@jklu.edu.in,Vansh Vaibhav Singh,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+varrasrivalli@jklu.edu.in,varra srivalli ,true,false,true,true,1,CLAY MODELLING,false,UNVALIDATED_WITH_PAYMENT
+ved.sanadhya@gmail.com,Ved Sanadhya,true,true,true,true,1,VALORANT TOURNAMENT; ECHOES OF NOOR,false,VALIDATED_WITH_PAYMENT
+vermarohnan@gmail.com,Rohan verma,true,true,true,true,1,BGMI TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+vermautkarsh1814@gmail.com,Utkarsh Verma,true,false,false,false,0,VERSEVAAD,false,ALREADY_UNVALIDATED
+vidhaanpshah@gmail.com,vidhaan p shah,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+vijaypratp7475@gmail.com,Harsh Chandeliya ,true,true,true,true,1,BGMI,false,VALIDATED_WITH_PAYMENT
+vikaschoudhary@jklu.edu.in,Vikaschoudhary,true,false,false,true,0,BIDDING BEFORE WICKET,false,ALREADY_UNVALIDATED
+vikassaran9974@gmail.com,Vikas Saran,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+vishal7719sharma@gmail.com,VISHAL SHARMA,true,true,true,true,1,FREE FIRE TOURNAMENT,false,VALIDATED_WITH_PAYMENT
+yagyavalkyasharama2@gmail.com,Yagyavalkya sharma,true,true,true,true,1,VERSEVAAD,false,VALIDATED_WITH_PAYMENT
+yashgill@jklu.edu.in,Yash Gill,true,true,true,true,1,IN CONVERSATION WITH,false,VALIDATED_WITH_PAYMENT
+yashmish10930@gmail.com,Yash Mishra,true,true,true,true,4,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+yashsvibothra@jklu.edu.in,Yashsvi Bothra,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+yatharthchaturvedi16@gmail.com,Yatharth Chaturvedi ,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+yogeshbijarniya9392@gmail.com,Yogesh Bijarniya,true,true,true,true,1,VISITOR_PASS,false,VALIDATED_WITH_PAYMENT
+yugjain@jklu.edu.in,yug jain,true,true,true,true,1,BIDDING BEFORE WICKET,false,VALIDATED_WITH_PAYMENT
+yuvrajranawat506@gmail.com,Yuvraj singh,true,false,true,true,1,IN CONVERSATION WITH,false,UNVALIDATED_WITH_PAYMENT
+yuvrajsingh0192rathore@gmail.com,Yuvraj Singh Rathore,true,true,true,true,1,COURTROOM,false,VALIDATED_WITH_PAYMENT
+yoxitt25@gmail.com,Yojit soni,true,true,false,true,0,STEP UP,true,VALIDATED_WITHOUT_PAYMENT
+farhankhan7861458@gmail.com,Farhan Khan,true,true,false,true,0,VISITOR PASS,true,VALIDATED_WITHOUT_PAYMENT
+bansa7512@gmail.com,Harshvardhan Singh Rathore,true,true,false,false,0,VISITOR_PASS,true,VALIDATED_WITHOUT_PAYMENT
+rohit12mandan@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
+aringupta444@gmail.com,,false,false,false,false,0,,false,USER_NOT_FOUND
